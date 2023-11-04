@@ -10,8 +10,9 @@ builder.Services.AddControllersWithViews();
 
 
 builder.Services.AddScoped<IMainRepository<Product>, ProductRepository>();
+builder.Services.AddScoped<IMainRepository<Category>, CategoryRepository>();
 
-builder.Services.AddScoped<OracleConnection>(provider => 
+builder.Services.AddScoped<OracleConnection>(provider =>
 {
     return new OracleConnection(builder.Configuration.GetConnectionString("DatabaseConnection"));
 });
