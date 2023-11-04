@@ -1,0 +1,59 @@
+﻿@model IEnumerable<Product>
+
+
+<h1> @ViewData["Title"]</h1>
+<a asp-action="Create" asp-route-id="">Create</a>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ActualPrice)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ClubCardPrice)
+            </th>
+            <th>
+                Category
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Weight)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model) 
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ActualPrice) Kč
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ClubCardPrice) Kč
+                </td>
+                <td>
+                    Category
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Weight) kg
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+@{
+    ViewData["Title"] = "Products";
+}

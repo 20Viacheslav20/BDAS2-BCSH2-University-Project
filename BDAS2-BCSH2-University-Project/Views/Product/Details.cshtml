@@ -1,0 +1,51 @@
+﻿@model Product
+
+<div>
+    <h4></h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.ActualPrice) 
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.ActualPrice) Kč
+        </dd>
+
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.ClubCardPrice) 
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.ClubCardPrice) Kč
+        </dd>
+
+        <dt class="col-sm-2">
+            Category
+        </dt>
+        <dd class="col-sm-10">
+            Category
+        </dd>
+
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Weight)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Weight) kg
+        </dd>
+
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
+    <a asp-action="Index">Back</a>
+</div>
+
+@{
+    ViewData["Title"] = "Details";
+}
