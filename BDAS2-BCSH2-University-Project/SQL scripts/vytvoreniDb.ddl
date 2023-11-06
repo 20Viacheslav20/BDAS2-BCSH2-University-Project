@@ -13,17 +13,17 @@ CREATE TABLE adresy (
     idadresy                  NUMBER NOT NULL,
     mesto                     VARCHAR2(32) NOT NULL,
     ulice                     VARCHAR2(32),
-    prodejny_idprodejny       NUMBER,
+    shops_idshops       NUMBER,
     zamestnanñi_idzamestnance NUMBER
 );
 
 ALTER TABLE adresy
     ADD CONSTRAINT fkarc_3 CHECK ( ( ( zamestnanñi_idzamestnance IS NOT NULL )
-                                     AND ( prodejny_idprodejny IS NULL ) )
-                                   OR ( ( prodejny_idprodejny IS NOT NULL )
+                                     AND ( shops_idshops IS NULL ) )
+                                   OR ( ( shops_idshops IS NOT NULL )
                                         AND ( zamestnanñi_idzamestnance IS NULL ) )
                                    OR ( ( zamestnanñi_idzamestnance IS NULL )
-                                        AND ( prodejny_idprodejny IS NULL ) ) );
+                                        AND ( shops_idshops IS NULL ) ) );
 
 ALTER TABLE adresy ADD CONSTRAINT adresa_pk PRIMARY KEY ( idadresy );
 
@@ -72,7 +72,7 @@ ALTER TABLE platby ADD CONSTRAINT platby_pk PRIMARY KEY ( idplatby );
 
 CREATE TABLE pokladny (
     idpokladny          NUMBER NOT NULL,
-    prodejny_idprodejny NUMBER,
+    shops_idshops NUMBER,
     cislo               NUMBER NOT NULL,
     jesamoobsluzna      NUMBER(1) NOT NULL
 );
@@ -114,17 +114,17 @@ CREATE UNIQUE INDEX prodej__idxv1 ON
 
 ALTER TABLE prodeje ADD CONSTRAINT prodej_pk PRIMARY KEY ( idprodeje );
 
-CREATE TABLE prodejny (
-    idprodejny     NUMBER NOT NULL,
+CREATE TABLE shops (
+    idshops     NUMBER NOT NULL,
     kontaktnicislo VARCHAR2(32),
     plocha         VARCHAR2(32) NOT NULL
 );
 
-ALTER TABLE prodejny ADD CONSTRAINT prodejna_pk PRIMARY KEY ( idprodejny );
+ALTER TABLE shops ADD CONSTRAINT Shop_pk PRIMARY KEY ( idshops );
 
 CREATE TABLE pulty (
     idpultu             NUMBER NOT NULL,
-    prodejny_idprodejny NUMBER,
+    shops_idshops NUMBER,
     cislo               NUMBER NOT NULL,
     pocetpolicek        NUMBER NOT NULL
 );
@@ -145,7 +145,7 @@ CREATE TABLE zamestnanci (
     prijmeni            VARCHAR2(32),
     rodnecislo          VARCHAR2(32) NOT NULL,
     telefonnicislo      VARCHAR2(32) NOT NULL,
-    prodejny_idprodejny NUMBER NOT NULL
+    shops_idshops NUMBER NOT NULL
 );
 
 ALTER TABLE zamestnanci ADD CONSTRAINT zamestnanñi_pk PRIMARY KEY ( idzamestnance );
@@ -180,8 +180,8 @@ ALTER TABLE zbozi_na_sklade ADD CONSTRAINT zbozi_na_sklade_pk PRIMARY KEY ( zboz
                                                                             sklady_idskladu );
 
 ALTER TABLE adresy
-    ADD CONSTRAINT adresy_prodejny_fk FOREIGN KEY ( prodejny_idprodejny )
-        REFERENCES prodejny ( idprodejny );
+    ADD CONSTRAINT adresy_shops_fk FOREIGN KEY ( shops_idshops )
+        REFERENCES shops ( idshops );
 
 ALTER TABLE adresy
     ADD CONSTRAINT adresy_zamestnanñi_fk FOREIGN KEY ( zamestnanñi_idzamestnance )
@@ -200,8 +200,8 @@ ALTER TABLE kupony
         REFERENCES platby ( idplatby );
 
 ALTER TABLE pokladny
-    ADD CONSTRAINT pokladny_prodejny_fk FOREIGN KEY ( prodejny_idprodejny )
-        REFERENCES prodejny ( idprodejny );
+    ADD CONSTRAINT pokladny_shops_fk FOREIGN KEY ( shops_idshops )
+        REFERENCES shops ( idshops );
 
 ALTER TABLE prodane_zbozi
     ADD CONSTRAINT prodane_zbozi_prodej_fk FOREIGN KEY ( prodej_idprodeje )
@@ -216,16 +216,16 @@ ALTER TABLE prodeje
         REFERENCES platby ( idplatby );
 
 ALTER TABLE pulty
-    ADD CONSTRAINT pulty_prodejny_fk FOREIGN KEY ( prodejny_idprodejny )
-        REFERENCES prodejny ( idprodejny );
+    ADD CONSTRAINT pulty_shops_fk FOREIGN KEY ( shops_idshops )
+        REFERENCES shops ( idshops );
 
 ALTER TABLE zamestnanci
     ADD CONSTRAINT zamestnanñi_pozice_fk FOREIGN KEY ( pozice_idpozice )
         REFERENCES pozice ( idpozice );
 
 ALTER TABLE zamestnanci
-    ADD CONSTRAINT zamestnanñi_prodejny_fk FOREIGN KEY ( prodejny_idprodejny )
-        REFERENCES prodejny ( idprodejny );
+    ADD CONSTRAINT zamestnanñi_shops_fk FOREIGN KEY ( shops_idshops )
+        REFERENCES shops ( idshops );
 
 ALTER TABLE zbozi
     ADD CONSTRAINT zbozi_kategorije_fk FOREIGN KEY ( kategorije_idkategorije )
@@ -405,14 +405,14 @@ BEGIN
 END;
 /
 
-CREATE SEQUENCE prodejny_idprodejny_seq START WITH 1 NOCACHE ORDER;
+CREATE SEQUENCE shops_idshops_seq START WITH 1 NOCACHE ORDER;
 
-CREATE OR REPLACE TRIGGER prodejny_idprodejny_trg BEFORE
-    INSERT ON prodejny
+CREATE OR REPLACE TRIGGER shops_idshops_trg BEFORE
+    INSERT ON shops
     FOR EACH ROW
-    WHEN ( new.idprodejny IS NULL )
+    WHEN ( new.idshops IS NULL )
 BEGIN
-    :new.idprodejny := prodejny_idprodejny_seq.nextval;
+    :new.idshops := shops_idshops_seq.nextval;
 END;
 /
 

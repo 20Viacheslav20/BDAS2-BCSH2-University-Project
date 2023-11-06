@@ -11,6 +11,7 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddScoped<IMainRepository<Product>, ProductRepository>();
 builder.Services.AddScoped<IMainRepository<Category>, CategoryRepository>();
+builder.Services.AddScoped<IMainRepository<Shop>, ShopRepository>();
 
 builder.Services.AddScoped<OracleConnection>(provider =>
 {
