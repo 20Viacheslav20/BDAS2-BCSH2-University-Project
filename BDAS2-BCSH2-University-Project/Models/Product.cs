@@ -16,7 +16,7 @@ namespace BDAS2_BCSH2_University_Project.Models
         public int? ClubCardPrice { get; set; }  
         public int CaregoryId { get; set; }
 
-        [Range(1, 100)]
+        [Range(0.1, 100)]
         public decimal Weight { get; set; }
 
     }

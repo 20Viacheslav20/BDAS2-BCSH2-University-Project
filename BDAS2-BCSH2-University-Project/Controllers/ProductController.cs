@@ -14,10 +14,24 @@ namespace BDAS2_BCSH2_University_Project.Controllers
         }
 
         [HttpGet]
-        public IActionResult Index()
+        public IActionResult Create()
         {
-            List<Product> products = _productRepository.GetAll();
-            return View(products);
+            throw new NotImplementedException();
+        }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Create(Product model)
+        {
+            throw new NotImplementedException();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Delete(int id)
+        {
+            throw new NotImplementedException();
         }
 
         [HttpGet]
@@ -26,15 +40,15 @@ namespace BDAS2_BCSH2_University_Project.Controllers
             if (id == null)
             {
                 return NotFound();
-            } 
+            }
 
             Product product = _productRepository.GetById(id.GetValueOrDefault());
-            
+
             if (product == null)
             {
                 return NotFound();
             }
-            
+
             return View(product);
         }
 
@@ -57,30 +71,15 @@ namespace BDAS2_BCSH2_University_Project.Controllers
             {
                 _productRepository.Edit(model);
             }
-            return View(model);
+            return RedirectToAction(nameof(Index));
         }
 
 
         [HttpGet]
-        public IActionResult Create()
+        public IActionResult Index()
         {
-            throw new NotImplementedException();
-        }
-
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Create(Product model)
-        {
-            throw new NotImplementedException();
-        }
-
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Delete(int id)
-        {
-            throw new NotImplementedException();
+            List<Product> products = _productRepository.GetAll();
+            return View(products);
         }
 
     }

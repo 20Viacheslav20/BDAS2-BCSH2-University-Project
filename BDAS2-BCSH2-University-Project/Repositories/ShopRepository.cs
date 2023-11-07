@@ -10,8 +10,6 @@ namespace BDAS2_BCSH2_University_Project.Repositories
 
         private const string TABLE = "PRODEJNY";
 
-        // SELECT z.nazev, k.nazev FROM ZBOZI z JOIN kategorije k on (z.kategorije_idkategorije = k.idkategorije);
-
         public ShopRepository(OracleConnection oracleConnection)
         {
             _oracleConnection = oracleConnection;
@@ -30,7 +28,7 @@ namespace BDAS2_BCSH2_University_Project.Repositories
                 using (OracleDataReader reader = command.ExecuteReader())
                 {
                     while (reader.Read())
-                    {                                
+                    {
                         shops.Add(CreateShopFromReader(reader));
                     }
                     return shops;
@@ -48,7 +46,7 @@ namespace BDAS2_BCSH2_University_Project.Repositories
                 command.CommandText = $"SELECT * FROM {TABLE} WHERE IDPRODEJNY = {id}";
 
                 using (OracleDataReader reader = command.ExecuteReader())
-                {        
+                {
                     if (reader.Read())
                     {
                         return CreateShopFromReader(reader);
@@ -56,7 +54,7 @@ namespace BDAS2_BCSH2_University_Project.Repositories
                     else
                     {
                         return null;
-                    }                  
+                    }
                 }
 
             }
@@ -74,7 +72,7 @@ namespace BDAS2_BCSH2_University_Project.Repositories
                 _oracleConnection.Open();
 
             }
-             throw new NotImplementedException();
+            throw new NotImplementedException();
         }
 
         public void Delete(int id)
@@ -84,13 +82,11 @@ namespace BDAS2_BCSH2_University_Project.Repositories
 
         private Shop CreateShopFromReader(OracleDataReader reader)
         {
-            
             Shop Shop = new Shop()
             {
                 Id = int.Parse(reader["IDPRODEJNY"].ToString()),
                 Contact = reader["KONTAKTNICISLO"].ToString(),
-                Square = double.Parse(reader["PLOCHA"].ToString()
-               )
+                Square = double.Parse(reader["PLOCHA"].ToString())
             };
             return Shop;
         }

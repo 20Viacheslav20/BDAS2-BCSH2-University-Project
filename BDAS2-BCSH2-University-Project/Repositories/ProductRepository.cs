@@ -10,8 +10,6 @@ namespace BDAS2_BCSH2_University_Project.Repositories
 
         private const string TABLE = "ZBOZI";
 
-        // SELECT z.nazev, k.nazev FROM ZBOZI z JOIN kategorije k on (z.kategorije_idkategorije = k.idkategorije);
-
         public ProductRepository(OracleConnection oracleConnection)
         {
             _oracleConnection = oracleConnection;
@@ -30,12 +28,11 @@ namespace BDAS2_BCSH2_University_Project.Repositories
                 using (OracleDataReader reader = command.ExecuteReader())
                 {
                     while (reader.Read())
-                    {                                
+                    {
                         products.Add(CreateProductFromReader(reader));
                     }
                     return products;
                 }
-
             }
         }
 
@@ -45,20 +42,24 @@ namespace BDAS2_BCSH2_University_Project.Repositories
             {
                 _oracleConnection.Open();
 
-                command.CommandText = $"SELECT * FROM {TABLE} WHERE IDZBOZI = {id}";
+                return GetByIdWithOracleCommand(command, id);
+            }
+        }
 
-                using (OracleDataReader reader = command.ExecuteReader())
-                {        
-                    if (reader.Read())
-                    {
-                        return CreateProductFromReader(reader);
-                    }
-                    else
-                    {
-                        return null;
-                    }                  
+        private Product GetByIdWithOracleCommand(OracleCommand command, int id)
+        {
+            command.CommandText = $"SELECT * FROM {TABLE} WHERE IDZBOZI = {id}";
+
+            using (OracleDataReader reader = command.ExecuteReader())
+            {
+                if (reader.Read())
+                {
+                    return CreateProductFromReader(reader);
                 }
-
+                else
+                {
+                    return null;
+                }
             }
         }
 
@@ -72,9 +73,44 @@ namespace BDAS2_BCSH2_University_Project.Repositories
             using (OracleCommand command = _oracleConnection.CreateCommand())
             {
                 _oracleConnection.Open();
+                
+                Product dbproduct = GetByIdWithOracleCommand(command, entity.Id);
+                if (dbproduct != null)
+                {
+                    string query = "";
+                    if (dbproduct.Name != entity.Name)
+                    {
+                        query += "NAZEV = :entityName, ";
+                        command.Parameters.Add("entityName", OracleDbType.Varchar2).Value = entity.Name;
+                    }
+
+                    if (dbproduct.ActualPrice != entity.ActualPrice)
+                    {
+                        query += "AKTUALNICENA = :entityActualPrice, ";
+                        command.Parameters.Add("entityActualPrice", OracleDbType.Int32).Value = entity.ActualPrice;
+                    }
+
+                    if (dbproduct.ClubCardPrice != entity.ClubCardPrice)
+                    {
+                        query += "CENAZECLUBCARTOU = :entityClubCardPrice ";
+                        command.Parameters.Add("entityClubCardPrice", OracleDbType.Int32).Value = entity.ClubCardPrice;
+                    }
+
+                    // TODO Weight
+
+                    if (!string.IsNullOrEmpty(query))
+                    {
+                        query = query.TrimEnd(',', ' ');
+
+                        command.CommandText = $"UPDATE {TABLE} SET {query} WHERE IDZBOZI = {entity.Id}";
+
+                        command.ExecuteNonQuery();
+                    }
+
+                }
 
             }
-             throw new NotImplementedException();
+
         }
 
         public void Delete(int id)
@@ -85,7 +121,7 @@ namespace BDAS2_BCSH2_University_Project.Repositories
         private Product CreateProductFromReader(OracleDataReader reader)
         {
             string price = reader["CENAZECLUBCARTOU"].ToString();
-
+            //var a = reader.GetValue(1);
             Product product = new Product()
             {
                 Id = int.Parse(reader["IDZBOZI"].ToString()),

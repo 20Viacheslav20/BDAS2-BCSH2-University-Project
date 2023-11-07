@@ -10,8 +10,6 @@ namespace BDAS2_BCSH2_University_Project.Repositories
 
         private const string TABLE = "POZICE";
 
-        // SELECT z.nazev, k.nazev FROM ZBOZI z JOIN kategorije k on (z.kategorije_idkategorije = k.idkategorije);
-
         public PositionRepository(OracleConnection oracleConnection)
         {
             _oracleConnection = oracleConnection;
@@ -33,7 +31,7 @@ namespace BDAS2_BCSH2_University_Project.Repositories
                     {
                         positions.Add(CreatePositionFromReader(reader));
                     }
-                    return  positions;
+                    return positions;
                 }
 
             }
@@ -84,13 +82,11 @@ namespace BDAS2_BCSH2_University_Project.Repositories
 
         private Position CreatePositionFromReader(OracleDataReader reader)
         {
-
             Position Position = new Position()
             {
                 Id = int.Parse(reader["IDPOZICE"].ToString()),
                 Name = reader["NAZEV"].ToString(),
-                Salary = double.Parse(reader["MZDA"].ToString()
-               )
+                Salary = double.Parse(reader["MZDA"].ToString())
             };
             return Position;
         }

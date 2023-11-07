@@ -10,8 +10,6 @@ namespace BDAS2_BCSH2_University_Project.Repositories
 
         private const string TABLE = "KATEGORIJE";
 
-        // SELECT z.nazev, k.nazev FROM ZBOZI z JOIN kategorije k on (z.kategorije_idkategorije = k.idkategorije);
-
         public CategoryRepository(OracleConnection oracleConnection)
         {
             _oracleConnection = oracleConnection;
