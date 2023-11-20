@@ -20,3 +20,8 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+.button-row {
+    display: flex;
+    gap: 10px; 
+}

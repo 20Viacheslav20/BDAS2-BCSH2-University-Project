@@ -1,5 +1,6 @@
 ﻿using BDAS2_BCSH2_University_Project.Interfaces;
 using BDAS2_BCSH2_University_Project.Models;
+using BDAS2_BCSH2_University_Project.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BDAS2_BCSH2_University_Project.Controllers
@@ -14,11 +15,24 @@ namespace BDAS2_BCSH2_University_Project.Controllers
             _positionRepository = positionRepository;
         }
 
-        [HttpGet]
-        public IActionResult Index()
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Delete(int? id)
         {
-            List<Position> positions = _positionRepository.GetAll();
-            return View(positions);
+            if (id == null)
+            {
+                return NotFound();
+            }
+            try
+            {
+                _positionRepository.Delete(id.GetValueOrDefault());
+            }
+            catch (Exception e)
+            {
+                TempData["Error"] = e.Message;
+                return RedirectToAction(nameof(Details), new { id });
+            }
+            return RedirectToAction(nameof(Index));
         }
 
         [HttpGet]
@@ -27,6 +41,22 @@ namespace BDAS2_BCSH2_University_Project.Controllers
             if (id == null)
             {
                 return NotFound();
+            }
+            Position position = _positionRepository.GetById(id.GetValueOrDefault());
+            if (position == null)
+            {
+                return NotFound();
+            }
+
+            return View(position);
+        }
+
+        [HttpGet]
+        public IActionResult Save(int? id)
+        {
+            if (id == null)
+            {
+                return View(new Product());
             }
 
             Position position = _positionRepository.GetById(id.GetValueOrDefault());
@@ -39,49 +69,46 @@ namespace BDAS2_BCSH2_University_Project.Controllers
             return View(position);
         }
 
-        [HttpGet]
-        public IActionResult Edit(int? id)
-        {
-            return Details(id);
-        }
-
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(int id, Position model)
+        public IActionResult Save(int? id, Position model)
         {
-            if (id != model.Id)
+            if (id != null)
             {
-                return NotFound();
+                if (id != model.Id)
+                {
+                    return NotFound();
+                }
             }
 
             if (ModelState.IsValid)
             {
-                _positionRepository.Edit(model);
+                try
+                {
+                    if (id == null)
+                    {
+                        _positionRepository.Create(model);
+                    }
+                    else
+                    {
+                        _positionRepository.Edit(model);
+                    }
+
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (Exception e)
+                {
+                    ModelState.AddModelError("", e.Message);
+                }
             }
             return View(model);
         }
 
-
         [HttpGet]
-        public IActionResult Create()
+        public IActionResult Index()
         {
-            throw new NotImplementedException();
-        }
-
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Create(Position model)
-        {
-            throw new NotImplementedException();
-        }
-
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Delete(int id)
-        {
-            throw new NotImplementedException();
+            List<Position> positions = _positionRepository.GetAll();
+            return View(positions);
         }
 
     }

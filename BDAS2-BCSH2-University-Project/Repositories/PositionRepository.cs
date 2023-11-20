@@ -33,7 +33,6 @@ namespace BDAS2_BCSH2_University_Project.Repositories
                     }
                     return positions;
                 }
-
             }
         }
 
@@ -43,26 +42,39 @@ namespace BDAS2_BCSH2_University_Project.Repositories
             {
                 _oracleConnection.Open();
 
-                command.CommandText = $"SELECT * FROM {TABLE} WHERE IDPOZICE = {id}";
+                return GetByIdWithOracleCommand(command, id);
+            }
+        }
 
-                using (OracleDataReader reader = command.ExecuteReader())
+        private Position GetByIdWithOracleCommand(OracleCommand command, int id)
+        {
+            command.CommandText = $"SELECT * FROM {TABLE} WHERE IDPOZICE = :entityId";
+
+            command.Parameters.Add("entityId", OracleDbType.Int32).Value = id;
+
+            using (OracleDataReader reader = command.ExecuteReader())
+            {
+                if (!reader.Read())
                 {
-                    if (reader.Read())
-                    {
-                        return CreatePositionFromReader(reader);
-                    }
-                    else
-                    {
-                        return null;
-                    }
+                    return null;
                 }
-
+                return CreatePositionFromReader(reader);
             }
         }
 
         public void Create(Position entity)
         {
-            throw new NotImplementedException();
+            using (OracleCommand command = _oracleConnection.CreateCommand())
+            {
+                _oracleConnection.Open();
+
+                command.CommandText = $"INSERT INTO {TABLE} (NAZEV, MZDA) VALUES (:entityName, :entitySalary)";
+
+                command.Parameters.Add("entityName", OracleDbType.Varchar2).Value = entity.Name;
+                command.Parameters.Add("entitySalary", OracleDbType.Int32).Value = entity.Salary;
+
+                command.ExecuteNonQuery();
+            }
         }
 
         public void Edit(Position entity)
@@ -70,19 +82,53 @@ namespace BDAS2_BCSH2_University_Project.Repositories
             using (OracleCommand command = _oracleConnection.CreateCommand())
             {
                 _oracleConnection.Open();
+                Position dbPosition = GetByIdWithOracleCommand(command, entity.Id);
 
+                if (dbPosition == null)
+                    return;
+
+                string query = "";
+                if (dbPosition.Name != entity.Name)
+                {
+                    query += "NAZEV = :entityName, ";
+                    command.Parameters.Add("entityName", OracleDbType.Varchar2).Value = entity.Name;
+                }
+
+                if (dbPosition.Salary != dbPosition.Salary)
+                {
+                    query += "MZDA = :entitySalary, ";
+                    command.Parameters.Add("entitySalary", OracleDbType.Int32).Value = entity.Salary;
+                }
+
+                if (!string.IsNullOrEmpty(query))
+                {
+                    query = query.TrimEnd(',', ' ');
+
+                    command.CommandText = $"UPDATE {TABLE} SET {query} WHERE IDPOZICE = :entityId";
+                    command.Parameters.Add("entityId", OracleDbType.Int32).Value = entity.Id;
+
+                    command.ExecuteNonQuery();
+                }
             }
-            throw new NotImplementedException();
         }
 
         public void Delete(int id)
         {
-            throw new NotImplementedException();
+            using (OracleCommand command = _oracleConnection.CreateCommand())
+            {
+                _oracleConnection.Open();
+
+                command.CommandText = $"DELETE FROM {TABLE} WHERE IDPOZICE = :entityId";
+
+                command.Parameters.Add("entityId", OracleDbType.Int32).Value = id;
+
+                command.ExecuteNonQuery();
+            }
         }
 
         private Position CreatePositionFromReader(OracleDataReader reader)
         {
-            Position Position = new Position()
+            Position Position = new()
             {
                 Id = int.Parse(reader["IDPOZICE"].ToString()),
                 Name = reader["NAZEV"].ToString(),

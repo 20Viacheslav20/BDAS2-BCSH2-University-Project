@@ -1,11 +1,13 @@
 ﻿@model IEnumerable<Category>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Categories";
 }
 
-<h1>Categories</h1>
-
+<h1> @ViewData["Title"]</h1>
+<p>
+    <a asp-action="Save" class="btn btn-success">Create</a>
+</p>
 <table class="table">
     <thead>
         <tr>
@@ -24,9 +26,8 @@
                 @Html.DisplayFor(modelItem => item.Name)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                <a asp-action="Save" asp-route-id="@item.Id" class="btn btn-secondary btn-sm">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-secondary btn-sm">Details</a>
             </td>
         </tr>
     }

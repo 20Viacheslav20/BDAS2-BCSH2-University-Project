@@ -1,8 +1,13 @@
 ﻿@model IEnumerable<Product>
 
+@{
+    ViewData["Title"] = "Products";
+}
 
 <h1> @ViewData["Title"]</h1>
-
+<p>
+    <a asp-action="Save" class="btn btn-success">Create</a>
+</p>
 <table class="table">
     <thead>
         <tr>
@@ -16,7 +21,7 @@
                 @Html.DisplayNameFor(model => model.ClubCardPrice)
             </th>
             <th>
-                Category
+                @Html.DisplayNameFor(model => model.Category)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Weight)
@@ -35,18 +40,22 @@
                     @Html.DisplayFor(modelItem => item.ActualPrice) Kč
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.ClubCardPrice) Kč
+                    @if (item.ClubCardPrice != null)
+                    {
+                        @Html.DisplayFor(modelItem => item.ClubCardPrice); <a>Kč</a>
+                    } else {
+                        <a>----</a>
+                    } 
                 </td>
                 <td>
-                    Category
+                    @Html.DisplayFor(modelItem => item.Category) 
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Weight) kg
                 </td>
                 <td>
-                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    <a asp-action="Save" asp-route-id="@item.Id" class="btn btn-secondary btn-sm">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-secondary btn-sm">Details</a>
                 </td>
             </tr>
         }
@@ -54,6 +63,4 @@
 </table>
 
 
-@{
-    ViewData["Title"] = "Products";
-}
+

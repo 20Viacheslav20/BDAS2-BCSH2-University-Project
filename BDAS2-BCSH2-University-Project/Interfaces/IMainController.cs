@@ -6,12 +6,9 @@ namespace BDAS2_BCSH2_University_Project.Interfaces
     {
         IActionResult Index();
         IActionResult Details(int? id);
-        IActionResult Edit(int? id);
-        IActionResult Edit(int id, T model);
-        IActionResult Create();
-        IActionResult Create(T model);
-
-        IActionResult Delete(int id);
+        IActionResult Save(int? id);
+        IActionResult Save(int? id, T model);
+        IActionResult Delete(int? id);
 
     }
 }

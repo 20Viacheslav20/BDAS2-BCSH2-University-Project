@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BDAS2_BCSH2_University_Project.Models
 {
@@ -14,9 +15,9 @@ namespace BDAS2_BCSH2_University_Project.Models
 
         [Display(Name = "ClubCard Price")]
         public int? ClubCardPrice { get; set; }  
-        public int CaregoryId { get; set; }
+        public string Category { get; set; }
 
-        [Range(0.1, 100)]
+        [Column(TypeName = "decimal(4, 2)")]
         public decimal Weight { get; set; }
 
     }

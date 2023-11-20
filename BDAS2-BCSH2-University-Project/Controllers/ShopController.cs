@@ -5,58 +5,109 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BDAS2_BCSH2_University_Project.Controllers
 {
-    public class ShopController : Controller, IMainController<Shop>
+    public class ShopController : Controller/*, IMainController<Shop>*/
     {
-        private readonly IMainRepository<Shop> _ShopRepository;
+        private readonly IMainRepository<Shop> _shopRepository;
 
-        public ShopController(IMainRepository<Shop> ShopRepository)
+        public ShopController(IMainRepository<Shop> shopRepository)
         {
-            _ShopRepository = ShopRepository;
-        }
-
-        [HttpGet]
-        public IActionResult Create()
-        {
-            throw new NotImplementedException();
+            _shopRepository = shopRepository;
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(Shop model)
+        public IActionResult Delete(int? id)
         {
-            throw new NotImplementedException();
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Delete(int id)
-        {
-            throw new NotImplementedException();
+            if (id == null)
+            {
+                return NotFound();
+            }
+            try
+            {
+                _shopRepository.Delete(id.GetValueOrDefault());
+            }
+            catch (Exception e)
+            {
+                TempData["Error"] = e.Message;
+                return RedirectToAction(nameof(Index));
+            }
+            return RedirectToAction(nameof(Index));
         }
 
         [HttpGet]
         public IActionResult Details(int? id)
         {
-            throw new NotImplementedException();
+            if (id == null)
+            {
+                return NotFound();
+            }
+            Shop shop = _shopRepository.GetById(id.GetValueOrDefault());
+            if (shop == null)
+            {
+                return NotFound();
+            }
+
+            return View(shop);
         }
 
         [HttpGet]
-        public IActionResult Edit(int? id)
+        public IActionResult Save(int? id)
         {
-            throw new NotImplementedException();
+            if (id == null)
+            {
+                return View(new Shop());
+            }
+
+            Shop shop = _shopRepository.GetById(id.GetValueOrDefault());
+
+            if (shop == null)
+            {
+                return NotFound();
+            }
+
+            return View(shop);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(int id, Shop model)
+        public IActionResult Save(int? id, Shop model)
         {
-            throw new NotImplementedException();
+            if (id != null)
+            {
+                if (id != model.Id)
+                {
+                    return NotFound();
+                }
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    if (id == null)
+                    {
+                        _shopRepository.Create(model);
+                    }
+                    else
+                    {
+                        _shopRepository.Edit(model);
+                    }
+
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (Exception e)
+                {
+                    ModelState.AddModelError("", e.Message);
+                }
+            }
+            return View(model);
         }
+
 
         [HttpGet]
         public IActionResult Index()
         {
-            List<Shop> shops = _ShopRepository.GetAll();
+            List<Shop> shops = _shopRepository.GetAll();
             return View(shops);
         }
     }

@@ -1,11 +1,13 @@
 ﻿@model IEnumerable<Shop>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Shops";
 }
 
-<h1>Shops</h1>
-
+<h1> @ViewData["Title"]</h1>
+<p>
+    <a asp-action="Save" class="btn btn-success">Create</a>
+</p>
 
 <table class="table">
     <thead>
@@ -13,11 +15,20 @@
             <th>
                 @Html.DisplayNameFor(model => model.Contact)
             </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Square)
+            </th>
+
+            <th>
+                @Html.DisplayNameFor(model => model.Address.City)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Address.Street)
+            </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-
         @foreach (var item in Model)
         {
             <tr>
@@ -25,9 +36,18 @@
                     @Html.DisplayFor(modelItem => item.Contact)
                 </td>
                 <td>
-                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    @Html.DisplayFor(modelItem => item.Square)
+                </td>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.Address.City)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Address.Street)
+                </td>
+                <td>
+                    <a asp-action="Save" asp-route-id="@item.Id" class="btn btn-secondary btn-sm">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-secondary btn-sm">Details</a>
                 </td>
             </tr>
         }

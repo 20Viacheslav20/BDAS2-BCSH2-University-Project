@@ -1,12 +1,14 @@
-﻿@model BDAS2_BCSH2_University_Project.Models.Position
+﻿@model Position
 
 @{
-    ViewData["Title"] = "Edit";
+    if (Model.Id == 0)
+        ViewData["Title"] = "Create";
+    else
+        ViewData["Title"] = "Edit";
 }
 
-<h1>Edit</h1>
+<h1>@ViewData["Title"]</h1>
 
-<h4>Position</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -23,19 +25,14 @@
                 <input asp-for="Salary" class="form-control" />
                 <span asp-validation-for="Salary" class="text-danger"></span>
             </div>
-            <hr/>
+            <br/>
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+                <input type="submit" value="Save" class="btn btn-success" />
             </div>
         </form>
     </div>
 </div>
-
+<br />
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index" class="btn btn-secondary btn-sm">Back</a>
 </div>
-
-@{
-
-}
-

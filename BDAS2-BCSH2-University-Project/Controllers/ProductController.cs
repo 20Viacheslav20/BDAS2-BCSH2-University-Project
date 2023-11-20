@@ -13,25 +13,23 @@ namespace BDAS2_BCSH2_University_Project.Controllers
             _productRepository = productRepository;
         }
 
-        [HttpGet]
-        public IActionResult Create()
-        {
-            throw new NotImplementedException();
-        }
-
-
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(Product model)
+        public IActionResult Delete(int? id)
         {
-            throw new NotImplementedException();
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Delete(int id)
-        {
-            throw new NotImplementedException();
+            if (id == null)
+            {
+                return NotFound();
+            }
+            try
+            {
+                _productRepository.Delete(id.GetValueOrDefault());
+            } catch (Exception e)
+            {
+                TempData["Error"] = e.Message;
+                return RedirectToAction(nameof(Details), new { id }); 
+            }
+            return RedirectToAction(nameof(Index));
         }
 
         [HttpGet]
@@ -40,6 +38,22 @@ namespace BDAS2_BCSH2_University_Project.Controllers
             if (id == null)
             {
                 return NotFound();
+            }
+            Product product = _productRepository.GetById(id.GetValueOrDefault());
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            return View(product);
+        }
+
+        [HttpGet]
+        public IActionResult Save(int? id)
+        {
+            if (id == null)
+            {
+                return View(new Product());
             }
 
             Product product = _productRepository.GetById(id.GetValueOrDefault());
@@ -52,26 +66,39 @@ namespace BDAS2_BCSH2_University_Project.Controllers
             return View(product);
         }
 
-        [HttpGet]
-        public IActionResult Edit(int? id)
-        {
-            return Details(id);
-        }
-
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(int id, Product model)
+        public IActionResult Save(int? id, Product model)
         {
-            if (id != model.Id)
+            if (id != null)
             {
-                return NotFound();
+                if (id != model.Id)
+                {
+                    return NotFound();
+                }
             }
 
             if (ModelState.IsValid)
             {
-                _productRepository.Edit(model);
+                try
+                {
+                    if (id == null)
+                    {
+                        _productRepository.Create(model);
+                    }
+                    else
+                    {
+                        _productRepository.Edit(model);
+                    }
+
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (Exception e)
+                {
+                    ModelState.AddModelError("", e.Message);
+                }
             }
-            return RedirectToAction(nameof(Index));
+            return View(model);
         }
 
 
