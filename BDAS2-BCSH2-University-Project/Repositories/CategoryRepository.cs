@@ -87,11 +87,13 @@ namespace BDAS2_BCSH2_University_Project.Repositories
                 if (dbCategory == null)
                     return;
 
+                command.Parameters.Clear();
+
                 if (dbCategory.Name != entity.Name)
                 {
-                    command.CommandText = $"UPDATE {TABLE} SET NAZEV = :entityName WHERE IDKATEGORIJE = 21";
+                    command.CommandText = $"UPDATE {TABLE} SET NAZEV = :entityName WHERE IDKATEGORIJE = :entityId";
                     command.Parameters.Add("entityName", OracleDbType.Varchar2).Value = entity.Name;
-                    //command.Parameters.Add("entityId", OracleDbType.Int32).Value = entity.Id;
+                    command.Parameters.Add("entityId", OracleDbType.Int32).Value = entity.Id;
 
                     command.ExecuteNonQuery();
                 }

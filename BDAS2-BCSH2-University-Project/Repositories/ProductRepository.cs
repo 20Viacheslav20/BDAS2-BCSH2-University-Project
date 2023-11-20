@@ -98,6 +98,8 @@ namespace BDAS2_BCSH2_University_Project.Repositories
                 if (dbProduct == null)
                     return;
 
+                command.Parameters.Clear();
+
                 string query = "";
                 if (dbProduct.Name != entity.Name)
                 {

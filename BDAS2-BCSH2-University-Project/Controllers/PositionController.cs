@@ -56,7 +56,7 @@ namespace BDAS2_BCSH2_University_Project.Controllers
         {
             if (id == null)
             {
-                return View(new Product());
+                return View(new Position());
             }
 
             Position position = _positionRepository.GetById(id.GetValueOrDefault());

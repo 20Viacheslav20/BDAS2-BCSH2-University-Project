@@ -97,6 +97,8 @@ namespace BDAS2_BCSH2_University_Project.Repositories
                 if (dbShop == null)
                     return;
 
+                command.Parameters.Clear();
+
                 string query = "";
 
                 if (dbShop.Contact != entity.Contact)
