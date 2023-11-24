@@ -21,7 +21,11 @@ namespace BDAS2_BCSH2_University_Project.Repositories
             {
                 _oracleConnection.Open();
 
-                command.CommandText = $"SELECT * FROM {TABLE}";
+                command.CommandText = $"SELECT z.IDZAMESTNANCE IDZAMESTNANCE, " +
+                    $"z.JMENO JMENO, z.PRIJMENI PRIJMENI, z.RODNECISLO RODNECISLO, " +
+                    $"z.TELEFONNICISLO TELEFONNICISLO, poz.Nazev POZICE " +
+                    $"FROM {TABLE} z " +
+                    $"JOIN POZICE poz ON poz.IDPOZICE = z.POZICE_IDPOZICE";
 
                 List<Employer> employers = new List<Employer>();
 
@@ -48,7 +52,13 @@ namespace BDAS2_BCSH2_University_Project.Repositories
 
         public Employer GetByIdWithOracleCommand(OracleCommand command, int id)
         {
-            command.CommandText = $"SELECT * FROM {TABLE} WHERE IDZAMESTNANCE = :entityId";
+            command.CommandText = $"SELECT z.IDZAMESTNANCE IDZAMESTNANCE, " +
+                   $"z.JMENO JMENO, z.PRIJMENI PRIJMENI, z.RODNECISLO RODNECISLO, " +
+                   $"z.TELEFONNICISLO TELEFONNICISLO, poz.Nazev POZICE " +
+                   $"FROM {TABLE} z " +
+                   $"JOIN POZICE poz ON poz.IDPOZICE = z.POZICE_IDPOZICE " +
+                   $"WHERE z.IDZAMESTNANCE = :entityId";
+
 
             command.Parameters.Add("entityId", OracleDbType.Int32).Value = id;
 
@@ -144,7 +154,7 @@ namespace BDAS2_BCSH2_University_Project.Repositories
 
         private Employer CreateEmployerFromReader(OracleDataReader reader)
         {
-            
+
             Employer employer = new()
             {
                 Id = int.Parse(reader["IDZAMESTNANCE"].ToString()),
@@ -152,6 +162,10 @@ namespace BDAS2_BCSH2_University_Project.Repositories
                 Surname = reader["PRIJMENI"].ToString(),
                 BornNumber = reader["RODNECISLO"].ToString(),
                 PhoneNumber = reader["TELEFONNICISLO"].ToString(),
+                Position = new()
+                {
+                    Name = reader["POZICE"].ToString(),
+                }
                
             };
             return employer;

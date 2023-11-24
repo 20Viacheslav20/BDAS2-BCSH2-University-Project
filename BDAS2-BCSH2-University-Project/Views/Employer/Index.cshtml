@@ -1,10 +1,11 @@
-﻿@model IEnumerable<Employer>
+﻿@model IEnumerable<BDAS2_BCSH2_University_Project.Models.Employer>
 
 @{
-    ViewData["Title"] = "Employers";
+    ViewData["Title"] = "Employees";
 }
 
-<h1> @ViewData["Title"]</h1>
+<h1>@ViewData["Title"]</h1>
+
 <p>
     <a asp-action="Save" class="btn btn-success">Create</a>
 </p>
@@ -14,22 +15,45 @@
             <th>
                 @Html.DisplayNameFor(model => model.Name)
             </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Surname)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.BornNumber)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PhoneNumber)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model=>model.Position.Name)
+            </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Name)
-                </td>
-                <td>
-                    <a asp-action="Save" asp-route-id="@item.Id" class="btn btn-secondary btn-sm">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-secondary btn-sm">Details</a>
-                </td>
-            </tr>
-        }
+    @foreach (var item in Model) 
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Surname)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.BornNumber)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PhoneNumber)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Position.Name)
+            </td>
+            <td>
+                <a asp-action="Save" asp-route-id="@item.Id" class="btn btn-secondary btn-sm">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-secondary btn-sm">Details</a>
+            </td>
+        </tr>
+    }
     </tbody>
 </table>

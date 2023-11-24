@@ -16,6 +16,8 @@ namespace BDAS2_BCSH2_University_Project.Models
         [Required]
         public string PhoneNumber {  get; set; }
 
+        public Position Position { get; set; }
+
 
     }
 }
