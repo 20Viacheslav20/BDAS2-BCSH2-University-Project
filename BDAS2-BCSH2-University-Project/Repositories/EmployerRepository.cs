@@ -8,7 +8,7 @@ namespace BDAS2_BCSH2_University_Project.Repositories
     {
         private readonly OracleConnection _oracleConnection;
 
-        private const string TABLE = "ZAMESTNANEC";
+        private const string TABLE = "ZAMESTNANCI";
 
         public EmployerRepository(OracleConnection oracleConnection)
         {
@@ -108,13 +108,13 @@ namespace BDAS2_BCSH2_University_Project.Repositories
                 if (dbEmployer.BornNumber != entity.BornNumber)
                 {
                     query += "RODNECISLO = :entityBornNumber, ";
-                    command.Parameters.Add("entityBornNumber", OracleDbType.Int32).Value = entity.BornNumber;
+                    command.Parameters.Add("entityBornNumber", OracleDbType.Varchar2).Value = entity.BornNumber;
                 }
 
                 if ( dbEmployer.PhoneNumber != entity.PhoneNumber)
                 {
                     query += "TELEFONNICISLO = :entityPhoneNumber ";
-                    command.Parameters.Add("entityPhoneNumber", OracleDbType.Int32).Value = entity.PhoneNumber;
+                    command.Parameters.Add("entityPhoneNumber", OracleDbType.Varchar2).Value = entity.PhoneNumber;
                 }
 
                 if (!string.IsNullOrEmpty(query))
@@ -147,11 +147,11 @@ namespace BDAS2_BCSH2_University_Project.Repositories
             
             Employer employer = new()
             {
-                Id = int.Parse(reader["IDZAMESTANCE"].ToString()),
+                Id = int.Parse(reader["IDZAMESTNANCE"].ToString()),
                 Name = reader["JMENO"].ToString(),
                 Surname = reader["PRIJMENI"].ToString(),
                 BornNumber = reader["RODNECISLO"].ToString(),
-                PhoneNumber= int.Parse(reader["TELEFONNICISLO"].ToString()),
+                PhoneNumber = reader["TELEFONNICISLO"].ToString(),
                
             };
             return employer;

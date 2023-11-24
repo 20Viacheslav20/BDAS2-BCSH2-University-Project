@@ -14,7 +14,7 @@ namespace BDAS2_BCSH2_University_Project.Models
         public string BornNumber { get; set; }
         
         [Required]
-        public int PhoneNumber {  get; set; }
+        public string PhoneNumber {  get; set; }
 
 
     }
