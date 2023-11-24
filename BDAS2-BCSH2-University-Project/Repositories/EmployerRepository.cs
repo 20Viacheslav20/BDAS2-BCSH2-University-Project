@@ -116,6 +116,7 @@ namespace BDAS2_BCSH2_University_Project.Repositories
                     query += "TELEFONNICISLO = :entityPhoneNumber ";
                     command.Parameters.Add("entityPhoneNumber", OracleDbType.Int32).Value = entity.PhoneNumber;
                 }
+
                 if (!string.IsNullOrEmpty(query))
                 {
                     query = query.TrimEnd(',', ' ');

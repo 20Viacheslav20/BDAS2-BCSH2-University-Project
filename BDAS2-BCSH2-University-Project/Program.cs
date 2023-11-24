@@ -8,11 +8,11 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-
 builder.Services.AddScoped<IMainRepository<Product>, ProductRepository>();
 builder.Services.AddScoped<IMainRepository<Category>, CategoryRepository>();
 builder.Services.AddScoped<IMainRepository<Shop>, ShopRepository>();
 builder.Services.AddScoped<IMainRepository<Position>, PositionRepository>();
+builder.Services.AddScoped<IMainRepository<Employer>, EmployerRepository>();
 
 builder.Services.AddScoped<OracleConnection>(provider =>
 {
