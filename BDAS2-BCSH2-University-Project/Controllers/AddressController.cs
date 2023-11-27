@@ -5,18 +5,17 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BDAS2_BCSH2_University_Project.Controllers
 {
-    public class EmployerController : Controller, IMainController<Employer>
+    public class AddressController : Controller, IMainController<Address>
     {
-        private readonly IMainRepository<Employer> _employerRepository;
+        private readonly IMainRepository<Address> _addressRepository;
 
-        public EmployerController(IMainRepository<Employer> employerRepository)
+        public AddressController(IMainRepository<Address> addressRepository)
         {
-            _employerRepository = employerRepository;
+            _addressRepository = addressRepository;
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-
         public IActionResult Delete(int? id)
         {
             if (id == null)
@@ -25,9 +24,9 @@ namespace BDAS2_BCSH2_University_Project.Controllers
             }
             try
             {
-                _employerRepository.Delete(id.GetValueOrDefault());
+                _addressRepository.Delete(id.GetValueOrDefault());
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 TempData["Error"] = e.Message;
                 return RedirectToAction(nameof(Details), new { id });
@@ -43,35 +42,41 @@ namespace BDAS2_BCSH2_University_Project.Controllers
             {
                 return NotFound();
             }
-            Employer employer = _employerRepository.GetById(id.GetValueOrDefault());
-            if (employer == null)
+            Address address = _addressRepository.GetById(id.GetValueOrDefault());
+            if (address == null)
             {
                 return NotFound();
             }
-            return View(employer);
-
+            return View(address);
         }
+
+        [HttpGet]
+        public IActionResult Index()
+        {
+           List<Address> addresses = _addressRepository.GetAll();
+            return View(addresses);
+        }
+
         [HttpGet]
         public IActionResult Save(int? id)
         {
+
             if (id == null)
             {
-                return View(new Employer());
+                return View(new Address());
             }
 
-            Employer employer = _employerRepository.GetById(id.GetValueOrDefault());
+            Address address = _addressRepository.GetById(id.GetValueOrDefault());
 
-            if (employer == null)
+            if (address == null)
             {
                 return NotFound();
             }
 
-            return View(employer);
+            return View(address);
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Save(int? id, Employer model)
+        public IActionResult Save(int? id, Address model)
         {
             if (id != null)
             {
@@ -87,11 +92,11 @@ namespace BDAS2_BCSH2_University_Project.Controllers
                 {
                     if (id == null)
                     {
-                        _employerRepository.Create(model);
+                        _addressRepository.Create(model);
                     }
                     else
                     {
-                        _employerRepository.Edit(model);
+                        _addressRepository.Edit(model);
                     }
 
                     return RedirectToAction(nameof(Index));
@@ -103,14 +108,5 @@ namespace BDAS2_BCSH2_University_Project.Controllers
             }
             return View(model);
         }
-
-
-        [HttpGet]
-        public IActionResult Index()
-        {
-            List<Employer> employers = _employerRepository.GetAll();
-            return View(employers);
-        }
-
     }
 }

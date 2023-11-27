@@ -2,7 +2,7 @@
 
 namespace BDAS2_BCSH2_University_Project.Models
 {
-    public class Employer
+    public class Employee
     {
         public int Id { get; set; }
         

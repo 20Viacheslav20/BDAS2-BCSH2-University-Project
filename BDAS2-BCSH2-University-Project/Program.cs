@@ -13,8 +13,9 @@ builder.Services.AddScoped<IMainRepository<Product>, ProductRepository>();
 builder.Services.AddScoped<IMainRepository<Category>, CategoryRepository>();
 builder.Services.AddScoped<IMainRepository<Shop>, ShopRepository>();
 builder.Services.AddScoped<IMainRepository<Position>, PositionRepository>();
-builder.Services.AddScoped<IMainRepository<Employer>, EmployerRepository>();
 builder.Services.AddScoped<IAuthenticateRepository, AuthenticateRepository>();
+builder.Services.AddScoped<IMainRepository<Employee>, EmployeeRepository>();
+builder.Services.AddScoped<IMainRepository<Address>, AddressRepository>();
 
 builder.Services.AddScoped<OracleConnection>(provider =>
 {
