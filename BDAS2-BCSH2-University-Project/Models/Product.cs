@@ -15,7 +15,7 @@ namespace BDAS2_BCSH2_University_Project.Models
 
         [Display(Name = "ClubCard Price")]
         public int? ClubCardPrice { get; set; }  
-        public string Category { get; set; }
+        public Category Category { get; set; }
 
         [Column(TypeName = "decimal(4, 2)")]
         public decimal Weight { get; set; }

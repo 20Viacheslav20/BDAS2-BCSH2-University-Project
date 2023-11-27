@@ -1,0 +1,34 @@
+CREATE TABLE LogedUser (
+    UserID INT PRIMARY KEY,
+    Username VARCHAR(50) NOT NULL UNIQUE,
+    PasswordHash VARCHAR(64) NOT NULL,
+    PasswordSalt VARCHAR(24) NOT NULL
+);
+
+CREATE TABLE ROLE (
+    RoleID INT PRIMARY KEY,
+    NAZEV VARCHAR(50) NOT NULL UNIQUE
+);
+
+CREATE TABLE UserRoles (
+    UserID INT,
+    RoleID INT,
+    PRIMARY KEY (UserID, RoleID),
+    FOREIGN KEY (UserID) REFERENCES LogedUser(UserID),
+    FOREIGN KEY (RoleID) REFERENCES ROLE(RoleID)
+);
+
+commit;
+
+select * from LogedUser;
+SELECT * FROM ROLE;
+SELECT * FROM UserRoles;
+
+INSERT INTO LogedUser(UserID, Username, PasswordHash, PasswordSalt) VALUES (1, 'user1', '+Pwq7MOZlslxahCBR1TJJLVA27bP4LRDJ+/W0xgh6zM=', 'DCq0FYnSFw3Ck/NU+fKvbA==');
+INSERT INTO ROLE(RoleID, NAZEV) VALUES (1, 'Admin');
+INSERT INTO UserRoles(UserID, RoleID) VALUES (1, 1);
+
+SELECT ur.roleid RoleID, r.nazev NAZEV FROM UserRoles ur
+JOIN ROLE r on r.roleid = ur.roleid
+WHERE UserID = 1;
+

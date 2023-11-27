@@ -78,17 +78,16 @@ namespace BDAS2_BCSH2_University_Project.Repositories
             {
                 _oracleConnection.Open();
 
-                command.CommandText = $"INSERT INTO{TABLE}(JMENO,PRIJMENI,RODNECISLO,TELEFONNICISLO)" +
+                command.CommandText = $"INSERT INTO {TABLE} (JMENO, PRIJMENI, RODNECISLO, TELEFONNICISLO)" +
                     "VALUES (:entityName, :entitySurname, :entityBornNumber, :entityPhoneNumber)";
 
                 command.Parameters.Add("entityName" , OracleDbType.Varchar2 ).Value = entity.Name;
                 command.Parameters.Add("entitySurname", OracleDbType.Varchar2).Value = entity.Surname;
-                command.Parameters.Add("entityBornNumber", OracleDbType.Int32).Value=entity.BornNumber;
-                command.Parameters.Add("entityPnoneNumber", OracleDbType.Int32).Value=entity.PhoneNumber;
+                command.Parameters.Add("entityBornNumber", OracleDbType.Int32).Value = entity.BornNumber;
+                command.Parameters.Add("entityPnoneNumber", OracleDbType.Int32).Value = entity.PhoneNumber;
 
                 command.ExecuteNonQuery();
             }
-
         }
 
         public void Edit(Employer entity)
@@ -165,8 +164,7 @@ namespace BDAS2_BCSH2_University_Project.Repositories
                 Position = new()
                 {
                     Name = reader["POZICE"].ToString(),
-                }
-               
+                }           
             };
             return employer;
         }

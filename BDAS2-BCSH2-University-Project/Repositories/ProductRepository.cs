@@ -23,7 +23,8 @@ namespace BDAS2_BCSH2_University_Project.Repositories
 
                 command.CommandText = $"SELECT z.idzbozi IDZBOZI, z.nazev NAZEV, " +
                     $"z.aktualnicena AKTUALNICENA, z.cenazeclubcartou CENAZECLUBCARTOU," +
-                    $"z.hmotnost HMOTNOST, k.nazev KATEGORIJE FROM {TABLE} z " +
+                    $"k.nazev KATEGORIJE, k.idkategorije IDKATEGORIJE, " + 
+                    $"z.hmotnost HMOTNOST FROM {TABLE} z " +
                     $"JOIN KATEGORIJE k ON z.kategorije_idkategorije = k.idkategorije";
 
                 List<Product> products = new List<Product>();
@@ -51,11 +52,12 @@ namespace BDAS2_BCSH2_University_Project.Repositories
 
         private Product GetByIdWithOracleCommand(OracleCommand command, int id)
         {
-            command.CommandText = $"SELECT z.idzbozi IDZBOZI, z.nazev NAZEV, " +
-                $"z.aktualnicena AKTUALNICENA, z.cenazeclubcartou CENAZECLUBCARTOU," +
-                $"z.hmotnost HMOTNOST, k.nazev KATEGORIJE FROM {TABLE} z " +
-                $"JOIN KATEGORIJE k ON z.kategorije_idkategorije = k.idkategorije " +
-                $"WHERE IDZBOZI = :entityId";
+            command.CommandText = @$"SELECT z.idzbozi IDZBOZI, z.nazev NAZEV,
+                    z.aktualnicena AKTUALNICENA, z.cenazeclubcartou CENAZECLUBCARTOU, 
+                    k.nazev KATEGORIJE, k.idkategorije IDKATEGORIJE, 
+                    z.hmotnost HMOTNOST FROM {TABLE} z
+                    JOIN KATEGORIJE k ON z.kategorije_idkategorije = k.idkategorije 
+                    WHERE z.IDZBOZI = :entityId";
 
             command.Parameters.Add("entityId", OracleDbType.Int32).Value = id;
 
@@ -159,9 +161,11 @@ namespace BDAS2_BCSH2_University_Project.Repositories
                 Name = reader["NAZEV"].ToString(),
                 ActualPrice = int.Parse(reader["AKTUALNICENA"].ToString()),
                 ClubCardPrice = !string.IsNullOrEmpty(price) ? int.Parse(price) : null,
-                // TODO 
-                //CategoryId = int.Parse(reader["KATEGORIJE_IDKATEGORIJE"].ToString()),
-                Category = reader["KATEGORIJE"].ToString(),
+                Category = new()
+                {
+                    Id = int.Parse(reader["IDKATEGORIJE"].ToString()),
+                    Name = reader["KATEGORIJE"].ToString()
+                },
                 Weight = decimal.Parse(reader["HMOTNOST"].ToString())
             };
             return product;

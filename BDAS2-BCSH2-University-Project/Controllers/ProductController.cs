@@ -1,5 +1,6 @@
 ﻿using BDAS2_BCSH2_University_Project.Interfaces;
 using BDAS2_BCSH2_University_Project.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BDAS2_BCSH2_University_Project.Controllers
@@ -7,14 +8,17 @@ namespace BDAS2_BCSH2_University_Project.Controllers
     public class ProductController : Controller, IMainController<Product>
     {
         private readonly IMainRepository<Product> _productRepository;
+        private readonly IMainRepository<Category> _categoryRepository;
 
-        public ProductController(IMainRepository<Product> productRepository)
+        public ProductController(IMainRepository<Product> productRepository, IMainRepository<Category> categoryRepository)
         {
             _productRepository = productRepository;
+            _categoryRepository = categoryRepository;
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public IActionResult Delete(int? id)
         {
             if (id == null)
@@ -33,6 +37,7 @@ namespace BDAS2_BCSH2_University_Project.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public IActionResult Details(int? id)
         {
             if (id == null)
@@ -49,8 +54,10 @@ namespace BDAS2_BCSH2_University_Project.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public IActionResult Save(int? id)
         {
+            //ViewBag.Categories = _categoryRepository.GetAll();
             if (id == null)
             {
                 return View(new Product());
@@ -68,6 +75,7 @@ namespace BDAS2_BCSH2_University_Project.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public IActionResult Save(int? id, Product model)
         {
             if (id != null)
@@ -100,7 +108,6 @@ namespace BDAS2_BCSH2_University_Project.Controllers
             }
             return View(model);
         }
-
 
         [HttpGet]
         public IActionResult Index()
