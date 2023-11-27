@@ -4,18 +4,18 @@ using Oracle.ManagedDataAccess.Client;
 
 namespace BDAS2_BCSH2_University_Project.Repositories
 {
-    public class EmployerRepository : IMainRepository<Employer>
+    public class EmployeeRepository : IMainRepository<Employee>
     {
         private readonly OracleConnection _oracleConnection;
 
         private const string TABLE = "ZAMESTNANCI";
 
-        public EmployerRepository(OracleConnection oracleConnection)
+        public EmployeeRepository(OracleConnection oracleConnection)
         {
             _oracleConnection = oracleConnection;
         }
 
-        public List<Employer> GetAll()
+        public List<Employee> GetAll()
         {
             using (OracleCommand command = _oracleConnection.CreateCommand())
             {
@@ -27,7 +27,7 @@ namespace BDAS2_BCSH2_University_Project.Repositories
                     $"FROM {TABLE} z " +
                     $"JOIN POZICE poz ON poz.IDPOZICE = z.POZICE_IDPOZICE";
 
-                List<Employer> employers = new List<Employer>();
+                List<Employee> employers = new List<Employee>();
 
                 using (OracleDataReader reader = command.ExecuteReader())
                 {
@@ -40,7 +40,7 @@ namespace BDAS2_BCSH2_University_Project.Repositories
             }
         }
 
-        public Employer GetById(int id)
+        public Employee GetById(int id)
         {
             using (OracleCommand command = _oracleConnection.CreateCommand())
             {
@@ -50,7 +50,7 @@ namespace BDAS2_BCSH2_University_Project.Repositories
             }
         }
 
-        public Employer GetByIdWithOracleCommand(OracleCommand command, int id)
+        public Employee GetByIdWithOracleCommand(OracleCommand command, int id)
         {
             command.CommandText = $"SELECT z.IDZAMESTNANCE IDZAMESTNANCE, " +
                    $"z.JMENO JMENO, z.PRIJMENI PRIJMENI, z.RODNECISLO RODNECISLO, " +
@@ -72,7 +72,7 @@ namespace BDAS2_BCSH2_University_Project.Repositories
             }
         }
 
-        public void Create(Employer entity)
+        public void Create(Employee entity)
         {
             using (OracleCommand command = _oracleConnection.CreateCommand())
             {
@@ -91,12 +91,12 @@ namespace BDAS2_BCSH2_University_Project.Repositories
 
         }
 
-        public void Edit(Employer entity)
+        public void Edit(Employee entity)
         {
             using(OracleCommand command = _oracleConnection.CreateCommand())
             {
                 _oracleConnection.Open();
-                Employer dbEmployer = GetByIdWithOracleCommand(command,entity.Id);
+                Employee dbEmployer = GetByIdWithOracleCommand(command,entity.Id);
 
                 if (dbEmployer == null)
                     return;
@@ -152,10 +152,10 @@ namespace BDAS2_BCSH2_University_Project.Repositories
             }
         }
 
-        private Employer CreateEmployerFromReader(OracleDataReader reader)
+        private Employee CreateEmployerFromReader(OracleDataReader reader)
         {
 
-            Employer employer = new()
+            Employee employer = new()
             {
                 Id = int.Parse(reader["IDZAMESTNANCE"].ToString()),
                 Name = reader["JMENO"].ToString(),

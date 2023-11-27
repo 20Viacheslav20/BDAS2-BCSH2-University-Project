@@ -5,13 +5,13 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BDAS2_BCSH2_University_Project.Controllers
 {
-    public class EmployerController : Controller, IMainController<Employer>
+    public class EmployeeController : Controller, IMainController<Employee>
     {
-        private readonly IMainRepository<Employer> _employerRepository;
+        private readonly IMainRepository<Employee> _employeeRepository;
 
-        public EmployerController(IMainRepository<Employer> employerRepository)
+        public EmployeeController(IMainRepository<Employee> employeeRepository)
         {
-            _employerRepository = employerRepository;
+            _employeeRepository = employeeRepository;
         }
 
         [HttpPost]
@@ -25,7 +25,7 @@ namespace BDAS2_BCSH2_University_Project.Controllers
             }
             try
             {
-                _employerRepository.Delete(id.GetValueOrDefault());
+                _employeeRepository.Delete(id.GetValueOrDefault());
             }
             catch(Exception e)
             {
@@ -43,7 +43,7 @@ namespace BDAS2_BCSH2_University_Project.Controllers
             {
                 return NotFound();
             }
-            Employer employer = _employerRepository.GetById(id.GetValueOrDefault());
+            Employee employer = _employeeRepository.GetById(id.GetValueOrDefault());
             if (employer == null)
             {
                 return NotFound();
@@ -56,10 +56,10 @@ namespace BDAS2_BCSH2_University_Project.Controllers
         {
             if (id == null)
             {
-                return View(new Employer());
+                return View(new Employee());
             }
 
-            Employer employer = _employerRepository.GetById(id.GetValueOrDefault());
+            Employee employer = _employeeRepository.GetById(id.GetValueOrDefault());
 
             if (employer == null)
             {
@@ -71,7 +71,7 @@ namespace BDAS2_BCSH2_University_Project.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Save(int? id, Employer model)
+        public IActionResult Save(int? id, Employee model)
         {
             if (id != null)
             {
@@ -87,11 +87,11 @@ namespace BDAS2_BCSH2_University_Project.Controllers
                 {
                     if (id == null)
                     {
-                        _employerRepository.Create(model);
+                        _employeeRepository.Create(model);
                     }
                     else
                     {
-                        _employerRepository.Edit(model);
+                        _employeeRepository.Edit(model);
                     }
 
                     return RedirectToAction(nameof(Index));
@@ -108,7 +108,7 @@ namespace BDAS2_BCSH2_University_Project.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-            List<Employer> employers = _employerRepository.GetAll();
+            List<Employee> employers = _employeeRepository.GetAll();
             return View(employers);
         }
 
