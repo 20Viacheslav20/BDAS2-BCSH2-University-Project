@@ -33,9 +33,7 @@ namespace BDAS2_BCSH2_University_Project.Repositories
                     }
                     return addresses;
                 }
-            }
-
-           
+            }           
         }
 
         public void Create(Address entity)

@@ -6,7 +6,7 @@ namespace BDAS2_BCSH2_University_Project.Models
     {
         public int Id { get; set; }
 
-        [Display(Name = "Position name: ")]
+        [Display(Name = "Position")]
         public string Name { get; set; }
 
         public double Salary { get; set; }
