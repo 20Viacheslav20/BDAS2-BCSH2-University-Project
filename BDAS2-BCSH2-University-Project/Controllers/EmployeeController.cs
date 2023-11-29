@@ -2,14 +2,15 @@
 using BDAS2_BCSH2_University_Project.Models;
 using BDAS2_BCSH2_University_Project.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using Repositories.IRepositories;
 
 namespace BDAS2_BCSH2_University_Project.Controllers
 {
     public class EmployeeController : Controller, IMainController<Employee>
     {
-        private readonly IMainRepository<Employee> _employeeRepository;
+        private readonly IEmployeeRepository<Employee> _employeeRepository;
 
-        public EmployeeController(IMainRepository<Employee> employeeRepository)
+        public EmployeeController(IEmployeeRepository<Employee> employeeRepository)
         {
             _employeeRepository = employeeRepository;
         }

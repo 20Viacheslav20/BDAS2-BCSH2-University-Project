@@ -4,6 +4,7 @@ using BDAS2_BCSH2_University_Project.Models.Login;
 using BDAS2_BCSH2_University_Project.Repositories;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Oracle.ManagedDataAccess.Client;
+using Repositories.IRepositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,7 +15,7 @@ builder.Services.AddScoped<IMainRepository<Product>, ProductRepository>();
 builder.Services.AddScoped<IMainRepository<Category>, CategoryRepository>();
 builder.Services.AddScoped<IMainRepository<Shop>, ShopRepository>();
 builder.Services.AddScoped<IMainRepository<Position>, PositionRepository>();
-builder.Services.AddScoped<IMainRepository<Employee>, EmployeeRepository>();
+builder.Services.AddScoped<IEmployeeRepository<Employee>, EmployeeRepository>();
 builder.Services.AddScoped<IMainRepository<Address>, AddressRepository>();
 
 builder.Services.AddScoped<IAuthorizationUserRepository, AuthorizationUserRepository>();

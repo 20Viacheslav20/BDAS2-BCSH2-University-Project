@@ -1,10 +1,11 @@
 ﻿using BDAS2_BCSH2_University_Project.Interfaces;
 using BDAS2_BCSH2_University_Project.Models;
 using Oracle.ManagedDataAccess.Client;
+using Repositories.IRepositories;
 
 namespace BDAS2_BCSH2_University_Project.Repositories
 {
-    public class EmployeeRepository : IMainRepository<Employee>
+    public class EmployeeRepository : IEmployeeRepository<Employee>
     {
         private readonly OracleConnection _oracleConnection;
 
@@ -57,10 +58,10 @@ namespace BDAS2_BCSH2_University_Project.Repositories
                    $"z.TELEFONNICISLO TELEFONNICISLO, poz.Nazev POZICE " +
                    $"FROM {TABLE} z " +
                    $"JOIN POZICE poz ON poz.IDPOZICE = z.POZICE_IDPOZICE " +
-                   $"WHERE z.IDZAMESTNANCE = :entityId";
+                   $"WHERE z.IDZAMESTNANCE = :employeeId";
 
 
-            command.Parameters.Add("entityId", OracleDbType.Int32).Value = id;
+            command.Parameters.Add("employeeId", OracleDbType.Int32).Value = id;
 
             using (OracleDataReader reader = command.ExecuteReader())
             {
@@ -72,30 +73,30 @@ namespace BDAS2_BCSH2_University_Project.Repositories
             }
         }
 
-        public void Create(Employee entity)
+        public void Create(Employee employee)
         {
             using (OracleCommand command = _oracleConnection.CreateCommand())
             {
                 _oracleConnection.Open();
 
                 command.CommandText = $"INSERT INTO {TABLE} (JMENO, PRIJMENI, RODNECISLO, TELEFONNICISLO)" +
-                    "VALUES (:entityName, :entitySurname, :entityBornNumber, :entityPhoneNumber)";
+                    "VALUES (:employeeName, :employeeSurname, :employeeBornNumber, :employeePhoneNumber)";
 
-                command.Parameters.Add("entityName" , OracleDbType.Varchar2 ).Value = entity.Name;
-                command.Parameters.Add("entitySurname", OracleDbType.Varchar2).Value = entity.Surname;
-                command.Parameters.Add("entityBornNumber", OracleDbType.Int32).Value = entity.BornNumber;
-                command.Parameters.Add("entityPnoneNumber", OracleDbType.Int32).Value = entity.PhoneNumber;
+                command.Parameters.Add("employeeName" , OracleDbType.Varchar2 ).Value = employee.Name;
+                command.Parameters.Add("employeeSurname", OracleDbType.Varchar2).Value = employee.Surname;
+                command.Parameters.Add("employeeBornNumber", OracleDbType.Int32).Value = employee.BornNumber;
+                command.Parameters.Add("employeePnoneNumber", OracleDbType.Int32).Value = employee.PhoneNumber;
 
                 command.ExecuteNonQuery();
             }
         }
 
-        public void Edit(Employee entity)
+        public void Edit(Employee employee)
         {
             using(OracleCommand command = _oracleConnection.CreateCommand())
             {
                 _oracleConnection.Open();
-                Employee dbEmployer = GetByIdWithOracleCommand(command,entity.Id);
+                Employee dbEmployer = GetByIdWithOracleCommand(command,employee.Id);
 
                 if (dbEmployer == null)
                     return;
@@ -103,35 +104,35 @@ namespace BDAS2_BCSH2_University_Project.Repositories
                 command.Parameters.Clear();
 
                 string query = "";
-                if (dbEmployer.Name != entity.Name)
+                if (dbEmployer.Name != employee.Name)
                 {
-                    query += "JMENO = :entityName, ";
-                    command.Parameters.Add("entityName", OracleDbType.Varchar2).Value = entity.Name;
+                    query += "JMENO = :employeeName, ";
+                    command.Parameters.Add("employeeName", OracleDbType.Varchar2).Value = employee.Name;
                 }
-                if (dbEmployer.Surname != entity.Surname)
+                if (dbEmployer.Surname != employee.Surname)
                 {
-                    query += "PRIJMENI = :entitySurname, ";
-                    command.Parameters.Add("entitySurname", OracleDbType.Varchar2).Value = entity.Surname;
-                }
-
-                if (dbEmployer.BornNumber != entity.BornNumber)
-                {
-                    query += "RODNECISLO = :entityBornNumber, ";
-                    command.Parameters.Add("entityBornNumber", OracleDbType.Varchar2).Value = entity.BornNumber;
+                    query += "PRIJMENI = :employeeSurname, ";
+                    command.Parameters.Add("employeeSurname", OracleDbType.Varchar2).Value = employee.Surname;
                 }
 
-                if ( dbEmployer.PhoneNumber != entity.PhoneNumber)
+                if (dbEmployer.BornNumber != employee.BornNumber)
                 {
-                    query += "TELEFONNICISLO = :entityPhoneNumber ";
-                    command.Parameters.Add("entityPhoneNumber", OracleDbType.Varchar2).Value = entity.PhoneNumber;
+                    query += "RODNECISLO = :employeeBornNumber, ";
+                    command.Parameters.Add("employeeBornNumber", OracleDbType.Varchar2).Value = employee.BornNumber;
+                }
+
+                if ( dbEmployer.PhoneNumber != employee.PhoneNumber)
+                {
+                    query += "TELEFONNICISLO = :employeePhoneNumber ";
+                    command.Parameters.Add("employeePhoneNumber", OracleDbType.Varchar2).Value = employee.PhoneNumber;
                 }
 
                 if (!string.IsNullOrEmpty(query))
                 {
                     query = query.TrimEnd(',', ' ');
 
-                    command.CommandText = $"UPDATE {TABLE} SET {query} WHERE IDZAMESTNANCE = :entityId";
-                    command.Parameters.Add("entityId", OracleDbType.Int32).Value = entity.Id;
+                    command.CommandText = $"UPDATE {TABLE} SET {query} WHERE IDZAMESTNANCE = :employeeId";
+                    command.Parameters.Add("employeeId", OracleDbType.Int32).Value = employee.Id;
 
                     command.ExecuteNonQuery();
                 }
@@ -144,8 +145,8 @@ namespace BDAS2_BCSH2_University_Project.Repositories
             {
                 _oracleConnection.Open();
 
-                command.CommandText = $"DELETE FROM {TABLE} WHERE IDZAMESTNANCE = :entityId";
-                command.Parameters.Add("entityId", OracleDbType.Int32).Value = id;
+                command.CommandText = $"DELETE FROM {TABLE} WHERE IDZAMESTNANCE = :employeeId";
+                command.Parameters.Add("employeeId", OracleDbType.Int32).Value = id;
 
                 command.ExecuteNonQuery();
             }
@@ -167,6 +168,46 @@ namespace BDAS2_BCSH2_University_Project.Repositories
                 }           
             };
             return employer;
+        }
+
+       
+        public List<Employee> GetEmployeesWithoutAuth(int id)
+        {
+            using (OracleCommand command = _oracleConnection.CreateCommand())
+            {
+                _oracleConnection.Open();
+
+                command.CommandText = @$"SELECT z.IDZAMESTNANCE IDZAMESTNANCE, z.JMENO JMENO, z.PRIJMENI PRIJMENI
+                    FROM zamestnanci z 
+                    LEFT JOIN autuzivatele au ON z.idzamestnance = au.zamestnanci_idzamestnance
+                    WHERE au.zamestnanci_idzamestnance IS NULL;";
+
+                List<Employee> employers = new List<Employee>();
+
+                using (OracleDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        employers.Add(CreateSimpleEmployee(reader));
+                    }
+                    return employers;
+                }
+            }
+        }
+        private Employee CreateSimpleEmployee(OracleDataReader reader)
+        {
+            Employee employee = new()
+            {
+                Id = int.Parse(reader["IDZAMESTNANCE"].ToString()),
+                Name = reader["JMENO"].ToString(),
+                Surname = reader["PRIJMENI"].ToString(),
+                
+            };
+            return employee;
+        }
+        public void GetEmployer(int id)
+        {
+            throw new NotImplementedException();
         }
     }
 }
