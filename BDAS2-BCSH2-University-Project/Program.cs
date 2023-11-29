@@ -1,5 +1,6 @@
 using BDAS2_BCSH2_University_Project.Interfaces;
 using BDAS2_BCSH2_University_Project.Models;
+using BDAS2_BCSH2_University_Project.Models.Login;
 using BDAS2_BCSH2_University_Project.Repositories;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Oracle.ManagedDataAccess.Client;
@@ -13,9 +14,10 @@ builder.Services.AddScoped<IMainRepository<Product>, ProductRepository>();
 builder.Services.AddScoped<IMainRepository<Category>, CategoryRepository>();
 builder.Services.AddScoped<IMainRepository<Shop>, ShopRepository>();
 builder.Services.AddScoped<IMainRepository<Position>, PositionRepository>();
-builder.Services.AddScoped<IAuthenticateRepository, AuthenticateRepository>();
 builder.Services.AddScoped<IMainRepository<Employee>, EmployeeRepository>();
 builder.Services.AddScoped<IMainRepository<Address>, AddressRepository>();
+
+builder.Services.AddScoped<IAuthorizationUserRepository, AuthorizationUserRepository>();
 
 builder.Services.AddScoped<OracleConnection>(provider =>
 {
@@ -24,14 +26,14 @@ builder.Services.AddScoped<OracleConnection>(provider =>
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>
 {
-    options.LoginPath = "/Authenticate/Login";
+    options.LoginPath = "/AuthorizationUser/Login";
 });
 
 builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy("Admin", policy => policy.RequireRole("Admin"));
+    options.AddPolicy(UserRole.Admin.ToStringValue(), policy => policy.RequireRole(UserRole.Admin.ToStringValue()));
+    options.AddPolicy(UserRole.Employee.ToStringValue(), policy => policy.RequireRole(UserRole.Employee.ToStringValue()));
     // TODO add after creating roles in db
-    //options.AddPolicy("Employee", policy => policy.RequireRole("Employee"));
     //options.AddPolicy("ShiftLeader", policy => policy.RequireRole("ShiftLeader"));
 });
 

@@ -5,16 +5,16 @@ using Oracle.ManagedDataAccess.Client;
 
 namespace BDAS2_BCSH2_University_Project.Repositories
 {
-    public class AuthenticateRepository : IAuthenticateRepository
+    public class AuthorizationUserRepository : IAuthorizationUserRepository
     {
         private readonly OracleConnection _oracleConnection;
 
-        public AuthenticateRepository(OracleConnection oracleConnection)
+        public AuthorizationUserRepository(OracleConnection oracleConnection)
         {
             _oracleConnection = oracleConnection;
         }
 
-        public List<Role> Authenticate(LoginModel loginModel)
+        public List<UserRole> Authenticate(LoginModel loginModel)
         {
             using (OracleCommand command = _oracleConnection.CreateCommand())
             {
@@ -29,14 +29,13 @@ namespace BDAS2_BCSH2_University_Project.Repositories
                 if (string.IsNullOrWhiteSpace(loginUserPasswordHash) || loginUserPasswordHash != user.PasswordHash) // login false
                     throw new Exception("Login failed");
 
-                List<Role> roles = new List<Role>();
-                roles = GetRolesForUserWithOracleCommand(command, user.Id);
+                List<UserRole> roles = GetRolesForUserWithOracleCommand(command, user.Id);
 
                 return roles;
             }
         }
 
-        public List<Role> GetRolesForUser(int userId)
+        public List<UserRole> GetRolesForUser(int userId)
         {
             using (OracleCommand command = _oracleConnection.CreateCommand())
             {
@@ -45,24 +44,24 @@ namespace BDAS2_BCSH2_University_Project.Repositories
             }
         }
 
-        private List<Role> GetRolesForUserWithOracleCommand(OracleCommand command, int userId)
+        private List<UserRole> GetRolesForUserWithOracleCommand(OracleCommand command, int userId)
         {
             command.Parameters.Clear();
-            // TODO write normal names of fields and tables
-            command.CommandText = "SELECT ur.roleid RoleID, r.nazev NAZEV " +
-                "FROM UserRoles ur " +
-                "JOIN ROLE r on r.roleid = ur.roleid " +
-                "WHERE UserID = :userId";
+
+            command.CommandText = @"SELECT r.IDROLE IDROLE, r.nazev NAZEV
+                FROM AUTUZIVATEL_ROLE ar
+                JOIN ROLE r on r.IDROLE = ar.ROLE_IDROLE
+                WHERE ar.AUTUZIVATELE_IDAUTUZ = :userId";
 
             command.Parameters.Add("userId", OracleDbType.Int32).Value = userId;
 
-            List<Role> roles = new List<Role>(); 
+            List<UserRole> roles = new List<UserRole>(); 
 
             using (OracleDataReader reader = command.ExecuteReader())
             {
                 while (reader.Read())
                 {
-                    roles.Add(CreateRoleFromREader(reader));
+                    roles.Add(CreateRoleFromReader(reader));
                 }
                 return roles;
             }
@@ -71,8 +70,8 @@ namespace BDAS2_BCSH2_University_Project.Repositories
         private User GetUserByLoginWithOracleCommand(OracleCommand command, string login)
         {
             command.Parameters.Clear();
-            // TODO write normal names of fields and tables
-            command.CommandText = "select * from LogedUser where Username = :login";
+
+            command.CommandText = "SELECT * FROM AUTUZIVATELE WHERE JMENO = :login";
 
             command.Parameters.Add("login", OracleDbType.Varchar2).Value = login;
 
@@ -92,29 +91,26 @@ namespace BDAS2_BCSH2_University_Project.Repositories
             throw new NotImplementedException();
         }
 
-        // TODO write normal names of fields
         private User CreateUserFromReader(OracleDataReader reader)
         {
             User user = new()
             {
-                Id = int.Parse(reader["UserID"].ToString()),
-                Login = reader["Username"].ToString(),
-                PasswordHash = reader["PasswordHash"].ToString(),
-                PasswordSalt = reader["PasswordSalt"].ToString()
+                Id = int.Parse(reader["IDAUTUZ"].ToString()),
+                Login = reader["JMENO"].ToString(),
+                PasswordHash = reader["HESLOHASH"].ToString(),
+                PasswordSalt = reader["HESLOSALT"].ToString()
             };
             return user;
         }
 
-        // TODO write normal names of fields
-        private Role CreateRoleFromREader(OracleDataReader reader)
+        private UserRole CreateRoleFromReader(OracleDataReader reader)
         {
-            Role role = new()
-            {
-                Id = int.Parse(reader["RoleID"].ToString()),
-                Name = reader["NAZEV"].ToString(),
-            };
-            return role;
+            return reader["NAZEV"].ToString().ToUserRole();
         }
 
+        public void Register()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

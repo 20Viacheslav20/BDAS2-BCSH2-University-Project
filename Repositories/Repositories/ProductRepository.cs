@@ -1,6 +1,7 @@
 ﻿using BDAS2_BCSH2_University_Project.Interfaces;
 using BDAS2_BCSH2_University_Project.Models;
 using Oracle.ManagedDataAccess.Client;
+using System.Data;
 
 namespace BDAS2_BCSH2_University_Project.Repositories
 {
@@ -44,7 +45,9 @@ namespace BDAS2_BCSH2_University_Project.Repositories
         {
             using (OracleCommand command = _oracleConnection.CreateCommand())
             {
-                _oracleConnection.Open();
+                if (_oracleConnection.State == ConnectionState.Closed)
+                    _oracleConnection.Open();
+
 
                 return GetByIdWithOracleCommand(command, id);
             }
@@ -76,7 +79,7 @@ namespace BDAS2_BCSH2_University_Project.Repositories
             using (OracleCommand command = _oracleConnection.CreateCommand())
             {
                 _oracleConnection.Open();
-
+                // TODO save category
                 command.CommandText = $"INSERT INTO {TABLE} (NAZEV, AKTUALNICENA, CENAZECLUBCARTOU, HMOTNOST, KATEGORIJE_idKategorije) " +
                               "VALUES (:entityName, :entityActualPrice, :entityClubCardPrice, :entityHmotnost, :entityCategoryId)";
 
@@ -127,6 +130,12 @@ namespace BDAS2_BCSH2_University_Project.Repositories
                     command.Parameters.Add("entityHmotnost", OracleDbType.Decimal).Value = entity.Weight;
                 }
 
+                if (dbProduct.Category.Id != entity.CategoryId)
+                {
+                    query += "KATEGORIJE_IDKATEGORIJE = :entityKategorijeId ";
+                    command.Parameters.Add("entityKategorijeId", OracleDbType.Int32).Value = entity.CategoryId;
+                }
+
                 if (!string.IsNullOrEmpty(query))
                 {
                     query = query.TrimEnd(',', ' ');
@@ -161,6 +170,7 @@ namespace BDAS2_BCSH2_University_Project.Repositories
                 Name = reader["NAZEV"].ToString(),
                 ActualPrice = int.Parse(reader["AKTUALNICENA"].ToString()),
                 ClubCardPrice = !string.IsNullOrEmpty(price) ? int.Parse(price) : null,
+                CategoryId = int.Parse(reader["IDKATEGORIJE"].ToString()),
                 Category = new()
                 {
                     Id = int.Parse(reader["IDKATEGORIJE"].ToString()),

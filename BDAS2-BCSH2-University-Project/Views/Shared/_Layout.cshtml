@@ -41,19 +41,26 @@
                             <a class="nav-link text-dark" asp-controller="Address" asp-action="Index">Addresses</a>
                         </li>
                     </ul>
-
                     <ul class="navbar-nav ml-auto">
                         @if (!User.Identity.IsAuthenticated)
-                        {                            
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="Authenticate" asp-action="Login">Login</a>
-                            </li>
-                        } else
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="Authenticate" asp-action="Logout">Logout</a>
+                                <a class="nav-link text-dark" asp-controller="AuthorizationUser" asp-action="Login">Login</a>
                             </li>
                         }
+                        else
+                        {
+                            <li class="nav-item user-welcome">
+                                <span class="nav-link text-dark">
+                                    @User.Identity.Name
+                                </span>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="AuthorizationUser" asp-action="Logout">
+                                    Logout
+                                </a>
+                            </li>
+                        }  
                     </ul>
                 </div>
             </div>
@@ -76,3 +83,4 @@
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
+

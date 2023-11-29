@@ -14,11 +14,12 @@ namespace BDAS2_BCSH2_University_Project.Models
         public int ActualPrice { get; set; }
 
         [Display(Name = "ClubCard Price")]
-        public int? ClubCardPrice { get; set; }  
-        public Category Category { get; set; }
+        public int? ClubCardPrice { get; set; }
 
         [Column(TypeName = "decimal(4, 2)")]
         public decimal Weight { get; set; }
+        public int CategoryId { get; set; }
+        public Category Category { get; set; }
 
     }
 }

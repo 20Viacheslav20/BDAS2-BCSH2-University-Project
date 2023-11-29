@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BDAS2_BCSH2_University_Project.Interfaces
 {
-    public interface IAuthenticateController
+    public interface IAuthorizationUserController
     {
         IActionResult Login(string returnUrl = null);
         Task<IActionResult> Login(LoginModel loginModel, string returnUrl);
@@ -11,6 +11,7 @@ namespace BDAS2_BCSH2_University_Project.Interfaces
 
         // TODO add simulate method
 
-        // TODO add register 
+        IActionResult Registrate();
+        IActionResult Registrate(RegistrateModel registrateModel);
     }
 }

@@ -1,7 +1,9 @@
 ﻿using BDAS2_BCSH2_University_Project.Interfaces;
 using BDAS2_BCSH2_University_Project.Models;
+using BDAS2_BCSH2_University_Project.Models.Login;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace BDAS2_BCSH2_University_Project.Controllers
 {
@@ -18,7 +20,7 @@ namespace BDAS2_BCSH2_University_Project.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = nameof(UserRole.Admin))]
         public IActionResult Delete(int? id)
         {
             if (id == null)
@@ -37,7 +39,7 @@ namespace BDAS2_BCSH2_University_Project.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = nameof(UserRole.Admin))]
         public IActionResult Details(int? id)
         {
             if (id == null)
@@ -54,17 +56,16 @@ namespace BDAS2_BCSH2_University_Project.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = nameof(UserRole.Admin))]
         public IActionResult Save(int? id)
         {
-            //ViewBag.Categories = _categoryRepository.GetAll();
+            GetCategories();
             if (id == null)
             {
                 return View(new Product());
             }
 
             Product product = _productRepository.GetById(id.GetValueOrDefault());
-
             if (product == null)
             {
                 return NotFound();
@@ -75,7 +76,7 @@ namespace BDAS2_BCSH2_University_Project.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = nameof(UserRole.Admin))]
         public IActionResult Save(int? id, Product model)
         {
             if (id != null)
@@ -106,6 +107,7 @@ namespace BDAS2_BCSH2_University_Project.Controllers
                     ModelState.AddModelError("", e.Message);
                 }
             }
+            GetCategories();
             return View(model);
         }
 
@@ -116,5 +118,11 @@ namespace BDAS2_BCSH2_University_Project.Controllers
             return View(products);
         }
 
+        [NonAction]
+        private void GetCategories()
+        {
+            List<Category> categories = _categoryRepository.GetAll();
+            ViewBag.Categories = new SelectList(categories, nameof(Category.Id), nameof(Category.Name));
+        }
     }
 }

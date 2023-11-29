@@ -9,12 +9,12 @@ using System.Security.Claims;
 
 namespace BDAS2_BCSH2_University_Project.Controllers
 {
-    public class AuthenticateController : Controller, IAuthenticateController
+    public class AuthorizationUserController : Controller, IAuthorizationUserController
     {
-        private readonly IAuthenticateRepository _authenticateRepository;
-        public AuthenticateController(IAuthenticateRepository authenticateRepository)
+        private readonly IAuthorizationUserRepository _authorizationUserRepository;
+        public AuthorizationUserController(IAuthorizationUserRepository authorizationUserRepository)
         {
-            _authenticateRepository = authenticateRepository;
+            _authorizationUserRepository = authorizationUserRepository;
         }
     
         [HttpGet]
@@ -32,7 +32,7 @@ namespace BDAS2_BCSH2_University_Project.Controllers
             {
                 try
                 {
-                    List<Role> roles = _authenticateRepository.Authenticate(loginModel);
+                    List<UserRole> roles = _authorizationUserRepository.Authenticate(loginModel);
                     if (roles != null)
                     {
                         List<Claim> claims = new List<Claim>
@@ -40,9 +40,9 @@ namespace BDAS2_BCSH2_University_Project.Controllers
                             new Claim(ClaimTypes.Name, loginModel.Login),
                         };
 
-                        foreach (Role role in roles)
+                        foreach (UserRole role in roles)
                         {
-                            claims.Add(new Claim(ClaimTypes.Role, role.Name));
+                            claims.Add(new Claim(ClaimTypes.Role, role.ToStringValue()));
                         }
 
                         ClaimsIdentity identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
@@ -71,6 +71,22 @@ namespace BDAS2_BCSH2_University_Project.Controllers
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return RedirectToAction(nameof(Index), nameof(Product));
+        }
+
+        [HttpGet]
+        [Authorize(Roles = nameof(UserRole.Admin))]
+        public IActionResult Registrate()
+        {
+            return View(new RegistrateModel());
+        }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = nameof(UserRole.Admin))]
+        public IActionResult Registrate(RegistrateModel registrateModel)
+        {
+            throw new NotImplementedException();
         }
     }
 }

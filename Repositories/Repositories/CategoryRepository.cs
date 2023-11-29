@@ -1,6 +1,7 @@
 using BDAS2_BCSH2_University_Project.Interfaces;
 using BDAS2_BCSH2_University_Project.Models;
 using Oracle.ManagedDataAccess.Client;
+using System.Data;
 
 namespace BDAS2_BCSH2_University_Project.Repositories
 {
@@ -19,7 +20,8 @@ namespace BDAS2_BCSH2_University_Project.Repositories
         {
             using (OracleCommand command = _oracleConnection.CreateCommand())
             {
-                _oracleConnection.Open();
+                if (_oracleConnection.State == ConnectionState.Closed)
+                    _oracleConnection.Open();
 
                 command.CommandText = $"SELECT * FROM {TABLE}";
 

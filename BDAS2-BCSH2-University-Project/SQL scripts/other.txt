@@ -1,1 +1,0 @@
-UPDATE zbozi SET nazev = INITCAP(nazev) WHERE nazev IS NOT NULL;
