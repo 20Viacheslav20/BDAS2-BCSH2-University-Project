@@ -9,7 +9,7 @@ namespace BDAS2_BCSH2_University_Project.Interfaces
         List<UserRole> GetRolesForUser(int userId);
         void Register();
         
-        // TODO show all registered users
+        // TODO show all and one registered users
         // TODO write this method
         //void Simulate();
 

@@ -10,6 +10,8 @@ namespace BDAS2_BCSH2_University_Project.Interfaces
         Task<IActionResult> Logout();
 
         // TODO add simulate method
+        // TODO show all and one registered users
+        // TODO write this method
 
         IActionResult Registrate();
         IActionResult Registrate(RegistrateModel registrateModel);
