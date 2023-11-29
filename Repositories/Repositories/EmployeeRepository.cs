@@ -68,7 +68,7 @@ namespace BDAS2_BCSH2_University_Project.Repositories
                 {
                     return null;
                 }
-                return CreateEmployerFromReader(reader);
+                return CreateEmployeeFromReader(reader);
             }
         }
 
@@ -151,7 +151,7 @@ namespace BDAS2_BCSH2_University_Project.Repositories
             }
         }
 
-        private Employee CreateEmployerFromReader(OracleDataReader reader)
+        private Employee CreateEmployeeFromReader(OracleDataReader reader)
         {
 
             Employee employer = new()

@@ -36,7 +36,7 @@ ALTER TABLE autuzivatel_role ADD CONSTRAINT autuzivatel_role_pk PRIMARY KEY ( ro
                                                                               autuzivatele_idautuz );
 
 CREATE TABLE autuzivatele (
-    idutuz                   NUMBER NOT NULL,
+    idautuz                   NUMBER NOT NULL,
     jmeno                     VARCHAR2(20) NOT NULL,
     heslohash                 VARCHAR2(64) NOT NULL,
     heslosalt                 VARCHAR2(24) NOT NULL,
