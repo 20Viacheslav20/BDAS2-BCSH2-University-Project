@@ -63,6 +63,9 @@ INSERT INTO Pozice (nazev, mzda) VALUES ('Manažer logistiky', 40000);
 INSERT INTO Pozice (nazev, mzda) VALUES ('Specialist na plánování', 38000);
 INSERT INTO Pozice (nazev, mzda) VALUES ('Manažer financí', 40000);
 INSERT INTO Pozice (nazev, mzda) VALUES ('Manažer PR a komunikace', 40000);
+INSERT INTO Pozice (nazev, mzda) VALUES ('Technický ředitel ', 30000);
+INSERT INTO Pozice (nazev, mzda) VALUES ('Vedoucí ředitel ', 100000);
+
 
 INSERT INTO ZAMESTNANCI (jmeno, prijmeni, telefonniCislo, rodneCislo, POZICE_idPozice, PRODEJNY_idProdejny) VALUES ('Jan', 'Novák', '+420 123 456 789', '123456/7890', 1, 1);
 INSERT INTO ZAMESTNANCI (jmeno, prijmeni, telefonniCislo, rodneCislo, POZICE_idPozice, PRODEJNY_idProdejny) VALUES ('Petr', 'Svoboda', '+420 987 654 321', '234567/8901', 2, 2);
@@ -105,7 +108,17 @@ INSERT INTO ZAMESTNANCI (jmeno, prijmeni, telefonniCislo, rodneCislo, POZICE_idP
 INSERT INTO ZAMESTNANCI (jmeno, prijmeni, telefonniCislo, rodneCislo, POZICE_idPozice, PRODEJNY_idProdejny) VALUES ('Tomáš', 'Baláž', '+420 233 344 455', '456789/0123', 4, 19);
 INSERT INTO ZAMESTNANCI (jmeno, prijmeni, telefonniCislo, rodneCislo, POZICE_idPozice, PRODEJNY_idProdejny) VALUES ('Tereza', 'Černá', '+420 566 677 788', '567890/1234', 6, 20);
 INSERT INTO ZAMESTNANCI (jmeno, prijmeni, telefonniCislo, rodneCislo, POZICE_idPozice, PRODEJNY_idProdejny) VALUES ('Lukáš', 'Černý', '+420 899 001 112', '678901/2345', 9, 21);
-INSERT INTO ZAMESTNANCI (jmeno, prijmeni, telefonniCislo, rodneCislo, POZICE_idPozice, PRODEJNY_idProdejny) VALUES ('Eliška', 'Červenková', '+420 122 233 344', '789012/3456', 11, 22);
+INSERT INTO ZAMESTNANCI (jmeno, prijmeni, telefonniCislo, rodneCislo, POZICE_idPozice, PRODEJNY_idProdejny) VALUES ('Eliška', 'Červenková', '+420 122 233 354', '789012/3456', 11, 22);
+INSERT INTO ZAMESTNANCI (jmeno, prijmeni, telefonniCislo, rodneCislo, POZICE_idPozice, PRODEJNY_idProdejny) VALUES ('Petr', 'Červeny', '+420 122 653 389', '695723/9344', 21, 22);
+INSERT INTO ZAMESTNANCI (jmeno, prijmeni, telefonniCislo, rodneCislo, POZICE_idPozice, PRODEJNY_idProdejny) VALUES ('Maria', 'Červena', '+420 122 289 371', '976022/5585', 22, 22);
+
+UPDATE ZAMESTNANCI z SET z.zamestnanci_idzamestnance = (SELECT zam.idzamestnance FROM zamestnanci zam where zam.pozice_idpozice = 14) where z.pozice_idpozice in (1, 5, 2, 4, 15, 13, 7);
+UPDATE ZAMESTNANCI z SET z.zamestnanci_idzamestnance = (SELECT zam.idzamestnance FROM zamestnanci zam where zam.pozice_idpozice = 17) where z.pozice_idpozice in (6, 18);
+UPDATE ZAMESTNANCI z SET z.zamestnanci_idzamestnance = (SELECT zam.idzamestnance FROM zamestnanci zam where zam.pozice_idpozice = 22) where z.pozice_idpozice in (3, 14, 17, 19, 20, 8, 16, 9, 10);
+UPDATE ZAMESTNANCI z SET z.zamestnanci_idzamestnance = (SELECT zam.idzamestnance FROM zamestnanci zam where zam.pozice_idpozice = 21) where z.pozice_idpozice in (11, 12);
+UPDATE ZAMESTNANCI z SET z.zamestnanci_idzamestnance = (SELECT zam.idzamestnance FROM zamestnanci zam where zam.pozice_idpozice = 16) where z.pozice_idpozice in (8);
+UPDATE ZAMESTNANCI z SET z.zamestnanci_idzamestnance = 44 where z.idzamestnance = 43;
+
 
 INSERT INTO ADRESY (mesto, ulice, ZAMESTNANCI_IDZAMESTNANCE) VALUES ('Roma', 'Via Cola di Rie', 1);
 INSERT INTO ADRESY (mesto, ulice, ZAMESTNANCI_IDZAMESTNANCE) VALUES ('Venice', 'Calle della Testa', 2);

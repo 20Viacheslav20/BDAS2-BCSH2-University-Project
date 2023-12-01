@@ -19,6 +19,5 @@ namespace BDAS2_BCSH2_University_Project.Models
 
         public string User {  get; set; }
 
-
     }
 }
