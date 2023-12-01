@@ -19,6 +19,8 @@ namespace BDAS2_BCSH2_University_Project.Models
         [Display(Name = "Phone Number")]
         public string PhoneNumber {  get; set; }
 
+        public int PositionId { get; set; } 
+
         public Position Position { get; set; }
     }
 }

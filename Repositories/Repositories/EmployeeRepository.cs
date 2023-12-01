@@ -34,7 +34,7 @@ namespace BDAS2_BCSH2_University_Project.Repositories
                 {
                     while (reader.Read())
                     {
-                        employers.Add(CreateEmployerFromReader(reader));
+                        employers.Add(CreateEmployeeFromReader(reader));
                     }
                     return employers;
                 }
