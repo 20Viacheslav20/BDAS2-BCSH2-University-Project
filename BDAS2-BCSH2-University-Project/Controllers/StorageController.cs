@@ -1,16 +1,18 @@
 ﻿using BDAS2_BCSH2_University_Project.Interfaces;
-using Microsoft.AspNetCore.Mvc;
 using BDAS2_BCSH2_University_Project.Models;
+using BDAS2_BCSH2_University_Project.Repositories;
+using BDAS2_BCSH2_University_Project.Repositories.IRepositories;
+using Microsoft.AspNetCore.Mvc;
 
 namespace BDAS2_BCSH2_University_Project.Controllers
 {
-    public class LogController : Controller, IMainController<Log>
+    public class StorageController : Controller, IMainController<Storage>
     {
-        private readonly IMainRepository<Log> _logRepository;
+        private readonly IStorageRepository _storageRepository;
 
-        public LogController(IMainRepository<Log> logRepository)
+        public StorageController(IStorageRepository storageRepository)
         {
-            _logRepository = logRepository;
+            _storageRepository = storageRepository;
         }
 
         [HttpPost]
@@ -23,7 +25,7 @@ namespace BDAS2_BCSH2_University_Project.Controllers
             }
             try
             {
-                _logRepository.Delete(id.GetValueOrDefault());
+                _storageRepository.Delete(id.GetValueOrDefault());
             }
             catch (Exception e)
             {
@@ -33,7 +35,6 @@ namespace BDAS2_BCSH2_University_Project.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-
         [HttpGet]
         public IActionResult Details(int? id)
         {
@@ -41,40 +42,43 @@ namespace BDAS2_BCSH2_University_Project.Controllers
             {
                 return NotFound();
             }
-            Log log = _logRepository.GetById(id.GetValueOrDefault());
-            if (log == null)
+            Storage storage = _storageRepository.GetById(id.GetValueOrDefault());
+            if (storage == null)
             {
                 return NotFound();
             }
 
-            return View(log);
+            return View(storage);
         }
 
         [HttpGet]
         public IActionResult Index()
         {
-            List<Log> logs = _logRepository.GetAll();
-            return View(logs);
+            List<Storage> storages = _storageRepository.GetAll();
+            return View(storages);
         }
 
+        [HttpGet]
         public IActionResult Save(int? id)
         {
             if (id == null)
             {
-                return View(new Log());
+                return View(new Storage());
             }
 
-            Log log = _logRepository.GetById(id.GetValueOrDefault());
+            Storage storage = _storageRepository.GetById(id.GetValueOrDefault());
 
-            if (log == null)
+            if (storage == null)
             {
                 return NotFound();
             }
 
-            return View(log);
+            return View(storage);
         }
 
-        public IActionResult Save(int? id, Log model)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Save(int? id, Storage model)
         {
             if (id != null)
             {
@@ -90,11 +94,11 @@ namespace BDAS2_BCSH2_University_Project.Controllers
                 {
                     if (id == null)
                     {
-                        _logRepository.Create(model);
+                        _storageRepository.Create(model);
                     }
                     else
                     {
-                        _logRepository.Edit(model);
+                        _storageRepository.Edit(model);
                     }
 
                     return RedirectToAction(nameof(Index));

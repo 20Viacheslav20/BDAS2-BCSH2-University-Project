@@ -1,0 +1,39 @@
+﻿@model IEnumerable<Storage>
+
+@{
+    ViewData["Title"] = "Storage";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<p>
+    <a asp-action="Save" class="btn btn-success">Create</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.NumberOfShelves)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Products)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.NumberOfShelves)
+            </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Products)
+                </td>
+                <td>
+                    <a asp-action="Save" asp-route-id="@item.Id" class="btn btn-secondary btn-sm">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-secondary btn-sm">Details</a>
+                </td>
+        </tr>
+}
+    </tbody>
+</table>

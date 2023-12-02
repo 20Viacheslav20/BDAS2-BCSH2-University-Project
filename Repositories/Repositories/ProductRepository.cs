@@ -1,11 +1,13 @@
 ﻿using BDAS2_BCSH2_University_Project.Interfaces;
-using BDAS2_BCSH2_University_Project.Models;
+using Models.Models.Product;
 using Oracle.ManagedDataAccess.Client;
+using Repositories.IRepositories;
 using System.Data;
+
 
 namespace BDAS2_BCSH2_University_Project.Repositories
 {
-    public class ProductRepository : IMainRepository<Product>
+    public class ProductRepository : IProductRepository
     {
         private readonly OracleConnection _oracleConnection;
 
@@ -59,9 +61,9 @@ namespace BDAS2_BCSH2_University_Project.Repositories
                     k.nazev KATEGORIJE, k.idkategorije IDKATEGORIJE, 
                     z.hmotnost HMOTNOST FROM {TABLE} z
                     JOIN KATEGORIJE k ON z.kategorije_idkategorije = k.idkategorije 
-                    WHERE z.IDZBOZI = :entityId";
+                    WHERE z.IDZBOZI = :productId";
 
-            command.Parameters.Add("entityId", OracleDbType.Int32).Value = id;
+            command.Parameters.Add("productId", OracleDbType.Int32).Value = id;
 
             using (OracleDataReader reader = command.ExecuteReader())
             {
@@ -73,31 +75,31 @@ namespace BDAS2_BCSH2_University_Project.Repositories
             }
         }
 
-        public void Create(Product entity)
+        public void Create(Product product)
         {
             using (OracleCommand command = _oracleConnection.CreateCommand())
             {
                 _oracleConnection.Open();
 
                 command.CommandText = $"INSERT INTO {TABLE} (NAZEV, AKTUALNICENA, CENAZECLUBCARTOU, HMOTNOST, KATEGORIJE_idKategorije) " +
-                              "VALUES (:entityName, :entityActualPrice, :entityClubCardPrice, :entityHmotnost, :entityCategoryId)";
+                              "VALUES (:productName, :productActualPrice, :productClubCardPrice, :productHmotnost, :productCategoryId)";
 
-                command.Parameters.Add("entityName", OracleDbType.Varchar2).Value = entity.Name;
-                command.Parameters.Add("entityActualPrice", OracleDbType.Int32).Value = entity.ActualPrice;
-                command.Parameters.Add("entityClubCardPrice", OracleDbType.Int32).Value = entity.ClubCardPrice;
-                command.Parameters.Add("entityHmotnost", OracleDbType.Decimal).Value = entity.Weight;
-                command.Parameters.Add("entityCategoryId", OracleDbType.Decimal).Value = entity.CategoryId;
+                command.Parameters.Add("productName", OracleDbType.Varchar2).Value = product.Name;
+                command.Parameters.Add("productActualPrice", OracleDbType.Int32).Value = product.ActualPrice;
+                command.Parameters.Add("productClubCardPrice", OracleDbType.Int32).Value = product.ClubCardPrice;
+                command.Parameters.Add("productHmotnost", OracleDbType.Decimal).Value = product.Weight;
+                command.Parameters.Add("productCategoryId", OracleDbType.Decimal).Value = 1;
 
                 command.ExecuteNonQuery();
             }
         }
 
-        public void Edit(Product entity)
+        public void Edit(Product product)
         {
             using (OracleCommand command = _oracleConnection.CreateCommand())
             {
                 _oracleConnection.Open();
-                Product dbProduct = GetByIdWithOracleCommand(command, entity.Id);
+                Product dbProduct = GetByIdWithOracleCommand(command, product.Id);
 
                 if (dbProduct == null)
                     return;
@@ -105,42 +107,42 @@ namespace BDAS2_BCSH2_University_Project.Repositories
                 command.Parameters.Clear();
 
                 string query = "";
-                if (dbProduct.Name != entity.Name)
+                if (dbProduct.Name != product.Name)
                 {
-                    query += "NAZEV = :entityName, ";
-                    command.Parameters.Add("entityName", OracleDbType.Varchar2).Value = entity.Name;
+                    query += "NAZEV = :productName, ";
+                    command.Parameters.Add("productName", OracleDbType.Varchar2).Value = product.Name;
                 }
 
-                if (dbProduct.ActualPrice != entity.ActualPrice)
+                if (dbProduct.ActualPrice != product.ActualPrice)
                 {
-                    query += "AKTUALNICENA = :entityActualPrice, ";
-                    command.Parameters.Add("entityActualPrice", OracleDbType.Int32).Value = entity.ActualPrice;
+                    query += "AKTUALNICENA = :productActualPrice, ";
+                    command.Parameters.Add("productActualPrice", OracleDbType.Int32).Value = product.ActualPrice;
                 }
 
-                if (dbProduct.ClubCardPrice != entity.ClubCardPrice)
+                if (dbProduct.ClubCardPrice != product.ClubCardPrice)
                 {
-                    query += "CENAZECLUBCARTOU = :entityClubCardPrice, ";
-                    command.Parameters.Add("entityClubCardPrice", OracleDbType.Int32).Value = entity.ClubCardPrice;
+                    query += "CENAZECLUBCARTOU = :productClubCardPrice, ";
+                    command.Parameters.Add("productClubCardPrice", OracleDbType.Int32).Value = product.ClubCardPrice;
                 }
 
-                if (dbProduct.Weight != entity.Weight)
+                if (dbProduct.Weight != product.Weight)
                 {
-                    query += "HMOTNOST = :entityHmotnost ";
-                    command.Parameters.Add("entityHmotnost", OracleDbType.Decimal).Value = entity.Weight;
+                    query += "HMOTNOST = :productHmotnost ";
+                    command.Parameters.Add("productHmotnost", OracleDbType.Decimal).Value = product.Weight;
                 }
 
-                if (dbProduct.Category.Id != entity.CategoryId)
+                if (dbProduct.Category.Id != product.CategoryId)
                 {
-                    query += "KATEGORIJE_IDKATEGORIJE = :entityKategorijeId ";
-                    command.Parameters.Add("entityKategorijeId", OracleDbType.Int32).Value = entity.CategoryId;
+                    query += "KATEGORIJE_IDKATEGORIJE = :productKategorijeId ";
+                    command.Parameters.Add("productKategorijeId", OracleDbType.Int32).Value = product.CategoryId;
                 }
 
                 if (!string.IsNullOrEmpty(query))
                 {
                     query = query.TrimEnd(',', ' ');
 
-                    command.CommandText = $"UPDATE {TABLE} SET {query} WHERE IDZBOZI = :entityId";
-                    command.Parameters.Add("entityId", OracleDbType.Int32).Value = entity.Id;
+                    command.CommandText = $"UPDATE {TABLE} SET {query} WHERE IDZBOZI = :productId";
+                    command.Parameters.Add("productId", OracleDbType.Int32).Value = product.Id;
 
                     command.ExecuteNonQuery();
                 }
@@ -153,8 +155,8 @@ namespace BDAS2_BCSH2_University_Project.Repositories
             {
                 _oracleConnection.Open();
 
-                command.CommandText = $"DELETE FROM {TABLE} WHERE IDZBOZI = :entityId";
-                command.Parameters.Add("entityId", OracleDbType.Int32).Value = id;
+                command.CommandText = $"DELETE FROM {TABLE} WHERE IDZBOZI = :productId";
+                command.Parameters.Add("productId", OracleDbType.Int32).Value = id;
 
                 command.ExecuteNonQuery();
             }
@@ -178,6 +180,46 @@ namespace BDAS2_BCSH2_University_Project.Repositories
                 Weight = decimal.Parse(reader["HMOTNOST"].ToString())
             };
             return product;
+        }
+
+        private StoragedProduct CreateStoragedProductFromReader(OracleDataReader reader)
+        {
+            StoragedProduct product = new()
+            {
+                Id = int.Parse(reader["IDZBOZI"].ToString()),
+                Name = reader["NAZEV"].ToString(),
+                Count = int.Parse(reader["POCETZBOZI"].ToString())
+            };
+            return product;
+        }
+
+
+        public List<StoragedProduct> GetProductsFromStorage(int storageId)
+        {
+            using (OracleCommand command = _oracleConnection.CreateCommand())
+            {
+                if (_oracleConnection.State == ConnectionState.Closed)
+                    _oracleConnection.Open();
+
+                command.CommandText = @$"SELECT z.IDZBOZI IDZBOZI,z.nazev NAZEV, zns.pocetZbozi POCETZBOZI 
+                                         FROM SKLADY s
+                                        JOIN ZBOZI_NA_SKLADE zns ON s.idSkladu = zns.SKLADY_idSkladu
+                                        JOIN ZBOZI z ON zns.ZBOZI_idZbozi = z.idZbozi
+                                        WHERE zns.SKLADY_idSkladu =:idSkladu ";
+
+                command.Parameters.Add("idSkladu", OracleDbType.Int32).Value = storageId;
+
+                List<StoragedProduct> storagedProducts = new List<StoragedProduct>();
+
+                using (OracleDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        storagedProducts.Add(CreateStoragedProductFromReader(reader));
+                    }
+                    return storagedProducts;
+                }
+            }
         }
     }
 }
