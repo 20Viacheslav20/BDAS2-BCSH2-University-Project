@@ -1,0 +1,26 @@
+-- получить все адреса которые не привязаны не к работнику и не к побочке + тот которые имеет побочка (1 из работника)
+SELECT * FROM ADRESY WHERE (prodejny_idprodejny is null or IDADRESY = (select MAX(IDADRESY) FROM  ADRESY WHERE PRODEJNY_IDPRODEJNY = 1)) and zamestnanci_idzamestnance is null;
+
+
+
+-- получить все адреса которые не привязаны не к работнику и не к побочке + тот которые имеет работник (12 из работника)
+SELECT * FROM ADRESY WHERE (zamestnanci_idzamestnance is null or IDADRESY = (select MAX(IDADRESY) FROM  ADRESY WHERE zamestnanci_idzamestnance = 12)) and prodejny_idprodejny is null;
+
+
+hierarch 
+SELECT z.IDZAMESTNANCE, z.jmeno, z.prijmeni, z.telefonniCislo, z.rodneCislo, z.ZAMESTNANCI_IDZAMESTNANCE, poz.nazev
+FROM ZAMESTNANCI z
+join pozice poz on poz.idpozice = z.pozice_idpozice
+START WITH z.ZAMESTNANCI_IDZAMESTNANCE IS NULL
+CONNECT BY PRIOR z.IDZAMESTNANCE = z.ZAMESTNANCI_IDZAMESTNANCE order by z.ZAMESTNANCI_IDZAMESTNANCE desc;
+
+SELECT p.*
+FROM prodejny p
+LEFT JOIN sklady s ON p.idprodejny = s.prodejny_idprodejny
+WHERE s.idskladu IS NULL
+UNION
+SELECT p.*
+FROM prodejny p
+JOIN sklady s ON p.idprodejny = s.prodejny_idprodejny
+WHERE s.idskladu = 1;
+1 - это параметр
