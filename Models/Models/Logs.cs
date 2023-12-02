@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace BDAS2_BCSH2_University_Project.Models
 {
-    public class Log
+    public class Logs
     {
         public int  Id { get; set; }
 

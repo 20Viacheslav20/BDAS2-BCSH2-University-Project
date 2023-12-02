@@ -2,6 +2,7 @@ using BDAS2_BCSH2_University_Project.Interfaces;
 using BDAS2_BCSH2_University_Project.Models;
 using BDAS2_BCSH2_University_Project.Models.Login;
 using BDAS2_BCSH2_University_Project.Repositories;
+using BDAS2_BCSH2_University_Project.Repositories.IRepositories;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Oracle.ManagedDataAccess.Client;
 using Repositories.IRepositories;
@@ -12,13 +13,14 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-builder.Services.AddScoped<IMainRepository<Product>, ProductRepository>();
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IMainRepository<Category>, CategoryRepository>();
 builder.Services.AddScoped<IMainRepository<Shop>, ShopRepository>();
 builder.Services.AddScoped<IMainRepository<Position>, PositionRepository>();
 builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 builder.Services.AddScoped<IMainRepository<Address>, AddressRepository>();
-builder.Services.AddScoped<IMainRepository<Log>, LogRepository>();
+builder.Services.AddScoped<ILogsRepository, LogRepository>();
+builder.Services.AddScoped<IStorageRepository, StorageRepository>();
 
 builder.Services.AddScoped<IAuthorizationUserRepository, AuthorizationUserRepository>();
 

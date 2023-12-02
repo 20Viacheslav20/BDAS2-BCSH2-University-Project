@@ -4,15 +4,17 @@ using BDAS2_BCSH2_University_Project.Models.Login;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Models.Models.Product;
+using Repositories.IRepositories;
 
 namespace BDAS2_BCSH2_University_Project.Controllers
 {
     public class ProductController : Controller, IMainController<Product>
     {
-        private readonly IMainRepository<Product> _productRepository;
+        private readonly IProductRepository _productRepository;
         private readonly IMainRepository<Category> _categoryRepository;
 
-        public ProductController(IMainRepository<Product> productRepository, IMainRepository<Category> categoryRepository)
+        public ProductController(IProductRepository productRepository, IMainRepository<Category> categoryRepository)
         {
             _productRepository = productRepository;
             _categoryRepository = categoryRepository;

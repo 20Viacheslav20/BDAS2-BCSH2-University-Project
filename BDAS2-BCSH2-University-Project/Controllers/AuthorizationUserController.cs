@@ -1,12 +1,10 @@
 ﻿using BDAS2_BCSH2_University_Project.Interfaces;
-using BDAS2_BCSH2_University_Project.Models;
 using BDAS2_BCSH2_University_Project.Models.Login;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Repositories.IRepositories;
+using Models.Models.Product;
 using System.Security.Claims;
 
 namespace BDAS2_BCSH2_University_Project.Controllers
