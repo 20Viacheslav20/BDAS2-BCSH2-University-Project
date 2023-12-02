@@ -9,6 +9,7 @@ using Oracle.ManagedDataAccess.Client;
 using Repositories.IRepositories;
 using Models.Models.Product;
 using System.Security.Claims;
+using BDAS2_BCSH2_University_Project.Models;
 
 namespace BDAS2_BCSH2_University_Project.Controllers
 {
