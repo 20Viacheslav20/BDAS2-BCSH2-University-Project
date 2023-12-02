@@ -4,7 +4,7 @@ using Repositories.IRepositories;
 using System.Data;
 
 
-namespace BDAS2_BCSH2_University_Project.Repositories
+namespace Repositories.Repositories
 {
     public class ProductRepository : IProductRepository
     {
@@ -25,7 +25,7 @@ namespace BDAS2_BCSH2_University_Project.Repositories
 
                 command.CommandText = $"SELECT z.idzbozi IDZBOZI, z.nazev NAZEV, " +
                     $"z.aktualnicena AKTUALNICENA, z.cenazeclubcartou CENAZECLUBCARTOU," +
-                    $"k.nazev KATEGORIJE, k.idkategorije IDKATEGORIJE, " + 
+                    $"k.nazev KATEGORIJE, k.idkategorije IDKATEGORIJE, " +
                     $"z.hmotnost HMOTNOST FROM {TABLE} z " +
                     $"JOIN KATEGORIJE k ON z.kategorije_idkategorije = k.idkategorije";
 
@@ -68,7 +68,7 @@ namespace BDAS2_BCSH2_University_Project.Repositories
             {
                 if (!reader.Read())
                 {
-                    return null;  
+                    return null;
                 }
                 return CreateProductFromReader(reader);
             }
@@ -201,7 +201,7 @@ namespace BDAS2_BCSH2_University_Project.Repositories
                     _oracleConnection.Open();
 
                 command.CommandText = @$"SELECT z.IDZBOZI IDZBOZI,z.nazev NAZEV, zns.pocetZbozi POCETZBOZI 
-                                         FROM SKLADY s
+                                        FROM SKLADY s
                                         JOIN ZBOZI_NA_SKLADE zns ON s.idSkladu = zns.SKLADY_idSkladu
                                         JOIN ZBOZI z ON zns.ZBOZI_idZbozi = z.idZbozi
                                         WHERE zns.SKLADY_idSkladu =:idSkladu ";

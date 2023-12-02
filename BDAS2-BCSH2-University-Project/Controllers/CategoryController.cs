@@ -1,7 +1,7 @@
-using BDAS2_BCSH2_University_Project.Interfaces;
 using Models.Models;
-using BDAS2_BCSH2_University_Project.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using Repositories.IRepositories;
+using BDAS2_BCSH2_University_Project.IControllers;
 
 namespace BDAS2_BCSH2_University_Project.Controllers
 {

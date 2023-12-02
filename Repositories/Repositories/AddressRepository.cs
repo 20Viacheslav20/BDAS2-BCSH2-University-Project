@@ -1,8 +1,8 @@
-﻿using BDAS2_BCSH2_University_Project.Interfaces;
-using Models.Models;
+﻿using Models.Models;
 using Oracle.ManagedDataAccess.Client;
+using Repositories.IRepositories;
 
-namespace BDAS2_BCSH2_University_Project.Repositories
+namespace Repositories.Repositories
 {
     public class AddressRepository : IMainRepository<Address>
     {
@@ -17,7 +17,7 @@ namespace BDAS2_BCSH2_University_Project.Repositories
 
         public List<Address> GetAll()
         {
-            using(OracleCommand command = _oracleConnection.CreateCommand())
+            using (OracleCommand command = _oracleConnection.CreateCommand())
             {
                 _oracleConnection.Open();
 
@@ -33,7 +33,7 @@ namespace BDAS2_BCSH2_University_Project.Repositories
                     }
                     return addresses;
                 }
-            }           
+            }
         }
 
         public void Create(Address entity)
@@ -47,7 +47,7 @@ namespace BDAS2_BCSH2_University_Project.Repositories
 
                 command.Parameters.Add("entityCity", OracleDbType.Varchar2).Value = entity.City;
                 command.Parameters.Add("entityStreet", OracleDbType.Varchar2).Value = entity.City;
-                
+
 
                 command.ExecuteNonQuery();
             }
@@ -109,7 +109,7 @@ namespace BDAS2_BCSH2_University_Project.Repositories
             {
                 _oracleConnection.Open();
 
-                return GetByIdWithOracleCommand(command,id);
+                return GetByIdWithOracleCommand(command, id);
             }
         }
 

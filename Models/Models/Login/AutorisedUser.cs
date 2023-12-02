@@ -17,8 +17,6 @@ namespace Models.Models.Login
         public int EmployeeId { get; set; }
         public Employee Employee { get; set; }
         public List<UserRole> Roles { get; set; }
-
+        public Image Image { get; set; }
     }
-
-   
 }

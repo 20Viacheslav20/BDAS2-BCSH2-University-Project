@@ -49,6 +49,10 @@
                         <li>
                             <a class="nav-link text-dark" asp-controller="AuthorizationUser" asp-action="Index">Autorised users</a>
                         </li>
+                        <li>
+                            <a class="nav-link text-dark" asp-controller="AuthorizationUser" asp-action="AllImages">Images</a>
+                        </li>
+
                     </ul>
                     <ul class="navbar-nav ml-auto">
                         @if (!User.Identity.IsAuthenticated)

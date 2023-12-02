@@ -1,4 +1,4 @@
-﻿using BDAS2_BCSH2_University_Project.Interfaces;
+﻿using BDAS2_BCSH2_University_Project.IControllers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;

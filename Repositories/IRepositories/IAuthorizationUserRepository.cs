@@ -1,6 +1,7 @@
-﻿using Models.Models.Login;
+﻿using Models.Models;
+using Models.Models.Login;
 
-namespace BDAS2_BCSH2_University_Project.Interfaces
+namespace Repositories.IRepositories
 {
     public interface IAuthorizationUserRepository
     {
@@ -15,5 +16,8 @@ namespace BDAS2_BCSH2_University_Project.Interfaces
         //void Simulate();
         void Edit(AutorisedUser autorisedUser);
         void Delete(int id);
+        Image GetUserImage(int userId);
+        void SaveImageForUser(Image image, int userId);
+        List<Image> GetAllImages();
     }
 }

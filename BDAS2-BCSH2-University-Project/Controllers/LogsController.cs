@@ -1,10 +1,10 @@
-﻿using BDAS2_BCSH2_University_Project.Interfaces;
-using BDAS2_BCSH2_University_Project.Repositories;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Models.Models;
-using Repositories.Repositories;
 using BDAS2_BCSH2_University_Project.IControllers;
 using Repositories.IRepositories;
+using Microsoft.AspNetCore.Authorization;
+using Models.Models.Login;
+using System.Data;
 
 namespace BDAS2_BCSH2_University_Project.Controllers
 {
@@ -18,6 +18,7 @@ namespace BDAS2_BCSH2_University_Project.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = nameof(UserRole.Admin))]
         public IActionResult Index()
         {
             List<Logs> logs = _logRepository.GetAll();

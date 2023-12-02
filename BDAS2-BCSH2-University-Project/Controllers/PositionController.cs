@@ -1,10 +1,10 @@
-﻿using BDAS2_BCSH2_University_Project.Interfaces;
-using Models.Models;
+﻿using Models.Models;
 using Microsoft.AspNetCore.Mvc;
+using Repositories.IRepositories;
+using BDAS2_BCSH2_University_Project.IControllers;
 
 namespace BDAS2_BCSH2_University_Project.Controllers
 {
-
     public class PositionController : Controller, IMainController<Position>
     {
         private readonly IMainRepository<Position> _positionRepository;

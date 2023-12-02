@@ -3,7 +3,7 @@ using Oracle.ManagedDataAccess.Client;
 using Repositories.IRepositories;
 using System.Data;
 
-namespace BDAS2_BCSH2_University_Project.Repositories
+namespace Repositories.Repositories
 {
     public class EmployeeRepository : IEmployeeRepository
     {
@@ -82,7 +82,7 @@ namespace BDAS2_BCSH2_University_Project.Repositories
                 command.CommandText = $"INSERT INTO {TABLE} (JMENO, PRIJMENI, RODNECISLO, TELEFONNICISLO)" +
                     "VALUES (:employeeName, :employeeSurname, :employeeBornNumber, :employeePhoneNumber)";
 
-                command.Parameters.Add("employeeName" , OracleDbType.Varchar2 ).Value = employee.Name;
+                command.Parameters.Add("employeeName", OracleDbType.Varchar2).Value = employee.Name;
                 command.Parameters.Add("employeeSurname", OracleDbType.Varchar2).Value = employee.Surname;
                 command.Parameters.Add("employeeBornNumber", OracleDbType.Int32).Value = employee.BornNumber;
                 command.Parameters.Add("employeePnoneNumber", OracleDbType.Int32).Value = employee.PhoneNumber;
@@ -93,10 +93,10 @@ namespace BDAS2_BCSH2_University_Project.Repositories
 
         public void Edit(Employee employee)
         {
-            using(OracleCommand command = _oracleConnection.CreateCommand())
+            using (OracleCommand command = _oracleConnection.CreateCommand())
             {
                 _oracleConnection.Open();
-                Employee dbEmployer = GetByIdWithOracleCommand(command,employee.Id);
+                Employee dbEmployer = GetByIdWithOracleCommand(command, employee.Id);
 
                 if (dbEmployer == null)
                     return;
@@ -121,7 +121,7 @@ namespace BDAS2_BCSH2_University_Project.Repositories
                     command.Parameters.Add("employeeBornNumber", OracleDbType.Varchar2).Value = employee.BornNumber;
                 }
 
-                if ( dbEmployer.PhoneNumber != employee.PhoneNumber)
+                if (dbEmployer.PhoneNumber != employee.PhoneNumber)
                 {
                     query += "TELEFONNICISLO = :employeePhoneNumber ";
                     command.Parameters.Add("employeePhoneNumber", OracleDbType.Varchar2).Value = employee.PhoneNumber;
@@ -165,12 +165,12 @@ namespace BDAS2_BCSH2_University_Project.Repositories
                 Position = new()
                 {
                     Name = reader["POZICE"].ToString(),
-                }           
+                }
             };
             return employer;
         }
 
-       
+
         public List<Employee> GetEmployeesWithoutAuth()
         {
             using (OracleCommand command = _oracleConnection.CreateCommand())
@@ -202,7 +202,7 @@ namespace BDAS2_BCSH2_University_Project.Repositories
                 Id = int.Parse(reader["IDZAMESTNANCE"].ToString()),
                 Name = reader["JMENO"].ToString(),
                 Surname = reader["PRIJMENI"].ToString(),
-                
+
             };
             return employee;
         }

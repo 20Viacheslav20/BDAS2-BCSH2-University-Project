@@ -1,9 +1,9 @@
-using BDAS2_BCSH2_University_Project.Interfaces;
 using Models.Models;
 using Oracle.ManagedDataAccess.Client;
+using Repositories.IRepositories;
 using System.Data;
 
-namespace BDAS2_BCSH2_University_Project.Repositories
+namespace Repositories.Repositories
 {
     public class CategoryRepository : IMainRepository<Category>
     {

@@ -1,5 +1,4 @@
-﻿using BDAS2_BCSH2_University_Project.Interfaces;
-using Microsoft.AspNetCore.Authentication;
+﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,6 +8,7 @@ using Models.Models.Product;
 using System.Security.Claims;
 using Models.Models.Login;
 using Models.Models;
+using BDAS2_BCSH2_University_Project.IControllers;
 
 namespace BDAS2_BCSH2_University_Project.Controllers
 {
@@ -43,6 +43,8 @@ namespace BDAS2_BCSH2_University_Project.Controllers
             {
                 return NotFound();
             }
+
+            autorisedUser.Image = _authorizationUserRepository.GetUserImage(autorisedUser.Id);
 
             return View(autorisedUser);
         }
@@ -168,6 +170,7 @@ namespace BDAS2_BCSH2_University_Project.Controllers
             }
 
             AutorisedUser autorisedUser = _authorizationUserRepository.GetAutorisedUser(id.GetValueOrDefault());
+
             if (autorisedUser == null)
             {
                 return NotFound();
@@ -179,7 +182,7 @@ namespace BDAS2_BCSH2_University_Project.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = nameof(UserRole.Admin))]
-        public IActionResult Edit(int? id, AutorisedUser model)
+        public IActionResult Edit(int? id, AutorisedUser model, IFormFile file)
         {
             if (id != null)
             {
@@ -194,6 +197,8 @@ namespace BDAS2_BCSH2_University_Project.Controllers
                 try
                 {
                     _authorizationUserRepository.Edit(model);
+
+                    SaveImage(file, id.GetValueOrDefault());
 
                     return RedirectToAction(nameof(Index));
                 }
@@ -211,6 +216,32 @@ namespace BDAS2_BCSH2_University_Project.Controllers
         {
             List<Employee> employees = _employeeRepository.GetEmployeesWithoutAuth();
             ViewBag.Employees = new SelectList(employees, nameof(Employee.Id), nameof(Employee.Name));
+        }
+
+        [NonAction]
+        private void SaveImage(IFormFile file, int userId)
+        {
+            if (file != null && file.Length > 0)
+            {
+                Image image = new()
+                {
+                    Name = file.FileName,
+                    Extension = Path.GetExtension(file.FileName),
+                };
+
+                using (var memoryStream = new MemoryStream())
+                {
+                    file.CopyTo(memoryStream);
+                    image.Data = memoryStream.ToArray();
+                }
+                _authorizationUserRepository.SaveImageForUser(image, userId);
+            }
+        }
+
+        public IActionResult AllImages()
+        {
+            List<Image> images = _authorizationUserRepository.GetAllImages();
+            return View(images);
         }
     }
 

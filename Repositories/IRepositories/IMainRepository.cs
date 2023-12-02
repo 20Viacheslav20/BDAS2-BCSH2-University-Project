@@ -1,5 +1,4 @@
-﻿
-namespace BDAS2_BCSH2_University_Project.Interfaces
+﻿namespace Repositories.IRepositories
 {
     public interface IMainRepository<T>
     {

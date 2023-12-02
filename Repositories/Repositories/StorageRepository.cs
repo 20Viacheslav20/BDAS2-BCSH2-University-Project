@@ -1,9 +1,8 @@
-﻿using BDAS2_BCSH2_University_Project.Repositories.IRepositories;
-using Models.Models;
+﻿using Models.Models;
 using Oracle.ManagedDataAccess.Client;
 using Repositories.IRepositories;
 
-namespace BDAS2_BCSH2_University_Project.Repositories
+namespace Repositories.Repositories
 {
     public class StorageRepository : IStorageRepository
     {
@@ -11,20 +10,18 @@ namespace BDAS2_BCSH2_University_Project.Repositories
 
         private readonly IProductRepository _productRepository;
 
-        
-
         private const string TABLE = "SKLADY";
 
         public StorageRepository(OracleConnection oracleConnection, IProductRepository productRepository)
         {
-            _oracleConnection = oracleConnection;  
-            
+            _oracleConnection = oracleConnection;
+
             _productRepository = productRepository;
         }
 
         public void Create(Storage entity)
         {
-            using(OracleCommand command = _oracleConnection.CreateCommand())
+            using (OracleCommand command = _oracleConnection.CreateCommand())
             {
                 _oracleConnection.Open();
 
@@ -85,7 +82,7 @@ namespace BDAS2_BCSH2_University_Project.Repositories
 
         public List<Storage> GetAll()
         {
-            using(OracleCommand command = _oracleConnection.CreateCommand())
+            using (OracleCommand command = _oracleConnection.CreateCommand())
             {
                 _oracleConnection.Open();
 
@@ -118,7 +115,7 @@ namespace BDAS2_BCSH2_University_Project.Repositories
 
         public Storage GetById(int id)
         {
-            using(OracleCommand command = _oracleConnection.CreateCommand())
+            using (OracleCommand command = _oracleConnection.CreateCommand())
             {
                 _oracleConnection.Open();
 
@@ -138,13 +135,11 @@ namespace BDAS2_BCSH2_University_Project.Repositories
                 {
                     return null;
                 }
-                Storage storage=CreateStorageFromReader(reader);
+                Storage storage = CreateStorageFromReader(reader);
 
                 storage.Products = _productRepository.GetProductsFromStorage(id);
                 return storage;
             }
         }
-
-    
     }
 }

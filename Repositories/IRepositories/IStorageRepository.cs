@@ -1,6 +1,6 @@
 ﻿using Models.Models;
 
-namespace BDAS2_BCSH2_University_Project.Repositories.IRepositories
+namespace Repositories.IRepositories
 {
     public interface IStorageRepository
     {

@@ -1,8 +1,8 @@
-﻿using BDAS2_BCSH2_University_Project.Interfaces;
-using Models.Models;
+﻿using Models.Models;
 using Oracle.ManagedDataAccess.Client;
+using Repositories.IRepositories;
 
-namespace BDAS2_BCSH2_University_Project.Repositories
+namespace Repositories.Repositories
 {
     public class PositionRepository : IMainRepository<Position>
     {

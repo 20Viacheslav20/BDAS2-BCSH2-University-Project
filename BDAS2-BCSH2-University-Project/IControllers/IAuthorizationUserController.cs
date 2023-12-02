@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Models.Models.Login;
 
-namespace BDAS2_BCSH2_University_Project.Interfaces
+namespace BDAS2_BCSH2_University_Project.IControllers
 {
     public interface IAuthorizationUserController
     {
@@ -17,6 +17,7 @@ namespace BDAS2_BCSH2_University_Project.Interfaces
         IActionResult Registrate(AutorisedUser registrateModel);
         IActionResult Delete(int? id);
         IActionResult Edit(int? id);
-        IActionResult Edit(int? id, AutorisedUser model);
+        IActionResult Edit(int? id, AutorisedUser model, IFormFile file);
+        IActionResult AllImages();
     }
 }

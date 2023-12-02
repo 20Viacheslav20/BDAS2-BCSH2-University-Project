@@ -1,7 +1,7 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
 
-namespace BDAS2_BCSH2_University_Project.Helpers
+namespace Repositories.Helpers
 {
     public static class PasswordHasher
     {
@@ -21,7 +21,7 @@ namespace BDAS2_BCSH2_University_Project.Helpers
             using (SHA256 sha256 = SHA256.Create())
             {
                 string passwordSaltPepper = $"{password}{salt}{pepper}";
-                
+
                 byte[] byteValue = Encoding.UTF8.GetBytes(passwordSaltPepper);
                 byte[] byteHash = sha256.ComputeHash(byteValue);
 
@@ -36,9 +36,9 @@ namespace BDAS2_BCSH2_University_Project.Helpers
             using (RandomNumberGenerator rng = RandomNumberGenerator.Create())
             {
                 byte[] byteSalt = new byte[16];
-                
+
                 rng.GetBytes(byteSalt);
-                
+
                 string salt = Convert.ToBase64String(byteSalt);
 
                 return salt;

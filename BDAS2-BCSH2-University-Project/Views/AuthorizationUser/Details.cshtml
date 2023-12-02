@@ -14,6 +14,13 @@
         </div>
     }
     <hr />
+    
+    @if (Model.Image != null)
+    {        
+        <img src="@($"data:{Model.Image.Extension};base64"), 
+            @Convert.ToBase64String(Model.Image.Data)" alt="User Image" width="150" height="150" />
+    }
+    
     <dl class="row">
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Login)
