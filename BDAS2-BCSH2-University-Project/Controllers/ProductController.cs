@@ -39,7 +39,7 @@ namespace BDAS2_BCSH2_University_Project.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = nameof(UserRole.ShiftLeader))]
+        [Authorize(Roles = nameof(UserRole.Admin))]
         public IActionResult Details(int? id)
         {
             if (id == null)
