@@ -16,7 +16,7 @@ builder.Services.AddScoped<IMainRepository<Product>, ProductRepository>();
 builder.Services.AddScoped<IMainRepository<Category>, CategoryRepository>();
 builder.Services.AddScoped<IMainRepository<Shop>, ShopRepository>();
 builder.Services.AddScoped<IMainRepository<Position>, PositionRepository>();
-builder.Services.AddScoped<IEmployeeRepository<Employee>, EmployeeRepository>();
+builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 builder.Services.AddScoped<IMainRepository<Address>, AddressRepository>();
 builder.Services.AddScoped<IMainRepository<Log>, LogRepository>();
 
@@ -30,14 +30,14 @@ builder.Services.AddScoped<OracleConnection>(provider =>
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>
 {
     options.LoginPath = "/AuthorizationUser/Login";
+    options.AccessDeniedPath = "/";
 });
 
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy(UserRole.Admin.ToStringValue(), policy => policy.RequireRole(UserRole.Admin.ToStringValue()));
     options.AddPolicy(UserRole.Employee.ToStringValue(), policy => policy.RequireRole(UserRole.Employee.ToStringValue()));
-    // TODO add after creating roles in db
-    //options.AddPolicy("ShiftLeader", policy => policy.RequireRole("ShiftLeader"));
+    options.AddPolicy(UserRole.ShiftLeader.ToStringValue(), policy => policy.RequireRole(UserRole.ShiftLeader.ToStringValue()));
 });
 
 var app = builder.Build();

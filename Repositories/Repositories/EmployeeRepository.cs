@@ -2,10 +2,11 @@
 using BDAS2_BCSH2_University_Project.Models;
 using Oracle.ManagedDataAccess.Client;
 using Repositories.IRepositories;
+using System.Data;
 
 namespace BDAS2_BCSH2_University_Project.Repositories
 {
-    public class EmployeeRepository : IEmployeeRepository<Employee>
+    public class EmployeeRepository : IEmployeeRepository
     {
         private readonly OracleConnection _oracleConnection;
 
@@ -171,16 +172,17 @@ namespace BDAS2_BCSH2_University_Project.Repositories
         }
 
        
-        public List<Employee> GetEmployeesWithoutAuth(int id)
+        public List<Employee> GetEmployeesWithoutAuth()
         {
             using (OracleCommand command = _oracleConnection.CreateCommand())
             {
-                _oracleConnection.Open();
+                if (_oracleConnection.State == ConnectionState.Closed)
+                    _oracleConnection.Open();
 
                 command.CommandText = @$"SELECT z.IDZAMESTNANCE IDZAMESTNANCE, z.JMENO JMENO, z.PRIJMENI PRIJMENI
                     FROM zamestnanci z 
                     LEFT JOIN autuzivatele au ON z.idzamestnance = au.zamestnanci_idzamestnance
-                    WHERE au.zamestnanci_idzamestnance IS NULL;";
+                    WHERE au.zamestnanci_idzamestnance IS NULL";
 
                 List<Employee> employers = new List<Employee>();
 

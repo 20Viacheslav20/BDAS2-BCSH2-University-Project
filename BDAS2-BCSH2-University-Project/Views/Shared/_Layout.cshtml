@@ -43,6 +43,9 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-controller="Log" asp-action="Index">Logs</a>
                         </li>
+                        <li>
+                            <a class="nav-link text-dark" asp-controller="AuthorizationUser" asp-action="Index">Autorised users</a>
+                        </li>
                     </ul>
                     <ul class="navbar-nav ml-auto">
                         @if (!User.Identity.IsAuthenticated)
@@ -63,6 +66,7 @@
                                     Logout
                                 </a>
                             </li>
+ 
                         }  
                     </ul>
                 </div>

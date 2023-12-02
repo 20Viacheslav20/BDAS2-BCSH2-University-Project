@@ -8,9 +8,9 @@ namespace BDAS2_BCSH2_University_Project.Controllers
 {
     public class EmployeeController : Controller, IMainController<Employee>
     {
-        private readonly IEmployeeRepository<Employee> _employeeRepository;
+        private readonly IEmployeeRepository _employeeRepository;
 
-        public EmployeeController(IEmployeeRepository<Employee> employeeRepository)
+        public EmployeeController(IEmployeeRepository employeeRepository)
         {
             _employeeRepository = employeeRepository;
         }

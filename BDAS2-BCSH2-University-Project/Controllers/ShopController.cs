@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BDAS2_BCSH2_University_Project.Controllers
 {
-    public class ShopController : Controller/*, IMainController<Shop>*/
+    public class ShopController : Controller, IMainController<Shop>
     {
         private readonly IMainRepository<Shop> _shopRepository;
 

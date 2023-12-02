@@ -1,20 +1,16 @@
-﻿using BDAS2_BCSH2_University_Project.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿
+using BDAS2_BCSH2_University_Project.Models;
 
 namespace Repositories.IRepositories
 {
-    public interface IEmployeeRepository<Employee>
+    public interface IEmployeeRepository
     {
         List<Employee> GetAll();
         Employee GetById(int id);
         void Create(Employee employee);
         void Edit(Employee  employee);
         void Delete(int id);
-        List<Employee> GetEmployeesWithoutAuth(int id);   
+        List<Employee> GetEmployeesWithoutAuth();   
         void GetEmployer(int id);   
     }
 }

@@ -48,7 +48,6 @@ namespace BDAS2_BCSH2_University_Project.Repositories
                 if (_oracleConnection.State == ConnectionState.Closed)
                     _oracleConnection.Open();
 
-
                 return GetByIdWithOracleCommand(command, id);
             }
         }
@@ -79,7 +78,7 @@ namespace BDAS2_BCSH2_University_Project.Repositories
             using (OracleCommand command = _oracleConnection.CreateCommand())
             {
                 _oracleConnection.Open();
-                // TODO save category
+
                 command.CommandText = $"INSERT INTO {TABLE} (NAZEV, AKTUALNICENA, CENAZECLUBCARTOU, HMOTNOST, KATEGORIJE_idKategorije) " +
                               "VALUES (:entityName, :entityActualPrice, :entityClubCardPrice, :entityHmotnost, :entityCategoryId)";
 
@@ -87,7 +86,7 @@ namespace BDAS2_BCSH2_University_Project.Repositories
                 command.Parameters.Add("entityActualPrice", OracleDbType.Int32).Value = entity.ActualPrice;
                 command.Parameters.Add("entityClubCardPrice", OracleDbType.Int32).Value = entity.ClubCardPrice;
                 command.Parameters.Add("entityHmotnost", OracleDbType.Decimal).Value = entity.Weight;
-                command.Parameters.Add("entityCategoryId", OracleDbType.Decimal).Value = 1;
+                command.Parameters.Add("entityCategoryId", OracleDbType.Decimal).Value = entity.CategoryId;
 
                 command.ExecuteNonQuery();
             }
