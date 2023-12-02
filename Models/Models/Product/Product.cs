@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using BDAS2_BCSH2_University_Project.Models;
 
 namespace Models.Models.Product
 {

@@ -1,5 +1,5 @@
-﻿using BDAS2_BCSH2_University_Project.Models.Login;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using Models.Models.Login;
 
 namespace BDAS2_BCSH2_University_Project.Interfaces
 {

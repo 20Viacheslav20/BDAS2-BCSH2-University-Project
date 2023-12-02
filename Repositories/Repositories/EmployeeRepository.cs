@@ -1,5 +1,4 @@
-﻿using BDAS2_BCSH2_University_Project.Interfaces;
-using BDAS2_BCSH2_University_Project.Models;
+﻿using Models.Models;
 using Oracle.ManagedDataAccess.Client;
 using Repositories.IRepositories;
 using System.Data;

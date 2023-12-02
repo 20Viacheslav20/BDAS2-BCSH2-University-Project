@@ -5,7 +5,7 @@ using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BDAS2_BCSH2_University_Project.Models
+namespace Models.Models
 {
     public class Logs
     {

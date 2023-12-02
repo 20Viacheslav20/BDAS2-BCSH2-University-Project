@@ -1,12 +1,7 @@
-﻿using BDAS2_BCSH2_University_Project.Models;
-using BDAS2_BCSH2_University_Project.Repositories.IRepositories;
+﻿using BDAS2_BCSH2_University_Project.Repositories.IRepositories;
+using Models.Models;
 using Oracle.ManagedDataAccess.Client;
 using Repositories.IRepositories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BDAS2_BCSH2_University_Project.Repositories
 {

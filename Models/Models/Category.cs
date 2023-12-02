@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace BDAS2_BCSH2_University_Project.Models
+namespace Models.Models
 {
     public class Category
     {

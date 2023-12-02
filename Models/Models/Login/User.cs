@@ -1,4 +1,4 @@
-﻿namespace BDAS2_BCSH2_University_Project.Models.Login
+﻿namespace Models.Models.Login
 {
     public class User
     {

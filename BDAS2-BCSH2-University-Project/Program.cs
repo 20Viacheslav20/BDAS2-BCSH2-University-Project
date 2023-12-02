@@ -1,9 +1,9 @@
 using BDAS2_BCSH2_University_Project.Interfaces;
-using BDAS2_BCSH2_University_Project.Models;
-using BDAS2_BCSH2_University_Project.Models.Login;
 using BDAS2_BCSH2_University_Project.Repositories;
 using BDAS2_BCSH2_University_Project.Repositories.IRepositories;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Models.Models;
+using Models.Models.Login;
 using Oracle.ManagedDataAccess.Client;
 using Repositories.IRepositories;
 using Repositories.Repositories;

@@ -1,0 +1,8 @@
+﻿CREATE OR REPLACE PROCEDURE smazat_autuzivatele(p_IDAUTUZ IN NUMBER) AS
+BEGIN
+    delete from autuzivatel_role where autuzivatele_idautuz = p_IDAUTUZ;
+    COMMIT;
+    delete from autuzivatele where idautuz = p_IDAUTUZ;
+    COMMIT;
+END;
+/

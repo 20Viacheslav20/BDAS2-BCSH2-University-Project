@@ -1,5 +1,5 @@
-﻿using BDAS2_BCSH2_University_Project.Models;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using Models.Models;
 using System.Diagnostics;
 
 namespace BDAS2_BCSH2_University_Project.Controllers

@@ -1,4 +1,4 @@
-namespace BDAS2_BCSH2_University_Project.Models
+namespace Models.Models
 {
     public class ErrorViewModel
     {

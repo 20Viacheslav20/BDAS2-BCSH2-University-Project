@@ -1,9 +1,9 @@
 ﻿using BDAS2_BCSH2_University_Project.Interfaces;
-using BDAS2_BCSH2_University_Project.Models;
-using BDAS2_BCSH2_University_Project.Models.Login;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Models.Models;
+using Models.Models.Login;
 using Models.Models.Product;
 using Repositories.IRepositories;
 

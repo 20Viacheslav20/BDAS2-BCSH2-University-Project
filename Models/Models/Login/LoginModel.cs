@@ -1,7 +1,6 @@
-﻿
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace BDAS2_BCSH2_University_Project.Models.Login
+namespace Models.Models.Login
 {
     public class LoginModel
     {

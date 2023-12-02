@@ -1,6 +1,6 @@
 ﻿using BDAS2_BCSH2_University_Project.Helpers;
 using BDAS2_BCSH2_University_Project.Interfaces;
-using BDAS2_BCSH2_University_Project.Models.Login;
+using Models.Models.Login;
 using Oracle.ManagedDataAccess.Client;
 using System.Data;
 
@@ -164,9 +164,9 @@ namespace BDAS2_BCSH2_University_Project.Repositories
                 command.CommandText = @$"SELECT au.idautuz IDAUTUZ, au.jmeno LOGIN, 
                                         z.idzamestnance IDZAMESTNANCE, z.jmeno JMENO, z.prijmeni PRIJMENI 
                                         FROM AUTUZIVATELE au
-                                        JOIN ZAMESTNANCI z on z.IDZAMESTNANCE = au.ZAMESTNANCI_IDZAMESTNANCE WHERE IDAUTUZ = :entityId";
+                                        JOIN ZAMESTNANCI z on z.IDZAMESTNANCE = au.ZAMESTNANCI_IDZAMESTNANCE WHERE IDAUTUZ = :autorisedUserId";
 
-                command.Parameters.Add("entityId", OracleDbType.Int32).Value = id;
+                command.Parameters.Add("autorisedUserId", OracleDbType.Int32).Value = id;
 
                 using (OracleDataReader reader = command.ExecuteReader())
                 {
@@ -199,12 +199,49 @@ namespace BDAS2_BCSH2_University_Project.Repositories
 
         public void Edit(AutorisedUser autorisedUser)
         {
-            throw new NotImplementedException();
+            using (OracleCommand command = _oracleConnection.CreateCommand())
+            {
+                _oracleConnection.Open();
+                AutorisedUser dbautorisedUser = GetAutorisedUser(autorisedUser.Id);
+
+                if (dbautorisedUser == null)
+                    return;
+
+                command.Parameters.Clear();
+
+                string query = "";
+
+                if (dbautorisedUser.Login != autorisedUser.Login)
+                {
+                    query += "JMENO = :autorisedUserLogin, ";
+                    command.Parameters.Add("autorisedUserLogin", OracleDbType.Varchar2).Value = autorisedUser.Login;
+                }
+
+                if (!string.IsNullOrEmpty(query))
+                {
+                    query = query.TrimEnd(',', ' ');
+
+                    command.CommandText = $"UPDATE AUTUZIVATELE SET {query} WHERE IDAUTUZ = :autorisedUserId";
+                    command.Parameters.Add("autorisedUserId", OracleDbType.Int32).Value = autorisedUser.Id;
+
+                    command.ExecuteNonQuery();
+                }
+            }
         }
 
         public void Delete(int id)
         {
-            throw new NotImplementedException();
+            using (OracleCommand command = _oracleConnection.CreateCommand())
+            {
+                _oracleConnection.Open();
+
+                command.CommandType = CommandType.StoredProcedure;
+                command.CommandText = "smazat_autuzivatele";
+
+                command.Parameters.Add("p_IDAUTUZ", OracleDbType.Int32).Value = id;
+
+                command.ExecuteNonQuery();
+            }
         }
     }
 }

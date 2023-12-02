@@ -1,15 +1,14 @@
 ﻿using BDAS2_BCSH2_University_Project.Interfaces;
-using BDAS2_BCSH2_University_Project.Models.Login;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Oracle.ManagedDataAccess.Client;
 using Repositories.IRepositories;
 using Models.Models.Product;
 using System.Security.Claims;
-using BDAS2_BCSH2_University_Project.Models;
+using Models.Models.Login;
+using Models.Models;
 
 namespace BDAS2_BCSH2_University_Project.Controllers
 {
@@ -194,7 +193,6 @@ namespace BDAS2_BCSH2_University_Project.Controllers
             {
                 try
                 {
-
                     _authorizationUserRepository.Edit(model);
 
                     return RedirectToAction(nameof(Index));

@@ -1,6 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Models.Validators;
+using System.ComponentModel.DataAnnotations;
 
-namespace BDAS2_BCSH2_University_Project.Models.Login
+namespace Models.Models.Login
 {
     public class AutorisedUser
     {
@@ -9,8 +10,7 @@ namespace BDAS2_BCSH2_University_Project.Models.Login
         [Required(ErrorMessage = "Please write login")]
         public string Login { get; set; }
 
-        [Required]
-        // TODO add validation 
+        [RequiredIf(nameof(Id), 0, ErrorMessage = "Please write password")]
         public string Password { get; set; }
 
         [Display(Name = "Employee")]
@@ -19,4 +19,6 @@ namespace BDAS2_BCSH2_University_Project.Models.Login
         public List<UserRole> Roles { get; set; }
 
     }
+
+   
 }
