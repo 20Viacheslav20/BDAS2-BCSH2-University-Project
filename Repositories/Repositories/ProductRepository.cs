@@ -1,5 +1,4 @@
-﻿using BDAS2_BCSH2_University_Project.Interfaces;
-using Models.Models.Product;
+﻿using Models.Models.Product;
 using Oracle.ManagedDataAccess.Client;
 using Repositories.IRepositories;
 using System.Data;
@@ -88,7 +87,7 @@ namespace BDAS2_BCSH2_University_Project.Repositories
                 command.Parameters.Add("productActualPrice", OracleDbType.Int32).Value = product.ActualPrice;
                 command.Parameters.Add("productClubCardPrice", OracleDbType.Int32).Value = product.ClubCardPrice;
                 command.Parameters.Add("productHmotnost", OracleDbType.Decimal).Value = product.Weight;
-                command.Parameters.Add("productCategoryId", OracleDbType.Decimal).Value = 1;
+                command.Parameters.Add("productCategoryId", OracleDbType.Decimal).Value = product.Category.Id;
 
                 command.ExecuteNonQuery();
             }
