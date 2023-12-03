@@ -6,8 +6,8 @@ namespace Repositories.IRepositories
     {
         List<Storage> GetAll();
         Storage GetById(int id);
-        void Create(Storage entity);
-        void Edit(Storage entity);
+        void Create(Storage storage);
+        void Edit(Storage storage);
         void Delete(int id);
     }
 }
