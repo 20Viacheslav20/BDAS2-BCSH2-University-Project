@@ -1,0 +1,37 @@
+﻿@model CashDesk
+
+@{
+    if (Model.Id == 0)
+        ViewData["Title"] = "Create";
+    else
+        ViewData["Title"] = "Edit";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Save">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Count" class="control-label"></label>
+                <input asp-for="Count" class="form-control" />
+                <span asp-validation-for="Count" class="text-danger"></span>
+            </div>
+            @*<div class="form-group form-check">
+                <input asp-for="isSelf" class="form-check-input" type="checkbox" />
+                <label asp-for="isSelf" class="form-check-label"></label>
+                <span asp-validation-for="isSelf" class="text-danger"></span>
+            </div>*@
+            <br />
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-success" />
+            </div>
+        </form>
+    </div>
+</div>
+<br />
+<div>
+    <a asp-action="Index" class="btn btn-secondary btn-sm">Back</a>
+</div>
