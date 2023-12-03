@@ -1,6 +1,7 @@
 ﻿using Models.Models;
 using Oracle.ManagedDataAccess.Client;
 using Repositories.IRepositories;
+using System.Data;
 
 namespace Repositories.Repositories
 {
@@ -19,7 +20,8 @@ namespace Repositories.Repositories
         {
             using (OracleCommand command = _oracleConnection.CreateCommand())
             {
-                _oracleConnection.Open();
+                if (_oracleConnection.State == ConnectionState.Closed)
+                    _oracleConnection.Open();
 
                 command.CommandText = $"SELECT * FROM {TABLE}";
 

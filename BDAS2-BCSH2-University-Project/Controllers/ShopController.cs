@@ -1,6 +1,7 @@
 ﻿using BDAS2_BCSH2_University_Project.IControllers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Models.Models;
 using Models.Models.Login;
 using Repositories.IRepositories;
@@ -11,10 +12,12 @@ namespace BDAS2_BCSH2_University_Project.Controllers
     public class ShopController : Controller, IMainController<Shop>
     {
         private readonly IMainRepository<Shop> _shopRepository;
+        private readonly IAddressRepository _addressRepository;
 
-        public ShopController(IMainRepository<Shop> shopRepository)
+        public ShopController(IMainRepository<Shop> shopRepository, IAddressRepository addressRepository)
         {
             _shopRepository = shopRepository;
+            _addressRepository = addressRepository;
         }
 
         [HttpPost]
@@ -59,6 +62,7 @@ namespace BDAS2_BCSH2_University_Project.Controllers
         [Authorize]
         public IActionResult Save(int? id)
         {
+            GetAddresses(id.GetValueOrDefault());
             if (id == null)
             {
                 return View(new Shop());
@@ -107,6 +111,7 @@ namespace BDAS2_BCSH2_University_Project.Controllers
                     ModelState.AddModelError("", e.Message);
                 }
             }
+            GetAddresses(id.GetValueOrDefault());
             return View(model);
         }
 
@@ -117,6 +122,13 @@ namespace BDAS2_BCSH2_University_Project.Controllers
         {
             List<Shop> shops = _shopRepository.GetAll();
             return View(shops);
+        }
+
+        [NonAction]
+        private void GetAddresses(int id)
+        {
+            List<Address> addresses = _addressRepository.GetAddressesForShop(id);
+            ViewBag.Addresses = new SelectList(addresses, nameof(Address.Id), nameof(Address.StringAddress));
         }
     }
 }

@@ -1,31 +1,33 @@
 ﻿using Models.Models;
 using Oracle.ManagedDataAccess.Client;
 using Repositories.IRepositories;
+using System.Data;
 
 namespace Repositories.Repositories
 {
     public class ShopRepository : IMainRepository<Shop>
     {
         private readonly OracleConnection _oracleConnection;
+        private readonly IAddressRepository _addressRepository;
 
         private const string TABLE = "PRODEJNY";
 
-        public ShopRepository(OracleConnection oracleConnection)
+        public ShopRepository(OracleConnection oracleConnection, IAddressRepository addressRepository)
         {
             _oracleConnection = oracleConnection;
+            _addressRepository = addressRepository;
         }
 
         public List<Shop> GetAll()
         {
             using (OracleCommand command = _oracleConnection.CreateCommand())
             {
-                _oracleConnection.Open();
+                if (_oracleConnection.State == ConnectionState.Closed)
+                    _oracleConnection.Open();
 
-                command.CommandText = $"SELECT p.idprodejny IDPRODEJNY, p.kontaktnicislo KONTAKTNICISLO, " +
-                    $"p.plocha PLOCHA, " +
-                    $"ad.mesto MESTO, ad.ulice ULICE " +
-                    $"FROM {TABLE} p " +
-                    $"JOIN ADRESY ad ON ad.prodejny_idprodejny = p.idprodejny";
+                command.CommandText = @$"SELECT p.idprodejny IDPRODEJNY, 
+                                        p.kontaktnicislo KONTAKTNICISLO, p.plocha PLOCHA
+                                        FROM {TABLE} p";
 
                 List<Shop> shops = new List<Shop>();
 
@@ -44,7 +46,8 @@ namespace Repositories.Repositories
         {
             using (OracleCommand command = _oracleConnection.CreateCommand())
             {
-                _oracleConnection.Open();
+                if (_oracleConnection.State == ConnectionState.Closed)
+                    _oracleConnection.Open();
 
                 return GetByIdWithOracleCommand(command, id);
             }
@@ -52,12 +55,10 @@ namespace Repositories.Repositories
 
         private Shop GetByIdWithOracleCommand(OracleCommand command, int id)
         {
-            command.CommandText = $"SELECT p.idprodejny IDPRODEJNY, p.kontaktnicislo KONTAKTNICISLO, " +
-                                    $"p.plocha PLOCHA, " +
-                                    $"ad.mesto MESTO, ad.ulice ULICE " +
-                                    $"FROM {TABLE} p " +
-                                    $"JOIN ADRESY ad on ad.prodejny_idprodejny = p.idprodejny " +
-                                    $"WHERE IDPRODEJNY = :entityId";
+            command.CommandText = @$"SELECT p.idprodejny IDPRODEJNY, p.kontaktnicislo KONTAKTNICISLO, 
+                                    p.plocha PLOCHA 
+                                    FROM {TABLE} p
+                                    WHERE IDPRODEJNY = :entityId";
 
             command.Parameters.Add("entityId", OracleDbType.Int32).Value = id;
 
@@ -112,6 +113,11 @@ namespace Repositories.Repositories
                     command.Parameters.Add("entitySquare", OracleDbType.Int32).Value = entity.Square;
                 }
 
+                if (entity.AddressId != 0)
+                {
+                    _addressRepository.SetAddressToShop(entity.Id, entity.AddressId);
+                }
+
                 if (!string.IsNullOrEmpty(query))
                 {
                     query = query.TrimEnd(',', ' ');
@@ -139,18 +145,14 @@ namespace Repositories.Repositories
 
         private Shop CreateShopFromReader(OracleDataReader reader)
         {
-            Shop Shop = new()
+            Shop shop = new()
             {
                 Id = int.Parse(reader["IDPRODEJNY"].ToString()),
                 Contact = reader["KONTAKTNICISLO"].ToString(),
                 Square = double.Parse(reader["PLOCHA"].ToString()),
-                Address = new()
-                {
-                    City = reader["MESTO"].ToString(),
-                    Street = reader["ULICE"].ToString(),
-                }
             };
-            return Shop;
+            shop.Address = _addressRepository.GetShopAddress(shop.Id);
+            return shop;
         }
     }
 }

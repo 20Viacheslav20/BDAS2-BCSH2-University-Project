@@ -61,7 +61,11 @@
                     @Html.DisplayFor(modelItem => item.Weight) kg
                 </td>
                 <td>
-                    <a asp-action="Save" asp-route-id="@item.Id" class="btn btn-secondary btn-sm">Edit</a> |
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <a asp-action="Save" asp-route-id="@item.Id" class="btn btn-secondary btn-sm">Edit</a> 
+                        <a>|</a>
+                    }
                     <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-secondary btn-sm">Details</a>
                 </td>
             </tr>

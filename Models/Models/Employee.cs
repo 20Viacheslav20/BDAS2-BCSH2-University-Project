@@ -22,6 +22,13 @@ namespace Models.Models
         public int PositionId { get; set; } 
 
         public Position Position { get; set; }
+
+        public int ShopId { get; set; }
+
+        public int AddressId { get; set; }
+
+        public Address Address { get; set; }
+
         public List<Employee> Subordinates { get; set; }
     }
 }

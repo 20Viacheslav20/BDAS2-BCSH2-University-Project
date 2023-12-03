@@ -44,6 +44,24 @@
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Position.Name)
         </dd>
+
+        @if (Model.Address != null)
+        {
+            <h5>Address</h5>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Address.City)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Address.City)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Address.Street)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Address.Street)
+            </dd>
+        } 
+
     </dl>
     @if (Model.Subordinates.Count != 0)
     {

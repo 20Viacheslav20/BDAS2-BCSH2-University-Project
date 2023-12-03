@@ -15,7 +15,7 @@ builder.Services.AddScoped<IMainRepository<Category>, CategoryRepository>();
 builder.Services.AddScoped<IMainRepository<Shop>, ShopRepository>();
 builder.Services.AddScoped<IMainRepository<Position>, PositionRepository>();
 builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
-builder.Services.AddScoped<IMainRepository<Address>, AddressRepository>();
+builder.Services.AddScoped<IAddressRepository, AddressRepository>();
 builder.Services.AddScoped<ILogsRepository, LogRepository>();
 builder.Services.AddScoped<IStorageRepository, StorageRepository>();
 

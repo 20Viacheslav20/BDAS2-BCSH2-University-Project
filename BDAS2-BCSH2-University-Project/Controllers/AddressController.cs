@@ -10,9 +10,9 @@ namespace BDAS2_BCSH2_University_Project.Controllers
     [Authorize(Roles = nameof(UserRole.Admin))]
     public class AddressController : Controller, IMainController<Address>
     {
-        private readonly IMainRepository<Address> _addressRepository;
+        private readonly IAddressRepository _addressRepository;
 
-        public AddressController(IMainRepository<Address> addressRepository)
+        public AddressController(IAddressRepository addressRepository)
         {
             _addressRepository = addressRepository;
         }

@@ -9,12 +9,14 @@ namespace Repositories.Repositories
     public class EmployeeRepository : IEmployeeRepository
     {
         private readonly OracleConnection _oracleConnection;
+        private readonly IAddressRepository _addressRepository;
 
         private const string TABLE = "ZAMESTNANCI";
 
-        public EmployeeRepository(OracleConnection oracleConnection)
+        public EmployeeRepository(OracleConnection oracleConnection, IAddressRepository addressRepository)
         {
             _oracleConnection = oracleConnection;
+            _addressRepository = addressRepository;
         }
 
         public List<Employee> GetAll()
@@ -23,11 +25,12 @@ namespace Repositories.Repositories
             {
                 _oracleConnection.Open();
 
-                command.CommandText = $"SELECT z.IDZAMESTNANCE IDZAMESTNANCE, " +
-                    $"z.JMENO JMENO, z.PRIJMENI PRIJMENI, z.RODNECISLO RODNECISLO, " +
-                    $"z.TELEFONNICISLO TELEFONNICISLO, poz.Nazev POZICE " +
-                    $"FROM {TABLE} z " +
-                    $"JOIN POZICE poz ON poz.IDPOZICE = z.POZICE_IDPOZICE";
+                command.CommandText = @$"SELECT z.IDZAMESTNANCE IDZAMESTNANCE, 
+                    z.JMENO JMENO, z.PRIJMENI PRIJMENI, z.RODNECISLO RODNECISLO, 
+                    z.PRODEJNY_IDPRODEJNY IDPRODEJNY,
+                    z.TELEFONNICISLO TELEFONNICISLO, poz.Nazev POZICE, poz.IDPOZICE IDPOZICE
+                    FROM {TABLE} z
+                    JOIN POZICE poz ON poz.IDPOZICE = z.POZICE_IDPOZICE";
 
                 List<Employee> employers = new List<Employee>();
 
@@ -46,22 +49,25 @@ namespace Repositories.Repositories
         {
             using (OracleCommand command = _oracleConnection.CreateCommand())
             {
-                _oracleConnection.Open();
+                if (_oracleConnection.State == ConnectionState.Closed)
+                    _oracleConnection.Open();
 
                 Employee employee = GetByIdWithOracleCommand(command, id);
                 employee.Subordinates = GetUserSubordinates(id);
+                employee.Address = _addressRepository.GetEmployeeAddress(id);
                 return employee; 
             }
         }
 
         public Employee GetByIdWithOracleCommand(OracleCommand command, int id)
         {
-            command.CommandText = $"SELECT z.IDZAMESTNANCE IDZAMESTNANCE, " +
-                   $"z.JMENO JMENO, z.PRIJMENI PRIJMENI, z.RODNECISLO RODNECISLO, " +
-                   $"z.TELEFONNICISLO TELEFONNICISLO, poz.Nazev POZICE " +
-                   $"FROM {TABLE} z " +
-                   $"JOIN POZICE poz ON poz.IDPOZICE = z.POZICE_IDPOZICE " +
-                   $"WHERE z.IDZAMESTNANCE = :employeeId";
+            command.CommandText = @$"SELECT z.IDZAMESTNANCE IDZAMESTNANCE,
+                   z.JMENO JMENO, z.PRIJMENI PRIJMENI, z.RODNECISLO RODNECISLO,
+                   z.TELEFONNICISLO TELEFONNICISLO, poz.Nazev POZICE, poz.IDPOZICE IDPOZICE,
+                   z.PRODEJNY_IDPRODEJNY IDPRODEJNY
+                   FROM {TABLE} z
+                   JOIN POZICE poz ON poz.IDPOZICE = z.POZICE_IDPOZICE
+                   WHERE z.IDZAMESTNANCE = :employeeId";
 
 
             command.Parameters.Add("employeeId", OracleDbType.Int32).Value = id;
@@ -85,7 +91,8 @@ namespace Repositories.Repositories
                     _oracleConnection.Open();
 
                 command.CommandText = @$"SELECT z.IDZAMESTNANCE IDZAMESTNANCE, z.jmeno JMENO, z.prijmeni PRIJMENI, 
-                                        z.telefonniCislo TELEFONNICISLO, z.rodneCislo RODNECISLO, poz.nazev POZICE
+                                        z.telefonniCislo TELEFONNICISLO, z.rodneCislo RODNECISLO, poz.nazev POZICE, poz.IDPOZICE IDPOZICE,
+                                        z.PRODEJNY_IDPRODEJNY IDPRODEJNY
                                         FROM ZAMESTNANCI z
                                         JOIN pozice poz on poz.idpozice = z.pozice_idpozice
                                         START WITH z.ZAMESTNANCI_IDZAMESTNANCE = :employeeId
@@ -113,13 +120,15 @@ namespace Repositories.Repositories
             {
                 _oracleConnection.Open();
 
-                command.CommandText = $"INSERT INTO {TABLE} (JMENO, PRIJMENI, RODNECISLO, TELEFONNICISLO)" +
-                    "VALUES (:employeeName, :employeeSurname, :employeeBornNumber, :employeePhoneNumber)";
+                command.CommandText = $"INSERT INTO {TABLE} (JMENO, PRIJMENI, RODNECISLO, TELEFONNICISLO, PRODEJNY_IDPRODEJNY, POZICE_IDPOZICE)" +
+                    "VALUES (:employeeName, :employeeSurname, :employeeBornNumber, :employeePhoneNumber, :employeeShopId, :employeerPositionId)";
 
                 command.Parameters.Add("employeeName", OracleDbType.Varchar2).Value = employee.Name;
                 command.Parameters.Add("employeeSurname", OracleDbType.Varchar2).Value = employee.Surname;
-                command.Parameters.Add("employeeBornNumber", OracleDbType.Int32).Value = employee.BornNumber;
-                command.Parameters.Add("employeePnoneNumber", OracleDbType.Int32).Value = employee.PhoneNumber;
+                command.Parameters.Add("employeeBornNumber", OracleDbType.Varchar2).Value = employee.BornNumber;
+                command.Parameters.Add("employeePnoneNumber", OracleDbType.Varchar2).Value = employee.PhoneNumber;
+                command.Parameters.Add("employeeShopId", OracleDbType.Int32).Value = employee.ShopId;
+                command.Parameters.Add("employeerPositionId", OracleDbType.Int32).Value = employee.PositionId;
 
                 command.ExecuteNonQuery();
             }
@@ -157,8 +166,25 @@ namespace Repositories.Repositories
 
                 if (dbEmployer.PhoneNumber != employee.PhoneNumber)
                 {
-                    query += "TELEFONNICISLO = :employeePhoneNumber ";
+                    query += "TELEFONNICISLO = :employeePhoneNumber, ";
                     command.Parameters.Add("employeePhoneNumber", OracleDbType.Varchar2).Value = employee.PhoneNumber;
+                }
+
+                if (dbEmployer.ShopId != employee.ShopId)
+                {
+                    query += "PRODEJNY_IDPRODEJNY = :employeeShopId, ";
+                    command.Parameters.Add("employeeShopId", OracleDbType.Int32).Value = employee.ShopId;
+                }
+
+                if (dbEmployer.Position.Id  != employee.PositionId)
+                {
+                    query += "POZICE_IDPOZICE = :smployeerPositionId ";
+                    command.Parameters.Add("smployeerPositionId", OracleDbType.Int32).Value = employee.PositionId;
+                }
+
+                if (employee.AddressId != 0)
+                {
+                    _addressRepository.SetAddressToEmployee(employee.Id, employee.AddressId);
                 }
 
                 if (!string.IsNullOrEmpty(query))
@@ -196,14 +222,15 @@ namespace Repositories.Repositories
                 Surname = reader["PRIJMENI"].ToString(),
                 BornNumber = reader["RODNECISLO"].ToString(),
                 PhoneNumber = reader["TELEFONNICISLO"].ToString(),
+                ShopId = int.Parse(reader["IDPRODEJNY"].ToString()),
                 Position = new()
                 {
+                    Id = int.Parse(reader["IDPOZICE"].ToString()),
                     Name = reader["POZICE"].ToString(),
                 }
             };
             return employer;
         }
-
 
         public List<Employee> GetEmployeesWithoutAuth()
         {
@@ -229,6 +256,7 @@ namespace Repositories.Repositories
                 }
             }
         }
+
         private Employee CreateSimpleEmployee(OracleDataReader reader)
         {
             Employee employee = new()
@@ -239,10 +267,6 @@ namespace Repositories.Repositories
 
             };
             return employee;
-        }
-        public void GetEmployer(int id)
-        {
-            throw new NotImplementedException();
         }
     }
 }

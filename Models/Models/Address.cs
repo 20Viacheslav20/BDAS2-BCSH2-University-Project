@@ -11,5 +11,7 @@ namespace Models.Models
 
         [Required]
         public string Street { get; set; }
+
+        public string StringAddress => $"{City} - {Street}";
     }
 }

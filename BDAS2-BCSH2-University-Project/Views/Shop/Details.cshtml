@@ -28,19 +28,22 @@
             @Html.DisplayFor(model => model.Square)
         </dd>
 
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Address.City)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Address.City)
-        </dd>
+        @if (Model.Address != null)
+        {
 
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Address.Street)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Address.Street)
-        </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Address.City)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Address.City)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Address.Street)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Address.Street)
+            </dd>
+        }
 
     </dl>
 </div>

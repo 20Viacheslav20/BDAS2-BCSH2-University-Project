@@ -5,16 +5,26 @@ using BDAS2_BCSH2_University_Project.IControllers;
 using Microsoft.AspNetCore.Authorization;
 using Models.Models.Login;
 using System.Data;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Repositories.Repositories;
+using static System.Formats.Asn1.AsnWriter;
 
 namespace BDAS2_BCSH2_University_Project.Controllers
 {
     public class EmployeeController : Controller, IMainController<Employee>
     {
         private readonly IEmployeeRepository _employeeRepository;
+        private readonly IMainRepository<Position> _positionRepository;
+        private readonly IMainRepository<Shop> _shopRepository;
+        private readonly IAddressRepository _addressRepository;
 
-        public EmployeeController(IEmployeeRepository employeeRepository)
+        public EmployeeController(IEmployeeRepository employeeRepository, IMainRepository<Position> positionRepository, 
+                                        IMainRepository<Shop> shopRepository, IAddressRepository addressRepository)
         {
             _employeeRepository = employeeRepository;
+            _positionRepository = positionRepository;
+            _shopRepository = shopRepository;
+            _addressRepository = addressRepository;
         }
 
         [HttpPost]
@@ -52,13 +62,13 @@ namespace BDAS2_BCSH2_University_Project.Controllers
                 return NotFound();
             }
             return View(employer);
-
         }
 
         [HttpGet]
         [Authorize(Roles = nameof(UserRole.Admin))]
         public IActionResult Save(int? id)
         {
+            GetData(id.GetValueOrDefault());
             if (id == null)
             {
                 return View(new Employee());
@@ -107,6 +117,7 @@ namespace BDAS2_BCSH2_University_Project.Controllers
                     ModelState.AddModelError("", e.Message);
                 }
             }
+            GetData(id.GetValueOrDefault());
             return View(model);
         }
 
@@ -117,6 +128,35 @@ namespace BDAS2_BCSH2_University_Project.Controllers
         {
             List<Employee> employers = _employeeRepository.GetAll();
             return View(employers);
+        }
+
+        [NonAction]
+        private void GetData(int id)
+        {
+            GetAllShops();
+            GetAllPosition();
+            GetAddresses(id);
+        }
+
+        [NonAction]
+        private void GetAddresses(int id)
+        {
+            List<Address> addresses = _addressRepository.GetAddressesForEmployee(id);
+            ViewBag.Addresses = new SelectList(addresses, nameof(Address.Id), nameof(Address.StringAddress));
+        }
+
+        [NonAction]
+        private void GetAllShops()
+        {
+            List<Shop> shops = _shopRepository.GetAll();
+            ViewBag.Shops = new SelectList(shops, nameof(Shop.Id), nameof(Shop.StringAddress));
+        }
+
+        [NonAction]
+        private void GetAllPosition()
+        {
+            List<Position> positions = _positionRepository.GetAll();
+            ViewBag.Positions = new SelectList(positions, nameof(Position.Id), nameof(Position.Name));
         }
 
     }

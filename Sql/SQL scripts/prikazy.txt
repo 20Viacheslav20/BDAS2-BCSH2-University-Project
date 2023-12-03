@@ -1,10 +1,4 @@
--- получить все адреса которые не привязаны не к работнику и не к побочке + тот которые имеет побочка (1 из работника)
-SELECT * FROM ADRESY WHERE (prodejny_idprodejny is null or IDADRESY = (select MAX(IDADRESY) FROM  ADRESY WHERE PRODEJNY_IDPRODEJNY = 1)) and zamestnanci_idzamestnance is null;
 
-
-
--- получить все адреса которые не привязаны не к работнику и не к побочке + тот которые имеет работник (12 из работника)
-SELECT * FROM ADRESY WHERE (zamestnanci_idzamestnance is null or IDADRESY = (select MAX(IDADRESY) FROM  ADRESY WHERE zamestnanci_idzamestnance = 12)) and prodejny_idprodejny is null;
 
 
 SELECT p.*

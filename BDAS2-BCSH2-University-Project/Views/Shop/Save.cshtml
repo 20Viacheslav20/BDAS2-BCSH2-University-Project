@@ -24,6 +24,15 @@
                 <input asp-for="Square" class="form-control" />
                 <span asp-validation-for="Square" class="text-danger"></span>
             </div>
+            @if (Model.Id > 0)
+            {
+                <div class="form-group">
+                    <label asp-for="AddressId" class="control-label">Address</label>
+                    <select asp-for="AddressId" asp-items="@ViewBag.Addresses" class="form-control">
+                    </select>
+                    <span asp-validation-for="AddressId" class="text-danger"></span>
+                </div>
+            }
             <br />
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-success" />

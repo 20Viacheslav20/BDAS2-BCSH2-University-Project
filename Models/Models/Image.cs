@@ -10,9 +10,11 @@ namespace Models.Models
     public class Image
     {
         public int Id { get; set; }
-        
+
+        [DisplayName("File name")]
+        public string Name { get; set; }
+
         [DisplayName("Image")]
-        public string Name { get; set; } 
         public byte[] Data { get; set; }
         public string Extension { get; set; } 
     }

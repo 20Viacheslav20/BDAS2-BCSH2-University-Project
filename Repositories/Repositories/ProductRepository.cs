@@ -87,7 +87,7 @@ namespace Repositories.Repositories
                 command.Parameters.Add("productActualPrice", OracleDbType.Int32).Value = product.ActualPrice;
                 command.Parameters.Add("productClubCardPrice", OracleDbType.Int32).Value = product.ClubCardPrice;
                 command.Parameters.Add("productHmotnost", OracleDbType.Decimal).Value = product.Weight;
-                command.Parameters.Add("productCategoryId", OracleDbType.Decimal).Value = product.Category.Id;
+                command.Parameters.Add("productCategoryId", OracleDbType.Decimal).Value = product.CategoryId;
 
                 command.ExecuteNonQuery();
             }

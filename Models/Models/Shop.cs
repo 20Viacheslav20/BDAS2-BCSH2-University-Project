@@ -11,6 +11,8 @@ namespace Models.Models
         
         public double Square {  get; set; }
 
+        public string StringAddress => Address != null ? $"{Address.City} - {Address.Street}" : "";
+        public int AddressId { get; set; }
         public Address Address { get; set; }
     }
 }
