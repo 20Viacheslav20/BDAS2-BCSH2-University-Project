@@ -5,6 +5,12 @@
 }
 
 <h1> @ViewData["Title"]</h1>
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">
+        <strong>Success:</strong> @TempData["Success"]
+    </div>
+}
 <p>
     <a asp-action="Save" class="btn btn-success">Create</a>
 </p>

@@ -65,7 +65,7 @@ namespace BDAS2_BCSH2_University_Project.Controllers
                 try
                 {
                     List<UserRole> roles = _authorizationUserRepository.Authenticate(loginModel);
-                    if (roles != null)
+                    if (roles.Count != 0)
                     {
                         List<Claim> claims = new List<Claim>
                         {
@@ -95,6 +95,60 @@ namespace BDAS2_BCSH2_University_Project.Controllers
                 }          
             }
             return View(loginModel);
+        }
+
+
+        [HttpGet]
+        [Authorize(Roles = nameof(UserRole.Admin))]
+        public async Task<IActionResult> Simulate(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            try
+            {
+                SimulatedUser simulatedUser = _authorizationUserRepository.Simulate(id.GetValueOrDefault());
+                if (simulatedUser != null)
+                {
+                    List<Claim> claims = new List<Claim>
+                    {
+                        new Claim(ClaimTypes.Name, $"Simulation ({simulatedUser.Login})"),
+                        new Claim(ClaimTypes.Role, UserRole.Admin.ToStringValue())
+                    };
+
+                    foreach (UserRole role in simulatedUser.Roles)
+                    {
+                        claims.Add(new Claim(ClaimTypes.Role, role.ToStringValue()));
+                    }
+
+                    ClaimsIdentity identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                    ClaimsPrincipal principal = new ClaimsPrincipal(identity);
+
+                    await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+
+                    TempData["Success"] = $"You simulated {simulatedUser.Login}";
+
+                    return RedirectToAction(nameof(Index));
+                }
+            } catch (Exception e)
+            {
+                TempData["Error"] = e.Message;
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpGet]
+        [Authorize(Roles = nameof(UserRole.Admin))]
+        public async Task<IActionResult> StopSimulation()
+        {
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
+            TempData["Success"] = "Simulation stopped successfully.";
+
+            return RedirectToAction(nameof(Index), nameof(Product));
         }
 
         [HttpGet]
@@ -211,6 +265,15 @@ namespace BDAS2_BCSH2_University_Project.Controllers
             return View(model);
         }
 
+        [HttpGet]
+        [Authorize(Roles = nameof(UserRole.Admin))]
+        public IActionResult AllImages()
+        {
+            List<Image> images = _authorizationUserRepository.GetAllImages();
+            return View(images);
+        }
+
+
         [NonAction]
         private void GetEployees()
         {
@@ -238,11 +301,6 @@ namespace BDAS2_BCSH2_University_Project.Controllers
             }
         }
 
-        public IActionResult AllImages()
-        {
-            List<Image> images = _authorizationUserRepository.GetAllImages();
-            return View(images);
-        }
     }
 
 }

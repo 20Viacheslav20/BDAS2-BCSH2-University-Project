@@ -7,9 +7,10 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/BDAS2_BCSH2_University_Project.styles.css" asp-append-version="true" />
+
 </head>
 <body>
-    <header>
+@*    <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Mega-Shop</a>
@@ -69,28 +70,110 @@
                                 </span>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="AuthorizationUser" asp-action="Logout">
-                                    Logout
-                                </a>
+                                <a class="nav-link text-dark" asp-controller="AuthorizationUser" asp-action="Logout">Logout</a>
                             </li>
- 
+                            @if (User.Identity.Name.Contains("Simulation "))
+                            {
+                                <li>
+                                    <a class="nav-link text-dark" asp-controller="AuthorizationUser" asp-action="StopSimulation">Stop Simulation</a>
+                                </li>                                
+                            }
+
                         }  
                     </ul>
                 </div>
             </div>
         </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
+    </header>*@
+    <div class="container-fluid">
+        <div class="row">
+            <nav class="col-md-2 d-none d-md-block bg-light sidebar">
+                <div class="sidebar-sticky">
+
+                    <ul class="nav flex-column">
+                        @if (!User.Identity.IsAuthenticated)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="AuthorizationUser" asp-action="Login">Login</a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item user-welcome">
+                                <span class="nav-link text-dark">
+                                    @User.Identity.Name
+                                </span>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="AuthorizationUser" asp-action="Logout">Logout</a>
+                            </li>
+                            @if (User.Identity.Name.Contains("Simulation "))
+                            {
+                                <li>
+                                    <a class="nav-link text-dark" asp-controller="AuthorizationUser" asp-action="StopSimulation">Stop Simulation</a>
+                                </li>
+                            }
+                        }
+                        <hr />
+
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-controller="Product" asp-action="Index">Products</a>
+                        </li>
+
+                        @if (User.IsInRole(UserRole.Employee.ToStringValue()))
+                        {                            
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Category" asp-action="Index">Categories</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Shop" asp-action="Index">Shops</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class=" nav-link text-dark" asp-controller="Employee" asp-action="Index">Employees</a>
+                            </li>
+                        }
+
+
+                        @if (User.IsInRole(UserRole.ShiftLeader.ToStringValue()) || User.IsInRole(UserRole.Admin.ToStringValue()))
+                        {                            
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Storage" asp-action="Index">Storages</a>
+                            </li>
+                        }
+
+
+                        @if (User.IsInRole(UserRole.Admin.ToStringValue()))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Address" asp-action="Index">Addresses</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Logs" asp-action="Index">Logs</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Position" asp-action="Index">Positions</a>
+                            </li>
+                            <li>
+                                <a class="nav-link text-dark" asp-controller="AuthorizationUser" asp-action="Index">Autorised users</a>
+                            </li>
+                            <li>
+                                <a class="nav-link text-dark" asp-controller="AuthorizationUser" asp-action="AllImages">Images</a>
+                            </li>
+                        }
+
+                    </ul>
+                </div>
+            </nav>
+            <main role="main" class="col-md-10 ml-sm-auto col-lg-10 px-4 main-content">
+                <br />
+                <div class="container">
+                    @RenderBody()
+                </div>
+            </main>
+        </div>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2023 - Mega-Shop @* - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>*@
-        </div>
-    </footer>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

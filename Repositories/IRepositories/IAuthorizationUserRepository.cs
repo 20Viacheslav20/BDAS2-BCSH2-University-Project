@@ -8,12 +8,9 @@ namespace Repositories.IRepositories
         List<UserRole> Authenticate(LoginModel loginModel);
         List<UserRole> GetRolesForUser(int userId);
         void Register(AutorisedUser registrateModel);
-
         List<AutorisedUser> GetAutorisedUsers();
         AutorisedUser GetAutorisedUser(int id);
-
-        // TODO write this method
-        //void Simulate();
+        SimulatedUser Simulate(int userId);
         void Edit(AutorisedUser autorisedUser);
         void Delete(int id);
         Image GetUserImage(int userId);

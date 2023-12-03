@@ -1,7 +1,10 @@
 ﻿using BDAS2_BCSH2_University_Project.IControllers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Models.Models;
+using Models.Models.Login;
 using Repositories.IRepositories;
+using System.Data;
 
 namespace BDAS2_BCSH2_University_Project.Controllers
 {
@@ -16,6 +19,7 @@ namespace BDAS2_BCSH2_University_Project.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = nameof(UserRole.Admin))]
         public IActionResult Delete(int? id)
         {
             if (id == null)
@@ -35,6 +39,7 @@ namespace BDAS2_BCSH2_University_Project.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public IActionResult Details(int? id)
         {
             if (id == null)
@@ -51,6 +56,7 @@ namespace BDAS2_BCSH2_University_Project.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public IActionResult Index()
         {
             List<Storage> storages = _storageRepository.GetAll();
@@ -58,6 +64,7 @@ namespace BDAS2_BCSH2_University_Project.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = nameof(UserRole.Admin) + ", " + nameof(UserRole.ShiftLeader))]
         public IActionResult Save(int? id)
         {
             if (id == null)
@@ -77,6 +84,7 @@ namespace BDAS2_BCSH2_University_Project.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = nameof(UserRole.Admin) + ", " + nameof(UserRole.ShiftLeader))]
         public IActionResult Save(int? id, Storage model)
         {
             if (id != null)

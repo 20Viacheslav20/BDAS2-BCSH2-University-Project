@@ -8,6 +8,7 @@ using System.Data;
 
 namespace BDAS2_BCSH2_University_Project.Controllers
 {
+    [Authorize(Roles = nameof(UserRole.Admin))]
     public class LogsController : Controller, ILogsController
     {
         private readonly ILogsRepository _logRepository;
@@ -18,7 +19,6 @@ namespace BDAS2_BCSH2_University_Project.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = nameof(UserRole.Admin))]
         public IActionResult Index()
         {
             List<Logs> logs = _logRepository.GetAll();

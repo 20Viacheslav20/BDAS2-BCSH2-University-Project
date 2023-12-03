@@ -38,6 +38,32 @@ namespace Repositories.Repositories
             }
         }
 
+        public SimulatedUser Simulate(int userId)
+        {
+            using (OracleCommand command = _oracleConnection.CreateCommand())
+            {
+                _oracleConnection.Open();
+
+                AutorisedUser user = GetAutorisedUser(userId);
+
+                if (user == null)
+                    throw new Exception("This user doesn't exist");
+
+                List<UserRole> roles = GetRolesForUserWithOracleCommand(command, user.Id);
+
+                if (roles.Contains(UserRole.Admin))
+                    throw new Exception("You can't  simulate the admin of program");
+
+                SimulatedUser simulatedUser = new()
+                {
+                    Login = user.Login,
+                    Roles = roles
+                };
+
+                return simulatedUser;
+            }
+        }
+
         public List<UserRole> GetRolesForUser(int userId)
         {
             using (OracleCommand command = _oracleConnection.CreateCommand())
@@ -336,7 +362,6 @@ namespace Repositories.Repositories
             };
             return image;
         }
-
     }
 
 }

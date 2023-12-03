@@ -2,9 +2,13 @@
 using Microsoft.AspNetCore.Mvc;
 using Repositories.IRepositories;
 using BDAS2_BCSH2_University_Project.IControllers;
+using Microsoft.AspNetCore.Authorization;
+using Models.Models.Login;
+using System.Data;
 
 namespace BDAS2_BCSH2_University_Project.Controllers
 {
+    [Authorize(Roles = nameof(UserRole.Admin))]
     public class PositionController : Controller, IMainController<Position>
     {
         private readonly IMainRepository<Position> _positionRepository;

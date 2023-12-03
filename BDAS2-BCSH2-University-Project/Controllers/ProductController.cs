@@ -41,7 +41,7 @@ namespace BDAS2_BCSH2_University_Project.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = nameof(UserRole.Admin))]
+        [Authorize]
         public IActionResult Details(int? id)
         {
             if (id == null)
@@ -58,7 +58,7 @@ namespace BDAS2_BCSH2_University_Project.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = nameof(UserRole.Admin))]
+        [Authorize]
         public IActionResult Save(int? id)
         {
             GetCategories();
@@ -78,7 +78,7 @@ namespace BDAS2_BCSH2_University_Project.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = nameof(UserRole.Admin))]
+        [Authorize]
         public IActionResult Save(int? id, Product model)
         {
             if (id != null)

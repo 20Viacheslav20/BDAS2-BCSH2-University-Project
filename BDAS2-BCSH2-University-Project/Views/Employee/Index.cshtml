@@ -6,9 +6,13 @@
 
 <h1>@ViewData["Title"]</h1>
 
-<p>
-    <a asp-action="Save" class="btn btn-success">Create</a>
-</p>
+
+@if (User.IsInRole(UserRole.Admin.ToStringValue()))
+{
+    <p>
+        <a asp-action="Save" class="btn btn-success">Create</a>
+    </p>
+}
 <table class="table">
     <thead>
         <tr>
@@ -18,12 +22,15 @@
             <th>
                 @Html.DisplayNameFor(model => model.Surname)
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.BornNumber)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.PhoneNumber)
-            </th>
+            @if (User.IsInRole(UserRole.Admin.ToStringValue()))
+            {                
+                <th>
+                    @Html.DisplayNameFor(model => model.BornNumber)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.PhoneNumber)
+                </th>
+            }
             <th>
                 @Html.DisplayNameFor(model=>model.Position.Name)
             </th>
@@ -31,29 +38,39 @@
         </tr>
     </thead>
     <tbody>
-    @foreach (var item in Model) 
-    {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Surname)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.BornNumber)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PhoneNumber)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Position.Name)
-            </td>
-            <td>
-                <a asp-action="Save" asp-route-id="@item.Id" class="btn btn-secondary btn-sm">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-secondary btn-sm">Details</a>
-            </td>
-        </tr>
-    }
+        @foreach (var item in Model) 
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Surname)
+                </td>
+
+                @if (User.IsInRole(UserRole.Admin.ToStringValue()))
+                {
+                    <td>
+                        @Html.DisplayFor(modelItem => item.BornNumber)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.PhoneNumber)
+                    </td>       
+                }
+                <td>
+                    @Html.DisplayFor(modelItem => item.Position.Name)
+                </td>
+                <td>
+
+                    @if (User.IsInRole(UserRole.Admin.ToStringValue()))
+                    {
+                        <a asp-action="Save" asp-route-id="@item.Id" class="btn btn-secondary btn-sm">Edit</a>
+
+                        <a>|</a>
+                    }
+                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-secondary btn-sm">Details</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>

@@ -9,9 +9,8 @@ namespace BDAS2_BCSH2_University_Project.IControllers
         IActionResult Login(string returnUrl = null);
         Task<IActionResult> Login(LoginModel loginModel, string returnUrl);
         Task<IActionResult> Logout();
-
-        // TODO add simulate method
-        //IActionResult Simulate();
+        Task<IActionResult> Simulate(int? id);
+        Task<IActionResult> StopSimulation();
         IActionResult Details(int? id);
         IActionResult Registrate();
         IActionResult Registrate(AutorisedUser registrateModel);

@@ -5,6 +5,19 @@
 }
 
 <h1> @ViewData["Title"]</h1>
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">
+        <strong>Error:</strong> @TempData["Error"]
+    </div>
+}
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">
+        <strong>Success:</strong> @TempData["Success"]
+    </div>
+}
 <p>
     <a asp-action="Registrate" class="btn btn-success">Registrate</a>
 </p>
@@ -38,7 +51,8 @@
                 </td>
                 <td>
                     <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-secondary btn-sm">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-secondary btn-sm">Details</a>
+                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-secondary btn-sm">Details</a>|
+                    <a asp-action="Simulate" asp-route-id="@item.Id" class="btn btn-secondary btn-sm">Simulate</a>
                 </td>
             </tr>
         }

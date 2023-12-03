@@ -25,3 +25,17 @@ body {
     display: flex;
     gap: 10px; 
 }
+
+
+.sidebar {
+    width: 170px; 
+    position: fixed;
+    height: 100%;
+    top: 0;
+    left: 0;
+}
+
+.main-content {
+    margin-left: 160px; 
+}
+

@@ -2,9 +2,12 @@
 using Microsoft.AspNetCore.Mvc;
 using Repositories.IRepositories;
 using BDAS2_BCSH2_University_Project.IControllers;
+using Microsoft.AspNetCore.Authorization;
+using Models.Models.Login;
 
 namespace BDAS2_BCSH2_University_Project.Controllers
 {
+    [Authorize(Roles = nameof(UserRole.Admin))]
     public class AddressController : Controller, IMainController<Address>
     {
         private readonly IMainRepository<Address> _addressRepository;
@@ -35,7 +38,6 @@ namespace BDAS2_BCSH2_University_Project.Controllers
         }
 
         [HttpGet]
-
         public IActionResult Details(int? id)
         {
             if (id == null)
@@ -76,6 +78,7 @@ namespace BDAS2_BCSH2_University_Project.Controllers
             return View(address);
         }
 
+        [HttpPost]
         public IActionResult Save(int? id, Address model)
         {
             if (id != null)
