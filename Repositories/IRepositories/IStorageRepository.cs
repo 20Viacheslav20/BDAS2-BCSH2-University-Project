@@ -7,7 +7,7 @@ namespace Repositories.IRepositories
         List<Storage> GetAll();
         Storage GetById(int id);
         void Create(Storage storage);
-        void Edit(Storage storage;
+        void Edit(Storage storage);
         void Delete(int id);
     }
 }
