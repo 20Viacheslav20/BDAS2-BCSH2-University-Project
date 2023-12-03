@@ -79,6 +79,7 @@ namespace BDAS2_BCSH2_University_Project.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult Save(int? id, Address model)
         {
             if (id != null)

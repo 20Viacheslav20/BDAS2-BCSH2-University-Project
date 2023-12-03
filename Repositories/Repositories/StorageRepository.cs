@@ -1,6 +1,7 @@
 ﻿using Models.Models;
 using Oracle.ManagedDataAccess.Client;
 using Repositories.IRepositories;
+using System.Data;
 
 namespace Repositories.Repositories
 {
@@ -9,8 +10,6 @@ namespace Repositories.Repositories
         private readonly OracleConnection _oracleConnection;
 
         private readonly IProductRepository _productRepository;
-
-        
 
         private const string TABLE = "SKLADY";
 
@@ -27,10 +26,11 @@ namespace Repositories.Repositories
             {
                 _oracleConnection.Open();
 
-                command.CommandText = $"INSERT INTO {TABLE} (POCETPOLICEK)" +
-                    $"VALUES(:entityShelves)";
+                command.CommandText = $"INSERT INTO {TABLE} (POCETPOLICEK, PRODEJNY_IDPRODEJNY)" +
+                    $"VALUES(:entityShelves, :storageShopId)";
 
                 command.Parameters.Add("entityShelves", OracleDbType.Int32).Value = entity.NumberOfShelves;
+                command.Parameters.Add("storageShopId", OracleDbType.Int32).Value = entity.ShopId;
 
                 command.ExecuteNonQuery();
             }
@@ -65,10 +65,15 @@ namespace Repositories.Repositories
                 string query = "";
                 if (dbStorage.NumberOfShelves != entity.NumberOfShelves)
                 {
-                    query += "POCETPOLICEK = :entityName, ";
-                    command.Parameters.Add("entityName", OracleDbType.Varchar2).Value = entity.NumberOfShelves;
+                    query += "POCETPOLICEK = :shopNumberOfShelves, ";
+                    command.Parameters.Add("shopNumberOfShelves", OracleDbType.Int32).Value = entity.NumberOfShelves;
                 }
 
+                if (dbStorage.ShopId != entity.ShopId)
+                {
+                    query += "PRODEJNY_IDPRODEJNY = :shopId, ";
+                    command.Parameters.Add("shopId", OracleDbType.Int32).Value = entity.ShopId;
+                }
 
                 if (!string.IsNullOrEmpty(query))
                 {
@@ -108,7 +113,8 @@ namespace Repositories.Repositories
             Storage Storage = new()
             {
                 Id = int.Parse(reader["IDSKLADU"].ToString()),
-                NumberOfShelves = int.Parse(reader["POCETPOLICEK"].ToString())
+                NumberOfShelves = int.Parse(reader["POCETPOLICEK"].ToString()),
+                ShopId = int.Parse(reader["PRODEJNY_IDPRODEJNY"].ToString())
             };
             return Storage;
         }
@@ -117,7 +123,8 @@ namespace Repositories.Repositories
         {
             using (OracleCommand command = _oracleConnection.CreateCommand())
             {
-                _oracleConnection.Open();
+                if (_oracleConnection.State == ConnectionState.Closed)
+                    _oracleConnection.Open();
 
                 return GetByIdWithOracleCommand(command, id);
             }

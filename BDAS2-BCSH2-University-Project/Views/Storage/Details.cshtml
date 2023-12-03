@@ -4,10 +4,14 @@
     ViewData["Title"] = "Details";
 }
 
-<h1>Details</h1>
-
 <div>
-    <h4>Storage</h4>
+    <h4>@ViewData["Title"]</h4>
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">
+            <strong>Error:</strong> @TempData["Error"]
+        </div>
+    }
     <hr />
     <dl class="row">
         <dt class = "col-sm-2">

@@ -127,7 +127,7 @@ namespace BDAS2_BCSH2_University_Project.Controllers
         private void GetAllShops(int id)
         {
             List<Shop> shops = _shopRepository.GetShopsForStorage(id);
-            ViewBag.Shops = new SelectList(shops, nameof(Shop.Id), nameof(Shop.StringAddress));
+            ViewBag.Shops = new SelectList(shops, nameof(Shop.Id), nameof(Shop.Contact));
         }
     }
 }
