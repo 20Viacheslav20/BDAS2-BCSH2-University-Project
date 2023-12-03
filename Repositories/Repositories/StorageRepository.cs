@@ -29,8 +29,8 @@ namespace Repositories.Repositories
                 command.CommandText = $"INSERT INTO {TABLE} (POCETPOLICEK, PRODEJNY_IDPRODEJNY)" +
                     $"VALUES(:entityShelves, :storageShopId)";
 
-                command.Parameters.Add("entityShelves", OracleDbType.Int32).Value = entity.NumberOfShelves;
-                command.Parameters.Add("storageShopId", OracleDbType.Int32).Value = entity.ShopId;
+                command.Parameters.Add("entityShelves", OracleDbType.Int32).Value = storage.NumberOfShelves;
+                command.Parameters.Add("storageShopId", OracleDbType.Int32).Value = storage.ShopId;
 
                 command.ExecuteNonQuery();
             }
@@ -65,16 +65,14 @@ namespace Repositories.Repositories
                 string query = "";
                 if (dbStorage.NumberOfShelves != storage.NumberOfShelves)
                 {
-                    query += "POCETPOLICEK = :storageName, ";
-                    command.Parameters.Add("storageName", OracleDbType.Varchar2).Value = storage.NumberOfShelves;
                     query += "POCETPOLICEK = :shopNumberOfShelves, ";
-                    command.Parameters.Add("shopNumberOfShelves", OracleDbType.Int32).Value = entity.NumberOfShelves;
+                    command.Parameters.Add("shopNumberOfShelves", OracleDbType.Int32).Value = storage.NumberOfShelves;
                 }
 
-                if (dbStorage.ShopId != entity.ShopId)
+                if (dbStorage.ShopId != storage.ShopId)
                 {
                     query += "PRODEJNY_IDPRODEJNY = :shopId, ";
-                    command.Parameters.Add("shopId", OracleDbType.Int32).Value = entity.ShopId;
+                    command.Parameters.Add("shopId", OracleDbType.Int32).Value = storage.ShopId;
                 }
 
                 if (!string.IsNullOrEmpty(query))
