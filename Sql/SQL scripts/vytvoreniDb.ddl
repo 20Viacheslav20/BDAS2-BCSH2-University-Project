@@ -84,7 +84,8 @@ CREATE TABLE logy (
     tabulka  VARCHAR2(30) NOT NULL,
     operace  VARCHAR2(400) NOT NULL,
     cas      DATE NOT NULL,
-    uzivatel VARCHAR2(20) NOT NULL
+    uzivatel VARCHAR2(20) NOT NULL,
+    zmeny VARCHAR2(4000) NOT NULL
 );
 
 ALTER TABLE logy ADD CONSTRAINT log_pk PRIMARY KEY ( idlogu );

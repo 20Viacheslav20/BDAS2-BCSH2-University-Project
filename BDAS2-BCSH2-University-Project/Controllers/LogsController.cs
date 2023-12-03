@@ -5,6 +5,8 @@ using Repositories.IRepositories;
 using Microsoft.AspNetCore.Authorization;
 using Models.Models.Login;
 using System.Data;
+using Models.Models.Product;
+using Repositories.Repositories;
 
 namespace BDAS2_BCSH2_University_Project.Controllers
 {
@@ -25,6 +27,21 @@ namespace BDAS2_BCSH2_University_Project.Controllers
             return View(logs);
         }
 
+        [HttpGet]
+        public IActionResult Details(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+            Logs logs = _logRepository.GetById(id.GetValueOrDefault());
+            if (logs == null)
+            {
+                return NotFound();
+            }
+
+            return View(logs);
+        }
         
     }
 }

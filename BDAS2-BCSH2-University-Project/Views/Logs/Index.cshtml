@@ -17,6 +17,9 @@
                 @Html.DisplayNameFor(model => model.Operation)
             </th>
             <th>
+                @Html.DisplayNameFor(model => model.Changes)
+            </th>
+            <th>
                 @Html.DisplayNameFor(model => model.Time)
             </th>
             <th>
@@ -34,6 +37,9 @@
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Operation)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Changes)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Time)

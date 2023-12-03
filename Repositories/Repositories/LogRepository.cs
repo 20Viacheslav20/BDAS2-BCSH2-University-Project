@@ -2,7 +2,6 @@
 using Oracle.ManagedDataAccess.Client;
 using Repositories.IRepositories;
 
-
 namespace Repositories.Repositories
 {
     public class LogRepository : ILogsRepository
@@ -36,7 +35,29 @@ namespace Repositories.Repositories
                 }
             }
         }
-        
+
+        public Logs GetById(int id)
+        {
+            using (OracleCommand command = _oracleConnection.CreateCommand())
+            {
+                _oracleConnection.Open();
+
+                command.CommandText = @$"SELECT * FROM {TABLE} WHERE IDLOGU = : logId";
+
+                command.Parameters.Add("logId", OracleDbType.Int32).Value = id;
+
+                using (OracleDataReader reader = command.ExecuteReader())
+                {
+                    if (!reader.Read())
+                    {
+                        return null;
+                    }
+                    return CreateLogFromReader(reader);
+                }             
+
+            }
+        }
+
         private Logs CreateLogFromReader(OracleDataReader reader)
         {
             Logs log = new()
@@ -44,8 +65,9 @@ namespace Repositories.Repositories
                 Id = int.Parse(reader["IDLOGU"].ToString()),
                 Table = reader["TABULKA"].ToString(),
                 Operation = reader["OPERACE"].ToString(),
-                // Time = reader["CAS"].ToString(), TODO
-                User = reader["UZIVATEL"].ToString()
+                Time = DateTime.Parse(reader["CAS"].ToString()), 
+                User = reader["UZIVATEL"].ToString(),
+                Changes = reader["ZMENY"].ToString()
             };
             return log;
         }
