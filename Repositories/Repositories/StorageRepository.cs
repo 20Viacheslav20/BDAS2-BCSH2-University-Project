@@ -10,6 +10,8 @@ namespace Repositories.Repositories
 
         private readonly IProductRepository _productRepository;
 
+        
+
         private const string TABLE = "SKLADY";
 
         public StorageRepository(OracleConnection oracleConnection, IProductRepository productRepository)
@@ -25,7 +27,7 @@ namespace Repositories.Repositories
             {
                 _oracleConnection.Open();
 
-                command.CommandText = $"INSERT INTO{TABLE}(POCETPOLICEK)" +
+                command.CommandText = $"INSERT INTO {TABLE} (POCETPOLICEK)" +
                     $"VALUES(:entityShelves)";
 
                 command.Parameters.Add("entityShelves", OracleDbType.Int32).Value = entity.NumberOfShelves;
@@ -141,5 +143,7 @@ namespace Repositories.Repositories
                 return storage;
             }
         }
+
+    
     }
 }
