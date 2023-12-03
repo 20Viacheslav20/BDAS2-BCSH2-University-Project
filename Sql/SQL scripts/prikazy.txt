@@ -1,13 +1,3 @@
 
 
 
-SELECT p.*
-FROM prodejny p
-LEFT JOIN sklady s ON p.idprodejny = s.prodejny_idprodejny
-WHERE s.idskladu IS NULL
-UNION
-SELECT p.*
-FROM prodejny p
-JOIN sklady s ON p.idprodejny = s.prodejny_idprodejny
-WHERE s.idskladu = 1;
-1 - это параметр

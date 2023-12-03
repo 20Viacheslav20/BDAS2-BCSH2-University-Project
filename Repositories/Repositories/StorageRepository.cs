@@ -109,8 +109,6 @@ namespace Repositories.Repositories
             {
                 Id = int.Parse(reader["IDSKLADU"].ToString()),
                 NumberOfShelves = int.Parse(reader["POCETPOLICEK"].ToString())
-
-
             };
             return Storage;
         }

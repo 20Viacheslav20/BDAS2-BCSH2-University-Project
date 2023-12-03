@@ -14,7 +14,26 @@ DROP SEQUENCE "SKLADY_IDSKLADU_SEQ";
 DROP SEQUENCE "ZAMESTNANCI_IDZAMESTNANCE_SEQ";
 DROP SEQUENCE "ZBOZI_IDZBOZI_SEQ";
 DROP SEQUENCE "AUTUZIVATELE_IDAUTUZ_SEQ";
-
+DROP TRIGGER TRIGGER trg_adresy_zmeny       
+DROP TRIGGER TRIGGER trg_autuzivatele_zmeny 
+DROP TRIGGER TRIGGER trg_hotove_zmeny       
+DROP TRIGGER TRIGGER trg_karty_zmeny        
+DROP TRIGGER TRIGGER trg_kategorije_zmeny   
+DROP TRIGGER TRIGGER trg_kupony_zmeny       
+DROP TRIGGER TRIGGER trg_platby_zmeny       
+DROP TRIGGER TRIGGER trg_pokladny_zmeny     
+DROP TRIGGER TRIGGER trg_pozice_zmeny       
+DROP TRIGGER TRIGGER trg_prodane_zbozi_zmeny
+DROP TRIGGER TRIGGER trg_prodeje_zmeny      
+DROP TRIGGER TRIGGER trg_prodejny_zmeny     
+DROP TRIGGER TRIGGER trg_pulty_zmeny        
+DROP TRIGGER TRIGGER trg_role_zmeny
+DROP TRIGGER TRIGGER trg_sklady_zmeny
+DROP TRIGGER TRIGGER trg_soubory_zmeny
+DROP TRIGGER TRIGGER trg_zamestnanci_zmeny
+DROP TRIGGER TRIGGER trg_zbozi_zmeny
+DROP TRIGGER TRIGGER trg_zbozi_na_pulte_zmeny
+DROP TRIGGER TRIGGER trg_zbozi_na_sklade_zmeny
 DROP TABLE adresy CASCADE CONSTRAINTS;
 
 DROP TABLE autuzivatel_role CASCADE CONSTRAINTS;

@@ -1,6 +1,7 @@
 ﻿using BDAS2_BCSH2_University_Project.IControllers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Models.Models;
 using Models.Models.Login;
 using Repositories.IRepositories;
@@ -11,10 +12,12 @@ namespace BDAS2_BCSH2_University_Project.Controllers
     public class StorageController : Controller, IMainController<Storage>
     {
         private readonly IStorageRepository _storageRepository;
+        private readonly IShopRepository _shopRepository;
 
-        public StorageController(IStorageRepository storageRepository)
+        public StorageController(IStorageRepository storageRepository, IShopRepository shopRepository)
         {
             _storageRepository = storageRepository;
+            _shopRepository = shopRepository;
         }
 
         [HttpPost]
@@ -67,6 +70,7 @@ namespace BDAS2_BCSH2_University_Project.Controllers
         [Authorize(Roles = nameof(UserRole.Admin) + ", " + nameof(UserRole.ShiftLeader))]
         public IActionResult Save(int? id)
         {
+            GetAllShops(id.GetValueOrDefault());
             if (id == null)
             {
                 return View(new Storage());
@@ -115,7 +119,15 @@ namespace BDAS2_BCSH2_University_Project.Controllers
                     ModelState.AddModelError("", e.Message);
                 }
             }
+            GetAllShops(id.GetValueOrDefault());
             return View(model);
+        }
+
+        [NonAction]
+        private void GetAllShops(int id)
+        {
+            List<Shop> shops = _shopRepository.GetShopsForStorage(id);
+            ViewBag.Shops = new SelectList(shops, nameof(Shop.Id), nameof(Shop.StringAddress));
         }
     }
 }

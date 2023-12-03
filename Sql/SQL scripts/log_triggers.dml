@@ -1,0 +1,618 @@
+﻿
+CREATE OR REPLACE TRIGGER trg_adresy_zmeny
+BEFORE INSERT OR UPDATE OR DELETE ON adresy
+FOR EACH ROW
+DECLARE
+    v_operace VARCHAR2(10);
+    v_zmeny VARCHAR2(4000);
+BEGIN
+    IF INSERTING THEN
+        v_operace := 'INSERT';
+        v_zmeny := 'PRIDANO ' ||  'mesto ' || '' || :new.mesto || ', ' || 'ulice ' || '' || :new.ulice || ', ' || 'prodejny_idprodejny ' || '' || :new.prodejny_idprodejny || ', ' || 'zamestnanci_idzamestnance ' || '' || :new.zamestnanci_idzamestnance;
+    ELSIF UPDATING THEN
+        v_operace := 'UPDATE';
+        v_zmeny := 'ZMENENO ';
+            	IF (:new.mesto != :old.mesto) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'mesto ' || '' || :old.mesto || ' -> ' || 'mesto ' || ' ' || :new.mesto; 
+	END IF; 
+	IF (:new.ulice != :old.ulice) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'ulice ' || '' || :old.ulice || ' -> ' || 'ulice ' || ' ' || :new.ulice; 
+	END IF; 
+	IF (:new.prodejny_idprodejny != :old.prodejny_idprodejny) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'prodejny_idprodejny ' || '' || :old.prodejny_idprodejny || ' -> ' || 'prodejny_idprodejny ' || ' ' || :new.prodejny_idprodejny; 
+	END IF; 
+	IF (:new.zamestnanci_idzamestnance != :old.zamestnanci_idzamestnance) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'zamestnanci_idzamestnance ' || '' || :old.zamestnanci_idzamestnance || ' -> ' || 'zamestnanci_idzamestnance ' || ' ' || :new.zamestnanci_idzamestnance; 
+	END IF; 
+
+    ELSIF DELETING THEN
+        v_operace := 'DELETE';
+        v_zmeny := 'Smazano ' ||  'mesto ' || '' || :new.mesto || ', ' || 'ulice ' || '' || :new.ulice || ', ' || 'prodejny_idprodejny ' || '' || :new.prodejny_idprodejny || ', ' || 'zamestnanci_idzamestnance ' || '' || :new.zamestnanci_idzamestnance;
+    END IF;
+    INSERT INTO logy (TABULKA, OPERACE, CAS, UZIVATEL, ZMENY) VALUES ('adresy', v_operace, SYSTIMESTAMP, USER, v_zmeny);
+END;
+/
+    
+CREATE OR REPLACE TRIGGER trg_autuzivatele_zmeny
+BEFORE INSERT OR UPDATE OR DELETE ON autuzivatele
+FOR EACH ROW
+DECLARE
+    v_operace VARCHAR2(10);
+    v_zmeny VARCHAR2(4000);
+BEGIN
+    IF INSERTING THEN
+        v_operace := 'INSERT';
+        v_zmeny := 'PRIDANO ' ||  'jmeno ' || '' || :new.jmeno || ', ' || 'heslohash ' || '' || :new.heslohash || ', ' || 'heslosalt ' || '' || :new.heslosalt || ', ' || 'zamestnanci_idzamestnance ' || '' || :new.zamestnanci_idzamestnance;
+    ELSIF UPDATING THEN
+        v_operace := 'UPDATE';
+        v_zmeny := 'ZMENENO ';
+            	IF (:new.jmeno != :old.jmeno) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'jmeno ' || '' || :old.jmeno || ' -> ' || 'jmeno ' || ' ' || :new.jmeno; 
+	END IF; 
+	IF (:new.heslohash != :old.heslohash) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'heslohash ' || '' || :old.heslohash || ' -> ' || 'heslohash ' || ' ' || :new.heslohash; 
+	END IF; 
+	IF (:new.heslosalt != :old.heslosalt) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'heslosalt ' || '' || :old.heslosalt || ' -> ' || 'heslosalt ' || ' ' || :new.heslosalt; 
+	END IF; 
+	IF (:new.zamestnanci_idzamestnance != :old.zamestnanci_idzamestnance) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'zamestnanci_idzamestnance ' || '' || :old.zamestnanci_idzamestnance || ' -> ' || 'zamestnanci_idzamestnance ' || ' ' || :new.zamestnanci_idzamestnance; 
+	END IF; 
+
+    ELSIF DELETING THEN
+        v_operace := 'DELETE';
+        v_zmeny := 'Smazano ' ||  'jmeno ' || '' || :new.jmeno || ', ' || 'heslohash ' || '' || :new.heslohash || ', ' || 'heslosalt ' || '' || :new.heslosalt || ', ' || 'zamestnanci_idzamestnance ' || '' || :new.zamestnanci_idzamestnance;
+    END IF;
+    INSERT INTO logy (TABULKA, OPERACE, CAS, UZIVATEL, ZMENY) VALUES ('autuzivatele', v_operace, SYSTIMESTAMP, USER, v_zmeny);
+END;
+/
+    
+CREATE OR REPLACE TRIGGER trg_hotove_zmeny
+BEFORE INSERT OR UPDATE OR DELETE ON hotove
+FOR EACH ROW
+DECLARE
+    v_operace VARCHAR2(10);
+    v_zmeny VARCHAR2(4000);
+BEGIN
+    IF INSERTING THEN
+        v_operace := 'INSERT';
+        v_zmeny := 'PRIDANO ' ||  'idplatby ' || '' || :new.idplatby || ', ' || 'vraceno ' || '' || :new.vraceno;
+    ELSIF UPDATING THEN
+        v_operace := 'UPDATE';
+        v_zmeny := 'ZMENENO ';
+            	IF (:new.idplatby != :old.idplatby) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'idplatby ' || '' || :old.idplatby || ' -> ' || 'idplatby ' || ' ' || :new.idplatby; 
+	END IF; 
+	IF (:new.vraceno != :old.vraceno) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'vraceno ' || '' || :old.vraceno || ' -> ' || 'vraceno ' || ' ' || :new.vraceno; 
+	END IF; 
+
+    ELSIF DELETING THEN
+        v_operace := 'DELETE';
+        v_zmeny := 'Smazano ' ||  'idplatby ' || '' || :new.idplatby || ', ' || 'vraceno ' || '' || :new.vraceno;
+    END IF;
+    INSERT INTO logy (TABULKA, OPERACE, CAS, UZIVATEL, ZMENY) VALUES ('hotove', v_operace, SYSTIMESTAMP, USER, v_zmeny);
+END;
+/
+    
+CREATE OR REPLACE TRIGGER trg_karty_zmeny
+BEFORE INSERT OR UPDATE OR DELETE ON karty
+FOR EACH ROW
+DECLARE
+    v_operace VARCHAR2(10);
+    v_zmeny VARCHAR2(4000);
+BEGIN
+    IF INSERTING THEN
+        v_operace := 'INSERT';
+        v_zmeny := 'PRIDANO ' ||  'idplatby ' || '' || :new.idplatby || ', ' || 'cislokarty ' || '' || :new.cislokarty || ', ' || 'autorizacnikod ' || '' || :new.autorizacnikod;
+    ELSIF UPDATING THEN
+        v_operace := 'UPDATE';
+        v_zmeny := 'ZMENENO ';
+            	IF (:new.idplatby != :old.idplatby) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'idplatby ' || '' || :old.idplatby || ' -> ' || 'idplatby ' || ' ' || :new.idplatby; 
+	END IF; 
+	IF (:new.cislokarty != :old.cislokarty) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'cislokarty ' || '' || :old.cislokarty || ' -> ' || 'cislokarty ' || ' ' || :new.cislokarty; 
+	END IF; 
+	IF (:new.autorizacnikod != :old.autorizacnikod) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'autorizacnikod ' || '' || :old.autorizacnikod || ' -> ' || 'autorizacnikod ' || ' ' || :new.autorizacnikod; 
+	END IF; 
+
+    ELSIF DELETING THEN
+        v_operace := 'DELETE';
+        v_zmeny := 'Smazano ' ||  'idplatby ' || '' || :new.idplatby || ', ' || 'cislokarty ' || '' || :new.cislokarty || ', ' || 'autorizacnikod ' || '' || :new.autorizacnikod;
+    END IF;
+    INSERT INTO logy (TABULKA, OPERACE, CAS, UZIVATEL, ZMENY) VALUES ('karty', v_operace, SYSTIMESTAMP, USER, v_zmeny);
+END;
+/
+    
+CREATE OR REPLACE TRIGGER trg_kategorije_zmeny
+BEFORE INSERT OR UPDATE OR DELETE ON kategorije
+FOR EACH ROW
+DECLARE
+    v_operace VARCHAR2(10);
+    v_zmeny VARCHAR2(4000);
+BEGIN
+    IF INSERTING THEN
+        v_operace := 'INSERT';
+        v_zmeny := 'PRIDANO ' ||  'nazev ' || '' || :new.nazev;
+    ELSIF UPDATING THEN
+        v_operace := 'UPDATE';
+        v_zmeny := 'ZMENENO ';
+            	IF (:new.nazev != :old.nazev) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'nazev ' || '' || :old.nazev || ' -> ' || 'nazev ' || ' ' || :new.nazev; 
+	END IF; 
+
+    ELSIF DELETING THEN
+        v_operace := 'DELETE';
+        v_zmeny := 'Smazano ' ||  'nazev ' || '' || :new.nazev;
+    END IF;
+    INSERT INTO logy (TABULKA, OPERACE, CAS, UZIVATEL, ZMENY) VALUES ('kategorije', v_operace, SYSTIMESTAMP, USER, v_zmeny);
+END;
+/
+    
+CREATE OR REPLACE TRIGGER trg_kupony_zmeny
+BEFORE INSERT OR UPDATE OR DELETE ON kupony
+FOR EACH ROW
+DECLARE
+    v_operace VARCHAR2(10);
+    v_zmeny VARCHAR2(4000);
+BEGIN
+    IF INSERTING THEN
+        v_operace := 'INSERT';
+        v_zmeny := 'PRIDANO ' ||  'idplatby ' || '' || :new.idplatby || ', ' || 'cislo ' || '' || :new.cislo;
+    ELSIF UPDATING THEN
+        v_operace := 'UPDATE';
+        v_zmeny := 'ZMENENO ';
+            	IF (:new.idplatby != :old.idplatby) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'idplatby ' || '' || :old.idplatby || ' -> ' || 'idplatby ' || ' ' || :new.idplatby; 
+	END IF; 
+	IF (:new.cislo != :old.cislo) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'cislo ' || '' || :old.cislo || ' -> ' || 'cislo ' || ' ' || :new.cislo; 
+	END IF; 
+
+    ELSIF DELETING THEN
+        v_operace := 'DELETE';
+        v_zmeny := 'Smazano ' ||  'idplatby ' || '' || :new.idplatby || ', ' || 'cislo ' || '' || :new.cislo;
+    END IF;
+    INSERT INTO logy (TABULKA, OPERACE, CAS, UZIVATEL, ZMENY) VALUES ('kupony', v_operace, SYSTIMESTAMP, USER, v_zmeny);
+END;
+/
+    
+CREATE OR REPLACE TRIGGER trg_platby_zmeny
+BEFORE INSERT OR UPDATE OR DELETE ON platby
+FOR EACH ROW
+DECLARE
+    v_operace VARCHAR2(10);
+    v_zmeny VARCHAR2(4000);
+BEGIN
+    IF INSERTING THEN
+        v_operace := 'INSERT';
+        v_zmeny := 'PRIDANO ' ||  'jeclubcarta ' || '' || :new.jeclubcarta || ', ' || 'platba_type ' || '' || :new.platba_type;
+    ELSIF UPDATING THEN
+        v_operace := 'UPDATE';
+        v_zmeny := 'ZMENENO ';
+            	IF (:new.jeclubcarta != :old.jeclubcarta) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'jeclubcarta ' || '' || :old.jeclubcarta || ' -> ' || 'jeclubcarta ' || ' ' || :new.jeclubcarta; 
+	END IF; 
+	IF (:new.platba_type != :old.platba_type) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'platba_type ' || '' || :old.platba_type || ' -> ' || 'platba_type ' || ' ' || :new.platba_type; 
+	END IF; 
+
+    ELSIF DELETING THEN
+        v_operace := 'DELETE';
+        v_zmeny := 'Smazano ' ||  'jeclubcarta ' || '' || :new.jeclubcarta || ', ' || 'platba_type ' || '' || :new.platba_type;
+    END IF;
+    INSERT INTO logy (TABULKA, OPERACE, CAS, UZIVATEL, ZMENY) VALUES ('platby', v_operace, SYSTIMESTAMP, USER, v_zmeny);
+END;
+/
+    
+CREATE OR REPLACE TRIGGER trg_pokladny_zmeny
+BEFORE INSERT OR UPDATE OR DELETE ON pokladny
+FOR EACH ROW
+DECLARE
+    v_operace VARCHAR2(10);
+    v_zmeny VARCHAR2(4000);
+BEGIN
+    IF INSERTING THEN
+        v_operace := 'INSERT';
+        v_zmeny := 'PRIDANO ' ||  'prodejny_idprodejny ' || '' || :new.prodejny_idprodejny || ', ' || 'cislo ' || '' || :new.cislo || ', ' || 'jesamoobsluzna ' || '' || :new.jesamoobsluzna;
+    ELSIF UPDATING THEN
+        v_operace := 'UPDATE';
+        v_zmeny := 'ZMENENO ';
+            	IF (:new.prodejny_idprodejny != :old.prodejny_idprodejny) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'prodejny_idprodejny ' || '' || :old.prodejny_idprodejny || ' -> ' || 'prodejny_idprodejny ' || ' ' || :new.prodejny_idprodejny; 
+	END IF; 
+	IF (:new.cislo != :old.cislo) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'cislo ' || '' || :old.cislo || ' -> ' || 'cislo ' || ' ' || :new.cislo; 
+	END IF; 
+	IF (:new.jesamoobsluzna != :old.jesamoobsluzna) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'jesamoobsluzna ' || '' || :old.jesamoobsluzna || ' -> ' || 'jesamoobsluzna ' || ' ' || :new.jesamoobsluzna; 
+	END IF; 
+
+    ELSIF DELETING THEN
+        v_operace := 'DELETE';
+        v_zmeny := 'Smazano ' ||  'prodejny_idprodejny ' || '' || :new.prodejny_idprodejny || ', ' || 'cislo ' || '' || :new.cislo || ', ' || 'jesamoobsluzna ' || '' || :new.jesamoobsluzna;
+    END IF;
+    INSERT INTO logy (TABULKA, OPERACE, CAS, UZIVATEL, ZMENY) VALUES ('pokladny', v_operace, SYSTIMESTAMP, USER, v_zmeny);
+END;
+/
+    
+CREATE OR REPLACE TRIGGER trg_pozice_zmeny
+BEFORE INSERT OR UPDATE OR DELETE ON pozice
+FOR EACH ROW
+DECLARE
+    v_operace VARCHAR2(10);
+    v_zmeny VARCHAR2(4000);
+BEGIN
+    IF INSERTING THEN
+        v_operace := 'INSERT';
+        v_zmeny := 'PRIDANO ' ||  'nazev ' || '' || :new.nazev || ', ' || 'mzda ' || '' || :new.mzda;
+    ELSIF UPDATING THEN
+        v_operace := 'UPDATE';
+        v_zmeny := 'ZMENENO ';
+            	IF (:new.nazev != :old.nazev) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'nazev ' || '' || :old.nazev || ' -> ' || 'nazev ' || ' ' || :new.nazev; 
+	END IF; 
+	IF (:new.mzda != :old.mzda) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'mzda ' || '' || :old.mzda || ' -> ' || 'mzda ' || ' ' || :new.mzda; 
+	END IF; 
+
+    ELSIF DELETING THEN
+        v_operace := 'DELETE';
+        v_zmeny := 'Smazano ' ||  'nazev ' || '' || :new.nazev || ', ' || 'mzda ' || '' || :new.mzda;
+    END IF;
+    INSERT INTO logy (TABULKA, OPERACE, CAS, UZIVATEL, ZMENY) VALUES ('pozice', v_operace, SYSTIMESTAMP, USER, v_zmeny);
+END;
+/
+    
+CREATE OR REPLACE TRIGGER trg_prodane_zbozi_zmeny
+BEFORE INSERT OR UPDATE OR DELETE ON prodane_zbozi
+FOR EACH ROW
+DECLARE
+    v_operace VARCHAR2(10);
+    v_zmeny VARCHAR2(4000);
+BEGIN
+    IF INSERTING THEN
+        v_operace := 'INSERT';
+        v_zmeny := 'PRIDANO ' ||  'pocetzbozi ' || '' || :new.pocetzbozi || ', ' || 'prodeje_idprodeje ' || '' || :new.prodeje_idprodeje || ', ' || 'zbozi_idzbozi ' || '' || :new.zbozi_idzbozi || ', ' || 'prodejnicena ' || '' || :new.prodejnicena;
+    ELSIF UPDATING THEN
+        v_operace := 'UPDATE';
+        v_zmeny := 'ZMENENO ';
+            	IF (:new.pocetzbozi != :old.pocetzbozi) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'pocetzbozi ' || '' || :old.pocetzbozi || ' -> ' || 'pocetzbozi ' || ' ' || :new.pocetzbozi; 
+	END IF; 
+	IF (:new.prodeje_idprodeje != :old.prodeje_idprodeje) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'prodeje_idprodeje ' || '' || :old.prodeje_idprodeje || ' -> ' || 'prodeje_idprodeje ' || ' ' || :new.prodeje_idprodeje; 
+	END IF; 
+	IF (:new.zbozi_idzbozi != :old.zbozi_idzbozi) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'zbozi_idzbozi ' || '' || :old.zbozi_idzbozi || ' -> ' || 'zbozi_idzbozi ' || ' ' || :new.zbozi_idzbozi; 
+	END IF; 
+	IF (:new.prodejnicena != :old.prodejnicena) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'prodejnicena ' || '' || :old.prodejnicena || ' -> ' || 'prodejnicena ' || ' ' || :new.prodejnicena; 
+	END IF; 
+
+    ELSIF DELETING THEN
+        v_operace := 'DELETE';
+        v_zmeny := 'Smazano ' ||  'pocetzbozi ' || '' || :new.pocetzbozi || ', ' || 'prodeje_idprodeje ' || '' || :new.prodeje_idprodeje || ', ' || 'zbozi_idzbozi ' || '' || :new.zbozi_idzbozi || ', ' || 'prodejnicena ' || '' || :new.prodejnicena;
+    END IF;
+    INSERT INTO logy (TABULKA, OPERACE, CAS, UZIVATEL, ZMENY) VALUES ('prodane_zbozi', v_operace, SYSTIMESTAMP, USER, v_zmeny);
+END;
+/
+    
+CREATE OR REPLACE TRIGGER trg_prodeje_zmeny
+BEFORE INSERT OR UPDATE OR DELETE ON prodeje
+FOR EACH ROW
+DECLARE
+    v_operace VARCHAR2(10);
+    v_zmeny VARCHAR2(4000);
+BEGIN
+    IF INSERTING THEN
+        v_operace := 'INSERT';
+        v_zmeny := 'PRIDANO ' ||  'datumprodeje ' || '' || :new.datumprodeje || ', ' || 'celkovacena ' || '' || :new.celkovacena || ', ' || 'platba_idplatby ' || '' || :new.platba_idplatby;
+    ELSIF UPDATING THEN
+        v_operace := 'UPDATE';
+        v_zmeny := 'ZMENENO ';
+            	IF (:new.datumprodeje != :old.datumprodeje) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'datumprodeje ' || '' || :old.datumprodeje || ' -> ' || 'datumprodeje ' || ' ' || :new.datumprodeje; 
+	END IF; 
+	IF (:new.celkovacena != :old.celkovacena) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'celkovacena ' || '' || :old.celkovacena || ' -> ' || 'celkovacena ' || ' ' || :new.celkovacena; 
+	END IF; 
+	IF (:new.platba_idplatby != :old.platba_idplatby) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'platba_idplatby ' || '' || :old.platba_idplatby || ' -> ' || 'platba_idplatby ' || ' ' || :new.platba_idplatby; 
+	END IF; 
+
+    ELSIF DELETING THEN
+        v_operace := 'DELETE';
+        v_zmeny := 'Smazano ' ||  'datumprodeje ' || '' || :new.datumprodeje || ', ' || 'celkovacena ' || '' || :new.celkovacena || ', ' || 'platba_idplatby ' || '' || :new.platba_idplatby;
+    END IF;
+    INSERT INTO logy (TABULKA, OPERACE, CAS, UZIVATEL, ZMENY) VALUES ('prodeje', v_operace, SYSTIMESTAMP, USER, v_zmeny);
+END;
+/
+    
+CREATE OR REPLACE TRIGGER trg_prodejny_zmeny
+BEFORE INSERT OR UPDATE OR DELETE ON prodejny
+FOR EACH ROW
+DECLARE
+    v_operace VARCHAR2(10);
+    v_zmeny VARCHAR2(4000);
+BEGIN
+    IF INSERTING THEN
+        v_operace := 'INSERT';
+        v_zmeny := 'PRIDANO ' ||  'kontaktnicislo ' || '' || :new.kontaktnicislo || ', ' || 'plocha ' || '' || :new.plocha;
+    ELSIF UPDATING THEN
+        v_operace := 'UPDATE';
+        v_zmeny := 'ZMENENO ';
+            	IF (:new.kontaktnicislo != :old.kontaktnicislo) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'kontaktnicislo ' || '' || :old.kontaktnicislo || ' -> ' || 'kontaktnicislo ' || ' ' || :new.kontaktnicislo; 
+	END IF; 
+	IF (:new.plocha != :old.plocha) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'plocha ' || '' || :old.plocha || ' -> ' || 'plocha ' || ' ' || :new.plocha; 
+	END IF; 
+
+    ELSIF DELETING THEN
+        v_operace := 'DELETE';
+        v_zmeny := 'Smazano ' ||  'kontaktnicislo ' || '' || :new.kontaktnicislo || ', ' || 'plocha ' || '' || :new.plocha;
+    END IF;
+    INSERT INTO logy (TABULKA, OPERACE, CAS, UZIVATEL, ZMENY) VALUES ('prodejny', v_operace, SYSTIMESTAMP, USER, v_zmeny);
+END;
+/
+    
+CREATE OR REPLACE TRIGGER trg_pulty_zmeny
+BEFORE INSERT OR UPDATE OR DELETE ON pulty
+FOR EACH ROW
+DECLARE
+    v_operace VARCHAR2(10);
+    v_zmeny VARCHAR2(4000);
+BEGIN
+    IF INSERTING THEN
+        v_operace := 'INSERT';
+        v_zmeny := 'PRIDANO ' ||  'prodejny_idprodejny ' || '' || :new.prodejny_idprodejny || ', ' || 'cislo ' || '' || :new.cislo || ', ' || 'pocetpolicek ' || '' || :new.pocetpolicek;
+    ELSIF UPDATING THEN
+        v_operace := 'UPDATE';
+        v_zmeny := 'ZMENENO ';
+            	IF (:new.prodejny_idprodejny != :old.prodejny_idprodejny) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'prodejny_idprodejny ' || '' || :old.prodejny_idprodejny || ' -> ' || 'prodejny_idprodejny ' || ' ' || :new.prodejny_idprodejny; 
+	END IF; 
+	IF (:new.cislo != :old.cislo) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'cislo ' || '' || :old.cislo || ' -> ' || 'cislo ' || ' ' || :new.cislo; 
+	END IF; 
+	IF (:new.pocetpolicek != :old.pocetpolicek) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'pocetpolicek ' || '' || :old.pocetpolicek || ' -> ' || 'pocetpolicek ' || ' ' || :new.pocetpolicek; 
+	END IF; 
+
+    ELSIF DELETING THEN
+        v_operace := 'DELETE';
+        v_zmeny := 'Smazano ' ||  'prodejny_idprodejny ' || '' || :new.prodejny_idprodejny || ', ' || 'cislo ' || '' || :new.cislo || ', ' || 'pocetpolicek ' || '' || :new.pocetpolicek;
+    END IF;
+    INSERT INTO logy (TABULKA, OPERACE, CAS, UZIVATEL, ZMENY) VALUES ('pulty', v_operace, SYSTIMESTAMP, USER, v_zmeny);
+END;
+/
+    
+CREATE OR REPLACE TRIGGER trg_role_zmeny
+BEFORE INSERT OR UPDATE OR DELETE ON role
+FOR EACH ROW
+DECLARE
+    v_operace VARCHAR2(10);
+    v_zmeny VARCHAR2(4000);
+BEGIN
+    IF INSERTING THEN
+        v_operace := 'INSERT';
+        v_zmeny := 'PRIDANO ' ||  'nazev ' || '' || :new.nazev;
+    ELSIF UPDATING THEN
+        v_operace := 'UPDATE';
+        v_zmeny := 'ZMENENO ';
+            	IF (:new.nazev != :old.nazev) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'nazev ' || '' || :old.nazev || ' -> ' || 'nazev ' || ' ' || :new.nazev; 
+	END IF; 
+
+    ELSIF DELETING THEN
+        v_operace := 'DELETE';
+        v_zmeny := 'Smazano ' ||  'nazev ' || '' || :new.nazev;
+    END IF;
+    INSERT INTO logy (TABULKA, OPERACE, CAS, UZIVATEL, ZMENY) VALUES ('role', v_operace, SYSTIMESTAMP, USER, v_zmeny);
+END;
+/
+    
+CREATE OR REPLACE TRIGGER trg_sklady_zmeny
+BEFORE INSERT OR UPDATE OR DELETE ON sklady
+FOR EACH ROW
+DECLARE
+    v_operace VARCHAR2(10);
+    v_zmeny VARCHAR2(4000);
+BEGIN
+    IF INSERTING THEN
+        v_operace := 'INSERT';
+        v_zmeny := 'PRIDANO ' ||  'pocetpolicek ' || '' || :new.pocetpolicek || ', ' || 'prodejny_idprodejny ' || '' || :new.prodejny_idprodejny;
+    ELSIF UPDATING THEN
+        v_operace := 'UPDATE';
+        v_zmeny := 'ZMENENO ';
+            	IF (:new.pocetpolicek != :old.pocetpolicek) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'pocetpolicek ' || '' || :old.pocetpolicek || ' -> ' || 'pocetpolicek ' || ' ' || :new.pocetpolicek; 
+	END IF; 
+	IF (:new.prodejny_idprodejny != :old.prodejny_idprodejny) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'prodejny_idprodejny ' || '' || :old.prodejny_idprodejny || ' -> ' || 'prodejny_idprodejny ' || ' ' || :new.prodejny_idprodejny; 
+	END IF; 
+
+    ELSIF DELETING THEN
+        v_operace := 'DELETE';
+        v_zmeny := 'Smazano ' ||  'pocetpolicek ' || '' || :new.pocetpolicek || ', ' || 'prodejny_idprodejny ' || '' || :new.prodejny_idprodejny;
+    END IF;
+    INSERT INTO logy (TABULKA, OPERACE, CAS, UZIVATEL, ZMENY) VALUES ('sklady', v_operace, SYSTIMESTAMP, USER, v_zmeny);
+END;
+/
+    
+CREATE OR REPLACE TRIGGER trg_soubory_zmeny
+BEFORE INSERT OR UPDATE OR DELETE ON soubory
+FOR EACH ROW
+DECLARE
+    v_operace VARCHAR2(10);
+    v_zmeny VARCHAR2(4000);
+BEGIN
+    IF INSERTING THEN
+        v_operace := 'INSERT';
+        v_zmeny := 'PRIDANO ' ||  'jmeno ' || '' || :new.jmeno || ', ' || 'pripona ' || '' || :new.pripona || ', ' || 'autuzivatele_idautuz ' || '' || :new.autuzivatele_idautuz;
+    ELSIF UPDATING THEN
+        v_operace := 'UPDATE';
+        v_zmeny := 'ZMENENO ';
+            	IF (:new.jmeno != :old.jmeno) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'jmeno ' || '' || :old.jmeno || ' -> ' || 'jmeno ' || ' ' || :new.jmeno; 
+	END IF; 
+	IF (:new.pripona != :old.pripona) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'pripona ' || '' || :old.pripona || ' -> ' || 'pripona ' || ' ' || :new.pripona; 
+	END IF; 
+	IF (:new.autuzivatele_idautuz != :old.autuzivatele_idautuz) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'autuzivatele_idautuz ' || '' || :old.autuzivatele_idautuz || ' -> ' || 'autuzivatele_idautuz ' || ' ' || :new.autuzivatele_idautuz; 
+	END IF; 
+
+    ELSIF DELETING THEN
+        v_operace := 'DELETE';
+        v_zmeny := 'Smazano ' ||  'jmeno ' || '' || :new.jmeno || ', ' || 'pripona ' || '' || :new.pripona || ', ' || 'autuzivatele_idautuz ' || '' || :new.autuzivatele_idautuz;
+    END IF;
+    INSERT INTO logy (TABULKA, OPERACE, CAS, UZIVATEL, ZMENY) VALUES ('soubory', v_operace, SYSTIMESTAMP, USER, v_zmeny);
+END;
+/
+    
+CREATE OR REPLACE TRIGGER trg_zamestnanci_zmeny
+BEFORE INSERT OR UPDATE OR DELETE ON zamestnanci
+FOR EACH ROW
+DECLARE
+    v_operace VARCHAR2(10);
+    v_zmeny VARCHAR2(4000);
+BEGIN
+    IF INSERTING THEN
+        v_operace := 'INSERT';
+        v_zmeny := 'PRIDANO ' ||  'pozice_idpozice ' || '' || :new.pozice_idpozice || ', ' || 'jmeno ' || '' || :new.jmeno || ', ' || 'prijmeni ' || '' || :new.prijmeni || ', ' || 'rodnecislo ' || '' || :new.rodnecislo || ', ' || 'telefonnicislo ' || '' || :new.telefonnicislo || ', ' || 'prodejny_idprodejny ' || '' || :new.prodejny_idprodejny || ', ' || 'zamestnanci_idzamestnance ' || '' || :new.zamestnanci_idzamestnance;
+    ELSIF UPDATING THEN
+        v_operace := 'UPDATE';
+        v_zmeny := 'ZMENENO ';
+            	IF (:new.pozice_idpozice != :old.pozice_idpozice) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'pozice_idpozice ' || '' || :old.pozice_idpozice || ' -> ' || 'pozice_idpozice ' || ' ' || :new.pozice_idpozice; 
+	END IF; 
+	IF (:new.jmeno != :old.jmeno) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'jmeno ' || '' || :old.jmeno || ' -> ' || 'jmeno ' || ' ' || :new.jmeno; 
+	END IF; 
+	IF (:new.prijmeni != :old.prijmeni) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'prijmeni ' || '' || :old.prijmeni || ' -> ' || 'prijmeni ' || ' ' || :new.prijmeni; 
+	END IF; 
+	IF (:new.rodnecislo != :old.rodnecislo) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'rodnecislo ' || '' || :old.rodnecislo || ' -> ' || 'rodnecislo ' || ' ' || :new.rodnecislo; 
+	END IF; 
+	IF (:new.telefonnicislo != :old.telefonnicislo) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'telefonnicislo ' || '' || :old.telefonnicislo || ' -> ' || 'telefonnicislo ' || ' ' || :new.telefonnicislo; 
+	END IF; 
+	IF (:new.prodejny_idprodejny != :old.prodejny_idprodejny) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'prodejny_idprodejny ' || '' || :old.prodejny_idprodejny || ' -> ' || 'prodejny_idprodejny ' || ' ' || :new.prodejny_idprodejny; 
+	END IF; 
+	IF (:new.zamestnanci_idzamestnance != :old.zamestnanci_idzamestnance) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'zamestnanci_idzamestnance ' || '' || :old.zamestnanci_idzamestnance || ' -> ' || 'zamestnanci_idzamestnance ' || ' ' || :new.zamestnanci_idzamestnance; 
+	END IF; 
+
+    ELSIF DELETING THEN
+        v_operace := 'DELETE';
+        v_zmeny := 'Smazano ' ||  'pozice_idpozice ' || '' || :new.pozice_idpozice || ', ' || 'jmeno ' || '' || :new.jmeno || ', ' || 'prijmeni ' || '' || :new.prijmeni || ', ' || 'rodnecislo ' || '' || :new.rodnecislo || ', ' || 'telefonnicislo ' || '' || :new.telefonnicislo || ', ' || 'prodejny_idprodejny ' || '' || :new.prodejny_idprodejny || ', ' || 'zamestnanci_idzamestnance ' || '' || :new.zamestnanci_idzamestnance;
+    END IF;
+    INSERT INTO logy (TABULKA, OPERACE, CAS, UZIVATEL, ZMENY) VALUES ('zamestnanci', v_operace, SYSTIMESTAMP, USER, v_zmeny);
+END;
+/
+    
+CREATE OR REPLACE TRIGGER trg_zbozi_zmeny
+BEFORE INSERT OR UPDATE OR DELETE ON zbozi
+FOR EACH ROW
+DECLARE
+    v_operace VARCHAR2(10);
+    v_zmeny VARCHAR2(4000);
+BEGIN
+    IF INSERTING THEN
+        v_operace := 'INSERT';
+        v_zmeny := 'PRIDANO ' ||  'nazev ' || '' || :new.nazev || ', ' || 'aktualnicena ' || '' || :new.aktualnicena || ', ' || 'cenazeclubcartou ' || '' || :new.cenazeclubcartou || ', ' || 'kategorije_idkategorije ' || '' || :new.kategorije_idkategorije || ', ' || 'hmotnost ' || '' || :new.hmotnost;
+    ELSIF UPDATING THEN
+        v_operace := 'UPDATE';
+        v_zmeny := 'ZMENENO ';
+            	IF (:new.nazev != :old.nazev) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'nazev ' || '' || :old.nazev || ' -> ' || 'nazev ' || ' ' || :new.nazev; 
+	END IF; 
+	IF (:new.aktualnicena != :old.aktualnicena) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'aktualnicena ' || '' || :old.aktualnicena || ' -> ' || 'aktualnicena ' || ' ' || :new.aktualnicena; 
+	END IF; 
+	IF (:new.cenazeclubcartou != :old.cenazeclubcartou) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'cenazeclubcartou ' || '' || :old.cenazeclubcartou || ' -> ' || 'cenazeclubcartou ' || ' ' || :new.cenazeclubcartou; 
+	END IF; 
+	IF (:new.kategorije_idkategorije != :old.kategorije_idkategorije) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'kategorije_idkategorije ' || '' || :old.kategorije_idkategorije || ' -> ' || 'kategorije_idkategorije ' || ' ' || :new.kategorije_idkategorije; 
+	END IF; 
+	IF (:new.hmotnost != :old.hmotnost) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'hmotnost ' || '' || :old.hmotnost || ' -> ' || 'hmotnost ' || ' ' || :new.hmotnost; 
+	END IF; 
+
+    ELSIF DELETING THEN
+        v_operace := 'DELETE';
+        v_zmeny := 'Smazano ' ||  'nazev ' || '' || :new.nazev || ', ' || 'aktualnicena ' || '' || :new.aktualnicena || ', ' || 'cenazeclubcartou ' || '' || :new.cenazeclubcartou || ', ' || 'kategorije_idkategorije ' || '' || :new.kategorije_idkategorije || ', ' || 'hmotnost ' || '' || :new.hmotnost;
+    END IF;
+    INSERT INTO logy (TABULKA, OPERACE, CAS, UZIVATEL, ZMENY) VALUES ('zbozi', v_operace, SYSTIMESTAMP, USER, v_zmeny);
+END;
+/
+    
+CREATE OR REPLACE TRIGGER trg_zbozi_na_pulte_zmeny
+BEFORE INSERT OR UPDATE OR DELETE ON zbozi_na_pulte
+FOR EACH ROW
+DECLARE
+    v_operace VARCHAR2(10);
+    v_zmeny VARCHAR2(4000);
+BEGIN
+    IF INSERTING THEN
+        v_operace := 'INSERT';
+        v_zmeny := 'PRIDANO ' ||  'pulty_idpultu ' || '' || :new.pulty_idpultu || ', ' || 'zbozi_idzbozi ' || '' || :new.zbozi_idzbozi || ', ' || 'pocetzbozi ' || '' || :new.pocetzbozi;
+    ELSIF UPDATING THEN
+        v_operace := 'UPDATE';
+        v_zmeny := 'ZMENENO ';
+            	IF (:new.pulty_idpultu != :old.pulty_idpultu) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'pulty_idpultu ' || '' || :old.pulty_idpultu || ' -> ' || 'pulty_idpultu ' || ' ' || :new.pulty_idpultu; 
+	END IF; 
+	IF (:new.zbozi_idzbozi != :old.zbozi_idzbozi) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'zbozi_idzbozi ' || '' || :old.zbozi_idzbozi || ' -> ' || 'zbozi_idzbozi ' || ' ' || :new.zbozi_idzbozi; 
+	END IF; 
+	IF (:new.pocetzbozi != :old.pocetzbozi) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'pocetzbozi ' || '' || :old.pocetzbozi || ' -> ' || 'pocetzbozi ' || ' ' || :new.pocetzbozi; 
+	END IF; 
+
+    ELSIF DELETING THEN
+        v_operace := 'DELETE';
+        v_zmeny := 'Smazano ' ||  'pulty_idpultu ' || '' || :new.pulty_idpultu || ', ' || 'zbozi_idzbozi ' || '' || :new.zbozi_idzbozi || ', ' || 'pocetzbozi ' || '' || :new.pocetzbozi;
+    END IF;
+    INSERT INTO logy (TABULKA, OPERACE, CAS, UZIVATEL, ZMENY) VALUES ('zbozi_na_pulte', v_operace, SYSTIMESTAMP, USER, v_zmeny);
+END;
+/
+    
+CREATE OR REPLACE TRIGGER trg_zbozi_na_sklade_zmeny
+BEFORE INSERT OR UPDATE OR DELETE ON zbozi_na_sklade
+FOR EACH ROW
+DECLARE
+    v_operace VARCHAR2(10);
+    v_zmeny VARCHAR2(4000);
+BEGIN
+    IF INSERTING THEN
+        v_operace := 'INSERT';
+        v_zmeny := 'PRIDANO ' ||  'pocetzbozi ' || '' || :new.pocetzbozi || ', ' || 'sklady_idskladu ' || '' || :new.sklady_idskladu || ', ' || 'zbozi_idzbozi ' || '' || :new.zbozi_idzbozi;
+    ELSIF UPDATING THEN
+        v_operace := 'UPDATE';
+        v_zmeny := 'ZMENENO ';
+            	IF (:new.pocetzbozi != :old.pocetzbozi) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'pocetzbozi ' || '' || :old.pocetzbozi || ' -> ' || 'pocetzbozi ' || ' ' || :new.pocetzbozi; 
+	END IF; 
+	IF (:new.sklady_idskladu != :old.sklady_idskladu) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'sklady_idskladu ' || '' || :old.sklady_idskladu || ' -> ' || 'sklady_idskladu ' || ' ' || :new.sklady_idskladu; 
+	END IF; 
+	IF (:new.zbozi_idzbozi != :old.zbozi_idzbozi) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'zbozi_idzbozi ' || '' || :old.zbozi_idzbozi || ' -> ' || 'zbozi_idzbozi ' || ' ' || :new.zbozi_idzbozi; 
+	END IF; 
+
+    ELSIF DELETING THEN
+        v_operace := 'DELETE';
+        v_zmeny := 'Smazano ' ||  'pocetzbozi ' || '' || :new.pocetzbozi || ', ' || 'sklady_idskladu ' || '' || :new.sklady_idskladu || ', ' || 'zbozi_idzbozi ' || '' || :new.zbozi_idzbozi;
+    END IF;
+    INSERT INTO logy (TABULKA, OPERACE, CAS, UZIVATEL, ZMENY) VALUES ('zbozi_na_sklade', v_operace, SYSTIMESTAMP, USER, v_zmeny);
+END;
+/
+    

@@ -11,10 +11,10 @@ namespace BDAS2_BCSH2_University_Project.Controllers
 {
     public class ShopController : Controller, IMainController<Shop>
     {
-        private readonly IMainRepository<Shop> _shopRepository;
+        private readonly IShopRepository _shopRepository;
         private readonly IAddressRepository _addressRepository;
 
-        public ShopController(IMainRepository<Shop> shopRepository, IAddressRepository addressRepository)
+        public ShopController(IShopRepository shopRepository, IAddressRepository addressRepository)
         {
             _shopRepository = shopRepository;
             _addressRepository = addressRepository;

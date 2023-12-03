@@ -5,7 +5,7 @@ using System.Data;
 
 namespace Repositories.Repositories
 {
-    public class ShopRepository : IMainRepository<Shop>
+    public class ShopRepository : IShopRepository
     {
         private readonly OracleConnection _oracleConnection;
         private readonly IAddressRepository _addressRepository;
@@ -153,6 +153,11 @@ namespace Repositories.Repositories
             };
             shop.Address = _addressRepository.GetShopAddress(shop.Id);
             return shop;
+        }
+
+        public List<Shop> GetShopsForStorage(int storageId)
+        {
+            throw new NotImplementedException();
         }
     }
 }
