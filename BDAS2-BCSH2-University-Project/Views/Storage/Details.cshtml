@@ -16,14 +16,14 @@
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.NumberOfShelves)
         </dd>
-        <h4>Products: </h4>
-        <ul>
-            @foreach (var storagedProduct in Model.Products)
-            {
-                <li>@storagedProduct.Name</li>
-            }
-        </ul> 
     </dl>
+    <h5>Products</h5>
+    <ul>
+        @foreach (var storagedProduct in Model.Products)
+        {
+            <li>@storagedProduct.Name</li>
+        }
+    </ul>
 </div>
 <div>
     <div class="button-row">

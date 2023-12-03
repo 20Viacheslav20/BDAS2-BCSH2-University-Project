@@ -8,9 +8,9 @@ namespace Repositories.IRepositories
         List<Employee> GetAll();
         Employee GetById(int id);
         void Create(Employee employee);
-        void Edit(Employee  employee);
+        void Edit(Employee employee);
         void Delete(int id);
-        List<Employee> GetEmployeesWithoutAuth();   
+        List<Employee> GetEmployeesWithoutAuth();
         void GetEmployer(int id);   
     }
 }

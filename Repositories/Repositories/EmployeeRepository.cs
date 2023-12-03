@@ -2,6 +2,7 @@
 using Oracle.ManagedDataAccess.Client;
 using Repositories.IRepositories;
 using System.Data;
+using System.Xml.Linq;
 
 namespace Repositories.Repositories
 {
@@ -47,7 +48,9 @@ namespace Repositories.Repositories
             {
                 _oracleConnection.Open();
 
-                return GetByIdWithOracleCommand(command, id);
+                Employee employee = GetByIdWithOracleCommand(command, id);
+                employee.Subordinates = GetUserSubordinates(id);
+                return employee; 
             }
         }
 
@@ -70,6 +73,37 @@ namespace Repositories.Repositories
                     return null;
                 }
                 return CreateEmployeeFromReader(reader);
+            }
+        }
+
+        private List<Employee> GetUserSubordinates(int employeeId)
+        {
+            using (OracleCommand command = _oracleConnection.CreateCommand())
+            {
+
+                if (_oracleConnection.State == ConnectionState.Closed)
+                    _oracleConnection.Open();
+
+                command.CommandText = @$"SELECT z.IDZAMESTNANCE IDZAMESTNANCE, z.jmeno JMENO, z.prijmeni PRIJMENI, 
+                                        z.telefonniCislo TELEFONNICISLO, z.rodneCislo RODNECISLO, poz.nazev POZICE
+                                        FROM ZAMESTNANCI z
+                                        JOIN pozice poz on poz.idpozice = z.pozice_idpozice
+                                        START WITH z.ZAMESTNANCI_IDZAMESTNANCE = :employeeId
+                                        CONNECT BY PRIOR z.IDZAMESTNANCE = z.ZAMESTNANCI_IDZAMESTNANCE";
+
+                command.Parameters.Clear();
+                command.Parameters.Add("employeeId", OracleDbType.Int32).Value = employeeId;
+
+                List<Employee> employers = new List<Employee>();
+
+                using (OracleDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        employers.Add(CreateEmployeeFromReader(reader));
+                    }
+                    return employers;
+                }
             }
         }
 

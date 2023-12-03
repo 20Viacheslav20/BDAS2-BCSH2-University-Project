@@ -42,15 +42,14 @@
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.Employee.Surname)
         </dd>
-
-        <h4>User Roles</h4>
-        <ul>
-            @foreach (var role in Model.Roles)
-            {
-                <li>@UserRoleExtensions.GetEnumDescription(role)</li>
-            }
-        </ul>
     </dl>
+    <h5>User roles</h5>
+    <ul>
+        @foreach (var role in Model.Roles)
+        {
+            <li>@UserRoleExtensions.GetEnumDescription(role)</li>
+        }
+    </ul>
 </div>
 <div>
     <div class="button-row">

@@ -7,13 +7,6 @@ SELECT * FROM ADRESY WHERE (prodejny_idprodejny is null or IDADRESY = (select MA
 SELECT * FROM ADRESY WHERE (zamestnanci_idzamestnance is null or IDADRESY = (select MAX(IDADRESY) FROM  ADRESY WHERE zamestnanci_idzamestnance = 12)) and prodejny_idprodejny is null;
 
 
-hierarch 
-SELECT z.IDZAMESTNANCE, z.jmeno, z.prijmeni, z.telefonniCislo, z.rodneCislo, z.ZAMESTNANCI_IDZAMESTNANCE, poz.nazev
-FROM ZAMESTNANCI z
-join pozice poz on poz.idpozice = z.pozice_idpozice
-START WITH z.ZAMESTNANCI_IDZAMESTNANCE IS NULL
-CONNECT BY PRIOR z.IDZAMESTNANCE = z.ZAMESTNANCI_IDZAMESTNANCE order by z.ZAMESTNANCI_IDZAMESTNANCE desc;
-
 SELECT p.*
 FROM prodejny p
 LEFT JOIN sklady s ON p.idprodejny = s.prodejny_idprodejny

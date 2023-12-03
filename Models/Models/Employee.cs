@@ -22,5 +22,6 @@ namespace Models.Models
         public int PositionId { get; set; } 
 
         public Position Position { get; set; }
+        public List<Employee> Subordinates { get; set; }
     }
 }

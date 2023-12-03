@@ -45,6 +45,16 @@
             @Html.DisplayFor(model => model.Position.Name)
         </dd>
     </dl>
+    @if (Model.Subordinates.Count != 0)
+    {
+        <h5>Subordinates</h5>
+        <ul>
+            @foreach (var subordinat in Model.Subordinates)
+            {
+                <li>@subordinat.Name @subordinat.Surname - @subordinat.Position.Name</li>
+            }
+        </ul>        
+    }
 </div>
 <div>
     <div class="button-row">
