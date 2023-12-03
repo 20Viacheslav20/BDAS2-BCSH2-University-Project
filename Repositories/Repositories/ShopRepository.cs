@@ -157,7 +157,31 @@ namespace Repositories.Repositories
 
         public List<Shop> GetShopsForStorage(int storageId)
         {
-            throw new NotImplementedException();
+            using (OracleCommand command = _oracleConnection.CreateCommand())
+            {
+                if (_oracleConnection.State == ConnectionState.Closed)
+                    _oracleConnection.Open();
+
+
+                command.CommandText = @$"SELECT p.idprodejny IDPRODEJNY, p.kontaktnicislo KONTAKTNICISLO, p.plocha PLOCHA
+                                        FROM {TABLE} p
+                                        LEFT JOIN sklady s ON p.idprodejny = s.prodejny_idprodejny
+                                        WHERE s.idskladu IS NULL
+                                           OR s.idskladu = :storageId";
+
+                command.Parameters.Add(":storageId", OracleDbType.Int32).Value = storageId;
+
+                List<Shop> shops = new List<Shop>();
+
+                using (OracleDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        shops.Add(CreateShopFromReader(reader));
+                    }
+                    return shops;
+                }
+            }
         }
     }
 }
