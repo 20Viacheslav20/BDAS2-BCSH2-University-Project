@@ -21,16 +21,16 @@ namespace Repositories.Repositories
             _productRepository = productRepository;
         }
 
-        public void Create(Storage entity)
+        public void Create(Storage storage)
         {
             using (OracleCommand command = _oracleConnection.CreateCommand())
             {
                 _oracleConnection.Open();
 
                 command.CommandText = $"INSERT INTO {TABLE} (POCETPOLICEK)" +
-                    $"VALUES(:entityShelves)";
+                    $"VALUES(:storageShelves)";
 
-                command.Parameters.Add("entityShelves", OracleDbType.Int32).Value = entity.NumberOfShelves;
+                command.Parameters.Add("storageShelves", OracleDbType.Int32).Value = storage.NumberOfShelves;
 
                 command.ExecuteNonQuery();
             }
@@ -42,20 +42,20 @@ namespace Repositories.Repositories
             {
                 _oracleConnection.Open();
 
-                command.CommandText = $"DELETE FROM {TABLE} WHERE IDSKLADU = :entityId";
+                command.CommandText = $"DELETE FROM {TABLE} WHERE IDSKLADU = :storageId";
 
-                command.Parameters.Add("entityId", OracleDbType.Int32).Value = id;
+                command.Parameters.Add("storageId", OracleDbType.Int32).Value = id;
 
                 command.ExecuteNonQuery();
             }
         }
 
-        public void Edit(Storage entity)
+        public void Edit(Storage storage)
         {
             using (OracleCommand command = _oracleConnection.CreateCommand())
             {
                 _oracleConnection.Open();
-                Storage dbStorage = GetByIdWithOracleCommand(command, entity.Id);
+                Storage dbStorage = GetByIdWithOracleCommand(command, storage.Id);
 
                 if (dbStorage == null)
                     return;
@@ -63,10 +63,10 @@ namespace Repositories.Repositories
                 command.Parameters.Clear();
 
                 string query = "";
-                if (dbStorage.NumberOfShelves != entity.NumberOfShelves)
+                if (dbStorage.NumberOfShelves != storage.NumberOfShelves)
                 {
-                    query += "POCETPOLICEK = :entityName, ";
-                    command.Parameters.Add("entityName", OracleDbType.Varchar2).Value = entity.NumberOfShelves;
+                    query += "POCETPOLICEK = :storageName, ";
+                    command.Parameters.Add("storageName", OracleDbType.Varchar2).Value = storage.NumberOfShelves;
                 }
 
 
@@ -74,8 +74,8 @@ namespace Repositories.Repositories
                 {
                     query = query.TrimEnd(',', ' ');
 
-                    command.CommandText = $"UPDATE {TABLE} SET {query} WHERE IDSKLADU = :entityId";
-                    command.Parameters.Add("entityId", OracleDbType.Int32).Value = entity.Id;
+                    command.CommandText = $"UPDATE {TABLE} SET {query} WHERE IDSKLADU = :storageId";
+                    command.Parameters.Add("storageId", OracleDbType.Int32).Value = storage.Id;
 
                     command.ExecuteNonQuery();
                 }
@@ -125,9 +125,9 @@ namespace Repositories.Repositories
 
         private Storage GetByIdWithOracleCommand(OracleCommand command, int id)
         {
-            command.CommandText = $"SELECT * FROM {TABLE} WHERE IDSKLADU = :entityId";
+            command.CommandText = $"SELECT * FROM {TABLE} WHERE IDSKLADU = :storageId";
 
-            command.Parameters.Add("entityId", OracleDbType.Int32).Value = id;
+            command.Parameters.Add("storageId", OracleDbType.Int32).Value = id;
 
             using (OracleDataReader reader = command.ExecuteReader())
             {
