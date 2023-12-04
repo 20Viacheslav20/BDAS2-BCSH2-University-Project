@@ -8,3 +8,60 @@ BEGIN
     COMMIT;
 END;
 /
+
+CREATE OR REPLACE PROCEDURE update_zasoby_produktu (
+  id_produktu IN NUMBER,
+  mnozstvi_zmeny IN NUMBER,
+  id_skladu IN NUMBER
+) AS
+BEGIN
+  UPDATE zbozi_na_sklade
+  SET pocetzbozi = pocetzbozi + mnozstvi_zmeny
+  WHERE zbozi_idzbozi = id_produktu AND sklady_idskladu=id_skladu;
+
+  COMMIT;
+END update_zasoby_produktu;
+
+
+CREATE OR REPLACE PROCEDURE delete_starsi_logy (
+  days_old IN NUMBER
+) AS
+  cutoff_date DATE;
+BEGIN
+  cutoff_date := SYSDATE - days_old;
+
+  DELETE FROM logy
+  WHERE cas < cutoff_date;
+
+  COMMIT;
+END delete_starsi_logy;
+
+CREATE OR REPLACE PROCEDURE update_cena_zbozi_kategorii (
+  kategorie_id IN kategorije.idkategorije%TYPE,
+  price_increase_percent IN NUMBER
+) AS
+  CURSOR product_cursor IS
+    SELECT idzbozi, aktualnicena
+    FROM zbozi
+    WHERE kategorije_idkategorije = kategorie_id;
+
+  v_product_id NUMBER;
+  v_current_price NUMBER;
+
+BEGIN
+  OPEN product_cursor;
+
+  LOOP
+    FETCH product_cursor INTO v_product_id, v_current_price;
+    EXIT WHEN product_cursor%NOTFOUND;
+
+    UPDATE zbozi
+    SET aktualnicena = v_current_price * (1 + price_increase_percent / 100)
+    WHERE idzbozi = v_product_id;
+
+  END LOOP;
+
+  CLOSE product_cursor;
+
+  COMMIT;
+END update_cena_zbozi_kategorii;

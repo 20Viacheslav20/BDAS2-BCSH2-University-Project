@@ -10,5 +10,8 @@ namespace Models.Models
         public string Name { get; set; }
 
         public double Salary { get; set; }
+
+        [Display(Name = "Employee count")]
+        public int EmployeeCount { get; set; } 
     }
 }

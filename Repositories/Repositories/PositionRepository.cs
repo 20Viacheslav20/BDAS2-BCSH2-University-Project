@@ -60,7 +60,12 @@ namespace Repositories.Repositories
                 {
                     return null;
                 }
-                return CreatePositionFromReader(reader);
+
+                Position position = CreatePositionFromReader(reader);
+                
+                position.EmployeeCount = GetEmployeeCount(position.Id);
+                
+                return position;
             }
         }
 
@@ -140,5 +145,22 @@ namespace Repositories.Repositories
             };
             return Position;
         }
+
+        private int GetEmployeeCount(int id)
+        {
+            using (OracleCommand command = _oracleConnection.CreateCommand())
+            {
+                if (_oracleConnection.State == ConnectionState.Closed)
+                    _oracleConnection.Open();
+
+                command.CommandText = $"SELECT POCET_ZAMESTNANCU_NA_POZICI(:p_idpozice) FROM DUAL";
+                command.Parameters.Add("p_idpozice", OracleDbType.Int32).Value = id;
+
+                int employeeCount = Convert.ToInt32(command.ExecuteScalar());
+
+                return employeeCount;
+            }
+        }
+
     }
 }

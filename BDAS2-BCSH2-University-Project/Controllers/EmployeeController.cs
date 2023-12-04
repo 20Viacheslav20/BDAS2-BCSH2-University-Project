@@ -15,11 +15,11 @@ namespace BDAS2_BCSH2_University_Project.Controllers
     {
         private readonly IEmployeeRepository _employeeRepository;
         private readonly IMainRepository<Position> _positionRepository;
-        private readonly IMainRepository<Shop> _shopRepository;
+        private readonly IShopRepository _shopRepository;
         private readonly IAddressRepository _addressRepository;
 
         public EmployeeController(IEmployeeRepository employeeRepository, IMainRepository<Position> positionRepository, 
-                                        IMainRepository<Shop> shopRepository, IAddressRepository addressRepository)
+                                        IShopRepository shopRepository, IAddressRepository addressRepository)
         {
             _employeeRepository = employeeRepository;
             _positionRepository = positionRepository;

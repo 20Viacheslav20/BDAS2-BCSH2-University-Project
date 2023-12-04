@@ -11,7 +11,7 @@ namespace Models.Models.Product
         public string Name { get; set; }
 
         [Display(Name = "Actual Price")]
-        public int ActualPrice { get; set; }
+        public double ActualPrice { get; set; }
 
         [Display(Name = "ClubCard Price")]
         public int? ClubCardPrice { get; set; }

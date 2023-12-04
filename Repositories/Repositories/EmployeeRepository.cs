@@ -116,21 +116,29 @@ namespace Repositories.Repositories
 
         public void Create(Employee employee)
         {
-            using (OracleCommand command = _oracleConnection.CreateCommand())
+            try
             {
-                _oracleConnection.Open();
+                using (OracleCommand command = _oracleConnection.CreateCommand())
+                {
+                    _oracleConnection.Open();
 
-                command.CommandText = $"INSERT INTO {TABLE} (JMENO, PRIJMENI, RODNECISLO, TELEFONNICISLO, PRODEJNY_IDPRODEJNY, POZICE_IDPOZICE)" +
-                    "VALUES (:employeeName, :employeeSurname, :employeeBornNumber, :employeePhoneNumber, :employeeShopId, :employeerPositionId)";
+                    command.CommandText = $"INSERT INTO {TABLE} (JMENO, PRIJMENI, RODNECISLO, TELEFONNICISLO, PRODEJNY_IDPRODEJNY, POZICE_IDPOZICE)" +
+                        "VALUES (:employeeName, :employeeSurname, :employeeBornNumber, :employeePhoneNumber, :employeeShopId, :employeerPositionId)";
 
-                command.Parameters.Add("employeeName", OracleDbType.Varchar2).Value = employee.Name;
-                command.Parameters.Add("employeeSurname", OracleDbType.Varchar2).Value = employee.Surname;
-                command.Parameters.Add("employeeBornNumber", OracleDbType.Varchar2).Value = employee.BornNumber;
-                command.Parameters.Add("employeePnoneNumber", OracleDbType.Varchar2).Value = employee.PhoneNumber;
-                command.Parameters.Add("employeeShopId", OracleDbType.Int32).Value = employee.ShopId;
-                command.Parameters.Add("employeerPositionId", OracleDbType.Int32).Value = employee.PositionId;
+                    command.Parameters.Add("employeeName", OracleDbType.Varchar2).Value = employee.Name;
+                    command.Parameters.Add("employeeSurname", OracleDbType.Varchar2).Value = employee.Surname;
+                    command.Parameters.Add("employeeBornNumber", OracleDbType.Varchar2).Value = employee.BornNumber;
+                    command.Parameters.Add("employeePnoneNumber", OracleDbType.Varchar2).Value = employee.PhoneNumber;
+                    command.Parameters.Add("employeeShopId", OracleDbType.Int32).Value = employee.ShopId;
+                    command.Parameters.Add("employeerPositionId", OracleDbType.Int32).Value = employee.PositionId;
 
-                command.ExecuteNonQuery();
+                    command.ExecuteNonQuery();
+                }
+            }catch (OracleException ex)
+            {
+                throw new Exception("Born Number is incorrect!");
+
+
             }
         }
 

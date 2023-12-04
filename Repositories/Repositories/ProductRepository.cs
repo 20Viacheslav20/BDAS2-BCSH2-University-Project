@@ -168,7 +168,7 @@ namespace Repositories.Repositories
             {
                 Id = int.Parse(reader["IDZBOZI"].ToString()),
                 Name = reader["NAZEV"].ToString(),
-                ActualPrice = int.Parse(reader["AKTUALNICENA"].ToString()),
+                ActualPrice = double.Parse(reader["AKTUALNICENA"].ToString()),
                 ClubCardPrice = !string.IsNullOrEmpty(price) ? int.Parse(price) : null,
                 CategoryId = int.Parse(reader["IDKATEGORIJE"].ToString()),
                 Category = new()
