@@ -1,4 +1,4 @@
-﻿using Models.Models;
+﻿using Models.Models.Storage;
 using Oracle.ManagedDataAccess.Client;
 using Repositories.IRepositories;
 using System.Data;
@@ -150,5 +150,21 @@ namespace Repositories.Repositories
             return Storage;
         }
 
+        public void AddProduct(Order order)
+        {
+            using (OracleCommand command = _oracleConnection.CreateCommand())
+            {
+                _oracleConnection.Open();
+
+                command.CommandType = CommandType.StoredProcedure;
+                command.CommandText = "insert_produkt";
+
+                command.Parameters.Add("zbozi_idzbozi", OracleDbType.Varchar2).Value = order.ProductId;
+                command.Parameters.Add("pocetzbozi", OracleDbType.Int32).Value = order.ProductCount;
+                command.Parameters.Add("sklady_idskladu", OracleDbType.Int32).Value = order.StorageId;
+
+                command.ExecuteNonQuery();
+            }
+        }
     }
 }
