@@ -75,10 +75,11 @@ namespace Repositories.Repositories
             {
                 _oracleConnection.Open();
 
-                command.CommandText = $"INSERT INTO {TABLE} (NAZEV, MZDA) VALUES (:entityName, :entitySalary)";
+                command.CommandType = CommandType.StoredProcedure;
+                command.CommandText = "AddPosition";
 
-                command.Parameters.Add("entityName", OracleDbType.Varchar2).Value = entity.Name;
-                command.Parameters.Add("entitySalary", OracleDbType.Int32).Value = entity.Salary;
+                command.Parameters.Add("p_nazev", OracleDbType.Varchar2).Value = entity.Name;
+                command.Parameters.Add("p_mzda", OracleDbType.Int32).Value = entity.Salary;
 
                 command.ExecuteNonQuery();
             }
