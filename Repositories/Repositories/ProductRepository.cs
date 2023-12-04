@@ -70,7 +70,11 @@ namespace Repositories.Repositories
                 {
                     return null;
                 }
-                return CreateProductFromReader(reader);
+
+                Product product = CreateProductFromReader(reader);
+
+                product.Aviability = GetAviability(product.Id);
+                return product;
             }
         }
 
@@ -218,6 +222,22 @@ namespace Repositories.Repositories
                     }
                     return storagedProducts;
                 }
+            }
+        }
+
+        private string GetAviability(int id)
+        {
+            using (OracleCommand command = _oracleConnection.CreateCommand())
+            {
+                if (_oracleConnection.State == ConnectionState.Closed)
+                    _oracleConnection.Open();
+
+                command.CommandText = $"SELECT GET_DOSTUPNOST_ZBOZI(:p_idzbozi) FROM DUAL";
+                command.Parameters.Add("p_idzbozi", OracleDbType.Int32).Value = id;
+
+                string aviability = command.ExecuteScalar().ToString();
+
+                return aviability;
             }
         }
 
