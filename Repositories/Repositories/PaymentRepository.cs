@@ -18,15 +18,68 @@ namespace Repositories.Repositories
 
         public void Create(Payment payment)
         {
-            throw new NotImplementedException();
+            using (OracleCommand command = _oracleConnection.CreateCommand())
+            {
+                _oracleConnection.Open();
+
+                command.CommandText = "INSERT INTO PLATBY (jeclubcarta, platba_type) VALUES (:jeclubcarta, :platbaType)";
+
+                command.Parameters.Add(":isClubCard", OracleDbType.Int16).Value = payment.IsClubCard ? 1 : 0;
+                command.Parameters.Add(":platbaType", OracleDbType.Varchar2).Value = payment.Type;
+
+                command.ExecuteNonQuery();
+
+                command.CommandText = "SELECT idplatby FROM platby WHERE ROWNUM = 1 ORDER BY idplatby DESC";
+
+                int idPlatby = Convert.ToInt32(command.ExecuteScalar());
+
+                if (payment is Cash cashPayment)
+                {
+                    command.CommandText = "INSERT INTO HOTOVE (IDPLATBY, VRACENO) VALUES (:idPlatby, :cashPaymentReturned)";
+                    command.Parameters.Clear();
+                    command.Parameters.Add(":idPlatby", OracleDbType.Int32).Value = idPlatby;
+                    command.Parameters.Add(":cashPaymentReturned", OracleDbType.Int32).Value = cashPayment.Returned;
+                }
+                else if (payment is CreditCard creditCardPayment)
+                {
+                    command.CommandText = @"INSERT INTO KARTY (IDPLATBY, CISLOKARTY, AUTORIZACNIKOD) 
+                                            VALUES (:idPlatby, :creditCardPaymentCardNumber, :creditCardPaymentAuthorizationCode)";
+                    command.Parameters.Clear();
+                    command.Parameters.Add(":idPlatby", OracleDbType.Int32).Value = idPlatby;
+                    command.Parameters.Add(":creditCardPaymentCardNumber", OracleDbType.Int32).Value = creditCardPayment.CardNumber;
+                    command.Parameters.Add(":creditCardPaymentAuthorizationCode", OracleDbType.Int32).Value = creditCardPayment.AuthorizationCode;
+                }
+                else if (payment is Coupon couponPayment)
+                {
+                    command.CommandText = "INSERT INTO HOTOVE (IDPLATBY, VRACENO) VALUES (:idPlatby, :couponPaymentNumber)";
+                    command.Parameters.Clear();
+                    command.Parameters.Add(":idPlatby", OracleDbType.Int32).Value = idPlatby;
+                    command.Parameters.Add(":couponPaymentNumber", OracleDbType.Int32).Value = couponPayment.Number;
+                }
+
+                command.ExecuteNonQuery();
+            }
         }
 
-        public void Delete(int id)
+        public void Delete(int id, string type)
         {
-            throw new NotImplementedException();
+            using (OracleCommand command = _oracleConnection.CreateCommand())
+            {
+                _oracleConnection.Open();
+
+                command.CommandText = $"DELETE FROM {type} WHERE idplatby = :paymentId";
+                command.Parameters.Add("paymentId", OracleDbType.Int32).Value = id;
+
+                command.ExecuteNonQuery();
+
+                command.Parameters.Clear();
+
+                command.CommandText = $"DELETE FROM {TABLE} WHERE idplatby = :paymentId";
+                command.Parameters.Add("paymentId", OracleDbType.Int32).Value = id;
+
+                command.ExecuteNonQuery();
+            }
         }
-
-
 
         public List<Payment> GetAllPayments()
         {
