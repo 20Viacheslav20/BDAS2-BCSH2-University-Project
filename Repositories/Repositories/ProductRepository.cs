@@ -23,11 +23,11 @@ namespace Repositories.Repositories
             {
                 _oracleConnection.Open();
 
-                command.CommandText = $"SELECT z.idzbozi IDZBOZI, z.nazev NAZEV, " +
-                    $"z.aktualnicena AKTUALNICENA, z.cenazeclubcartou CENAZECLUBCARTOU," +
-                    $"k.nazev KATEGORIJE, k.idkategorije IDKATEGORIJE, " +
-                    $"z.hmotnost HMOTNOST FROM {TABLE} z " +
-                    $"JOIN KATEGORIJE k ON z.kategorije_idkategorije = k.idkategorije";
+                command.CommandText = @$"SELECT z.idzbozi IDZBOZI, z.nazev NAZEV,
+                    z.aktualnicena AKTUALNICENA, z.cenazeclubcartou CENAZECLUBCARTOU,
+                    k.nazev KATEGORIJE, k.idkategorije IDKATEGORIJE,
+                    z.hmotnost HMOTNOST FROM {TABLE} z 
+                    JOIN KATEGORIJE k ON z.kategorije_idkategorije = k.idkategorije";
 
                 List<Product> products = new List<Product>();
 

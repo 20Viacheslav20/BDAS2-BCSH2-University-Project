@@ -27,9 +27,9 @@ namespace Repositories.Repositories
                 _oracleConnection.Open();
 
                 command.CommandText = $"INSERT INTO {TABLE} (POCETPOLICEK, PRODEJNY_IDPRODEJNY)" +
-                    $"VALUES(:entityShelves, :storageShopId)";
+                    $"VALUES(:storageShelves, :storageShopId)";
 
-                command.Parameters.Add("entityShelves", OracleDbType.Int32).Value = storage.NumberOfShelves;
+                command.Parameters.Add("storageShelves", OracleDbType.Int32).Value = storage.NumberOfShelves;
                 command.Parameters.Add("storageShopId", OracleDbType.Int32).Value = storage.ShopId;
 
                 command.ExecuteNonQuery();
@@ -108,16 +108,6 @@ namespace Repositories.Repositories
             }
         }
 
-        private Storage CreateStorageFromReader(OracleDataReader reader)
-        {
-            Storage Storage = new()
-            {
-                Id = int.Parse(reader["IDSKLADU"].ToString()),
-                NumberOfShelves = int.Parse(reader["POCETPOLICEK"].ToString()),
-                ShopId = int.Parse(reader["PRODEJNY_IDPRODEJNY"].ToString())
-            };
-            return Storage;
-        }
 
         public Storage GetById(int id)
         {
@@ -149,6 +139,16 @@ namespace Repositories.Repositories
             }
         }
 
-    
+        private Storage CreateStorageFromReader(OracleDataReader reader)
+        {
+            Storage Storage = new()
+            {
+                Id = int.Parse(reader["IDSKLADU"].ToString()),
+                NumberOfShelves = int.Parse(reader["POCETPOLICEK"].ToString()),
+                ShopId = int.Parse(reader["PRODEJNY_IDPRODEJNY"].ToString())
+            };
+            return Storage;
+        }
+
     }
 }

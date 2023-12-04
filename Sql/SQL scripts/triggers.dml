@@ -6,3 +6,12 @@ BEGIN
   VALUES (3, :NEW.IDAUTUZ);
 END;
 /
+CREATE OR REPLACE TRIGGER zam_validace
+BEFORE INSERT OR UPDATE ON zamestnanci
+FOR EACH ROW
+BEGIN
+    IF LENGTH(:new.telefonnicislo) < 9 OR validne_rc(:new.rodnecislo) = 0 THEN
+        raise_application_error(-20001, 'invalid data');
+    END IF;
+END;
+/

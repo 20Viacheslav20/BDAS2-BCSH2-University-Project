@@ -36,8 +36,6 @@ namespace Repositories.Repositories
 
                 command.ExecuteNonQuery();
 
-
-
             }
         }
 

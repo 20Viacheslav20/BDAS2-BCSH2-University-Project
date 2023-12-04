@@ -418,6 +418,7 @@ INSERT INTO KUPONY (idPlatby, cislo) VALUES (12, 112210);
 INSERT INTO KUPONY (idPlatby, cislo) VALUES (13, 179163);
 INSERT INTO KUPONY (idPlatby, cislo) VALUES (17, 120752);
 INSERT INTO KUPONY (idPlatby, cislo) VALUES (18, 156752);
+INSERT INTO KUPONY (idPlatby, cislo) VALUES(15, 1000);     
 
 INSERT INTO KARTY (idPlatby, cisloKarty, autorizacniKod) VALUES (1, 116479, 124871);
 INSERT INTO KARTY (idPlatby, cisloKarty, autorizacniKod) VALUES (10, 154676, 180441);

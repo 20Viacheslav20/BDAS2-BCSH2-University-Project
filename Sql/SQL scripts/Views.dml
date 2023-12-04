@@ -1,0 +1,37 @@
+﻿1=========================
+Сколько по категриям было продано
+CREATE VIEW v_prodej_kategorie AS
+SELECT k.nazev AS kategorie_nazev, SUM(pz.prodejnicena * pz.pocetzbozi) AS total_sales
+FROM prodane_zbozi pz
+JOIN zbozi z ON pz.zbozi_idzbozi = z.idzbozi
+JOIN kategorije k ON z.kategorije_idkategorije = k.idkategorije
+GROUP BY k.nazev;
+
+select * from v_prodej_kategorie;
+
+2===========================
+Показывает все продажи
+CREATE VIEW v_prodeje AS
+SELECT pr.idprodeje, pr.datumprodeje, pr.celkovacena, p.platba_type,
+       z.nazev AS nazev_zbozi, pz.pocetzbozi
+FROM prodeje pr
+JOIN platby p ON pr.platba_idplatby = p.idplatby
+JOIN prodane_zbozi pz ON pr.idprodeje = pz.prodeje_idprodeje
+JOIN zbozi z ON pz.zbozi_idzbozi = z.idzbozi;
+
+
+select * from v_prodeje;
+
+3==========================
+Показывает сколько товаров есть на складе и на полках
+CREATE VIEW v_zbozi_dostupnost AS
+SELECT z.idzbozi, z.nazev, z.aktualnicena,
+       SUM(zns.pocetzbozi) AS total_in_warehouses,
+       SUM(znp.pocetzbozi) AS total_on_shelves
+FROM zbozi z
+LEFT JOIN zbozi_na_sklade zns ON z.idzbozi = zns.zbozi_idzbozi
+LEFT JOIN zbozi_na_pulte znp ON z.idzbozi = znp.zbozi_idzbozi
+GROUP BY z.idzbozi, z.nazev, z.aktualnicena;
+
+
+select * from v_zbozi_dostupnost;
