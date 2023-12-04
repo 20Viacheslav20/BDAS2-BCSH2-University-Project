@@ -20,6 +20,7 @@ builder.Services.AddScoped<ILogsRepository, LogRepository>();
 builder.Services.AddScoped<IStorageRepository, StorageRepository>();
 builder.Services.AddScoped<ICashDeskRepository, CashDeskRepository>();
 builder.Services.AddScoped<IStandRepository, StandRepository>();
+builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
 
 builder.Services.AddScoped<IAuthorizationUserRepository, AuthorizationUserRepository>();
 

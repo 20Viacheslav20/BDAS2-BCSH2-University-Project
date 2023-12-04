@@ -28,7 +28,7 @@ namespace BDAS2_BCSH2_University_Project.Controllers
             }
             try
             {
-                _paymentRepository.Delete(id.GetValueOrDefault());
+                _paymentRepository.Delete(id.GetValueOrDefault(), "");
             }
             catch (Exception e)
             {
@@ -53,13 +53,6 @@ namespace BDAS2_BCSH2_University_Project.Controllers
             }
 
             return View(payment);
-        }
-
-        [HttpGet]
-        [Authorize(Roles = nameof(UserRole.Admin))]
-        public IActionResult Index()
-        {
-            throw new NotImplementedException();
         }
 
         [HttpGet]
@@ -101,10 +94,6 @@ namespace BDAS2_BCSH2_University_Project.Controllers
                     {
                         _paymentRepository.Create(model);
                     }
-                    else
-                    {
-                        _paymentRepository.Edit(model);
-                    }
 
                     return RedirectToAction(nameof(Index));
                 }
@@ -114,6 +103,14 @@ namespace BDAS2_BCSH2_University_Project.Controllers
                 }
             }
             return View(model);
+        }
+
+        [HttpGet]
+        [Authorize(Roles = nameof(UserRole.Admin))]
+        public IActionResult Index()
+        {
+            List<Payment> payments = _paymentRepository.GetAllPayments();
+            return View(payments);
         }
     }
 }

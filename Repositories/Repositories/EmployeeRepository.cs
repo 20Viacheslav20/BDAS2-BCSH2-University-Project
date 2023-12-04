@@ -116,9 +116,9 @@ namespace Repositories.Repositories
 
         public void Create(Employee employee)
         {
-            try
+            using (OracleCommand command = _oracleConnection.CreateCommand())
             {
-                using (OracleCommand command = _oracleConnection.CreateCommand())
+                try
                 {
                     _oracleConnection.Open();
 
@@ -133,12 +133,10 @@ namespace Repositories.Repositories
                     command.Parameters.Add("employeerPositionId", OracleDbType.Int32).Value = employee.PositionId;
 
                     command.ExecuteNonQuery();
+                } catch (OracleException ex)
+                {
+                    throw new Exception("Born Number is incorrect!");
                 }
-            }catch (OracleException ex)
-            {
-                throw new Exception("Born Number is incorrect!");
-
-
             }
         }
 

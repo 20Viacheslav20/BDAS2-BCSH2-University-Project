@@ -1,0 +1,75 @@
+﻿@model Payment
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>Payment</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.IsClubCard)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.IsClubCard)
+        </dd>
+
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Type)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Type)
+        </dd>
+        @if (Model is Cash)
+        {
+            var cashPayment = Model as Cash;
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => cashPayment.Returned)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => cashPayment.Returned)
+            </dd>
+        } else if (Model is CreditCard)
+        {
+            var creditCardPayment = Model as CreditCard;
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => creditCardPayment.CardNumber)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => creditCardPayment.CardNumber)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => creditCardPayment.AuthorizationCode)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => creditCardPayment.AuthorizationCode)
+            </dd>
+        } else if (Model is Coupon)
+        {
+            var couponPayment = Model as Coupon;
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => couponPayment.Number)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => couponPayment.Number)
+            </dd>
+        }
+    </dl>
+</div>
+<div>
+    <div class="button-row">
+        @if (User.IsInRole(UserRole.Admin.ToStringValue()))
+        {
+            <form asp-action="Delete" asp-route-id="@Model.Id">
+                <input type="submit" value="Delete" class="btn btn-danger" />
+            </form>
+        }
+    </div>
+    <div style="margin-top: 10px;">
+        <a asp-action="Index" class="btn btn-secondary btn-sm">Back</a>
+    </div>
+</div>
+

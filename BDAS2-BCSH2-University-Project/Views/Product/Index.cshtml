@@ -11,9 +11,12 @@
         <strong>Success:</strong> @TempData["Success"]
     </div>
 }
-<p>
-    <a asp-action="Save" class="btn btn-success">Create</a>
-</p>
+@if (User.Identity.IsAuthenticated)
+{
+    <p>
+        <a asp-action="Save" class="btn btn-success">Create</a>
+    </p>
+}
 <table class="table">
     <thead>
         <tr>

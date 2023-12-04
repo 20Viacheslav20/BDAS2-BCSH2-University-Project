@@ -1,0 +1,76 @@
+﻿@model IEnumerable<Payment>
+
+@{
+    ViewData["Title"] = "Payments";
+}
+
+<h1> @ViewData["Title"]</h1>
+
+<p>
+    <a asp-action="Save" class="btn btn-success">Create</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.IsClubCard)
+            </th>
+            <th>
+                Payment type
+            </th>
+            <th>
+                Cash returned
+            </th>
+            <th>
+                Card Number
+            </th>
+            <th>
+                Autorization code
+            </th>
+            <th>
+                Coupon Number
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model) 
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.IsClubCard)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Type)
+                </td>
+                @if (item is Cash)
+                {
+                    var cashPayment = item as Cash;
+                    <td>@cashPayment.Returned</td>
+                    <td>---</td>
+                    <td>---</td>
+                    <td>---</td>
+                }
+                else if (item is CreditCard)
+                {
+                    <td>---</td>
+                     var creditCardPayment = item as CreditCard;
+                    <td>@creditCardPayment.CardNumber</td>
+                    <td>@creditCardPayment.AuthorizationCode</td>
+                    <td>---</td>
+                }
+                else if (item is Coupon)
+                {
+                    <td>---</td>
+                    <td>---</td>
+                    <td>---</td>
+                    var couponPayment = item as Coupon;
+                    <td>@couponPayment.Number</td>
+                }
+                <td>
+                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-secondary btn-sm">Details</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

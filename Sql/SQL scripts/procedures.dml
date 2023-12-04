@@ -1,9 +1,9 @@
 ﻿CREATE OR REPLACE PROCEDURE smazat_autuzivatele(p_IDAUTUZ IN NUMBER) AS
 BEGIN
     delete from autuzivatel_role where autuzivatele_idautuz = p_IDAUTUZ;
-    COMMIT;
+
     delete from soubory where autuzivatele_idautuz = p_IDAUTUZ;
-    COMMIT;
+
     delete from autuzivatele where idautuz = p_IDAUTUZ;
     COMMIT;
 END;
@@ -21,7 +21,7 @@ BEGIN
 
   COMMIT;
 END update_zasoby_produktu;
-
+/
 
 CREATE OR REPLACE PROCEDURE delete_starsi_logy (
   days_old IN NUMBER

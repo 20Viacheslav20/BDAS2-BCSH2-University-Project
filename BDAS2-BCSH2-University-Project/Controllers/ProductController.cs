@@ -41,7 +41,6 @@ namespace BDAS2_BCSH2_University_Project.Controllers
         }
 
         [HttpGet]
-        [Authorize]
         public IActionResult Details(int? id)
         {
             if (id == null)
