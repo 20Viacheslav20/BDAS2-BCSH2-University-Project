@@ -35,7 +35,7 @@ Ukazuje kolik je zbozi na skladech a pultech
 
 CREATE VIEW v_zbozi_dostupnost AS
 SELECT z.idzbozi, z.nazev, z.aktualnicena,
-       SUM(zns.pocetzbozi) AS celkem_ na_skladech,
+       SUM(zns.pocetzbozi) AS celkem_na_skladech,
        SUM(znp.pocetzbozi) AS celkem_na_pulte
 FROM zbozi z
 LEFT JOIN zbozi_na_sklade zns ON z.idzbozi = zns.zbozi_idzbozi

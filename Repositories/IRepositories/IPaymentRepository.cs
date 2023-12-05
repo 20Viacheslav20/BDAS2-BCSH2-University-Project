@@ -8,6 +8,6 @@ namespace Repositories.IRepositories
         List<Payment> GetAllPayments();
         Payment GetPayment(int id);
         void Create(Payment payment);
-        void Delete(int id, string type);
+        void Delete(Payment payment);
     }
 }

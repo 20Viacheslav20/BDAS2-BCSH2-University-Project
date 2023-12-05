@@ -1,0 +1,41 @@
+﻿@model CreditCard
+
+@{
+    ViewData["Title"] = "Credit card payment";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="AddCreditCardPayment">
+            <input type="hidden" asp-for="Type" />
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <input asp-for="IsClubCard" />
+                <label asp-for="IsClubCard"></label>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="CardNumber"></label>
+                <input asp-for="CardNumber" class="form-control" />
+                <span asp-validation-for="CardNumber" class="text-danger"></span>
+            </div>
+            <div>
+                <label asp-for="AuthorizationCode"></label>
+                <input asp-for="AuthorizationCode" class="form-control" />
+                <span asp-validation-for="AuthorizationCode" class="text-danger"></span>
+            </div>
+
+            <br />
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-success" />
+            </div>
+        </form>
+    </div>
+</div>
+<br />
+<div>
+    <a asp-action="Index" class="btn btn-secondary btn-sm">Back</a>
+</div>

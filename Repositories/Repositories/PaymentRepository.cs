@@ -33,49 +33,65 @@ namespace Repositories.Repositories
 
                 int idPlatby = Convert.ToInt32(command.ExecuteScalar());
 
-                if (payment is Cash cashPayment)
+                if (idPlatby > 1)
                 {
-                    command.CommandText = "INSERT INTO HOTOVE (IDPLATBY, VRACENO) VALUES (:idPlatby, :cashPaymentReturned)";
-                    command.Parameters.Clear();
-                    command.Parameters.Add(":idPlatby", OracleDbType.Int32).Value = idPlatby;
-                    command.Parameters.Add(":cashPaymentReturned", OracleDbType.Int32).Value = cashPayment.Returned;
-                }
-                else if (payment is CreditCard creditCardPayment)
-                {
-                    command.CommandText = @"INSERT INTO KARTY (IDPLATBY, CISLOKARTY, AUTORIZACNIKOD) 
-                                            VALUES (:idPlatby, :creditCardPaymentCardNumber, :creditCardPaymentAuthorizationCode)";
-                    command.Parameters.Clear();
-                    command.Parameters.Add(":idPlatby", OracleDbType.Int32).Value = idPlatby;
-                    command.Parameters.Add(":creditCardPaymentCardNumber", OracleDbType.Int32).Value = creditCardPayment.CardNumber;
-                    command.Parameters.Add(":creditCardPaymentAuthorizationCode", OracleDbType.Int32).Value = creditCardPayment.AuthorizationCode;
-                }
-                else if (payment is Coupon couponPayment)
-                {
-                    command.CommandText = "INSERT INTO HOTOVE (IDPLATBY, VRACENO) VALUES (:idPlatby, :couponPaymentNumber)";
-                    command.Parameters.Clear();
-                    command.Parameters.Add(":idPlatby", OracleDbType.Int32).Value = idPlatby;
-                    command.Parameters.Add(":couponPaymentNumber", OracleDbType.Int32).Value = couponPayment.Number;
-                }
+                    if (payment.Type == PaymentType.HOTOVE)
+                    {
+                        Cash cashPayment = payment as Cash;
 
-                command.ExecuteNonQuery();
+                        command.CommandText = "INSERT INTO HOTOVE (IDPLATBY, VRACENO) VALUES (:idPlatby, :cashPaymentReturned)";
+
+                        command.Parameters.Clear();
+
+                        command.Parameters.Add(":idPlatby", OracleDbType.Int32).Value = idPlatby;
+                        command.Parameters.Add(":cashPaymentReturned", OracleDbType.Int32).Value = cashPayment.Returned;
+                    }
+                    else if (payment.Type == PaymentType.KARTA)
+                    {
+                        CreditCard creditCardPayment = payment as CreditCard;
+
+                        command.CommandText = @"INSERT INTO KARTY (IDPLATBY, CISLOKARTY, AUTORIZACNIKOD) 
+                                                VALUES (:idPlatby, :creditCardPaymentCardNumber, :creditCardPaymentAuthorizationCode)";
+
+                        command.Parameters.Clear();
+
+                        command.Parameters.Add(":idPlatby", OracleDbType.Int32).Value = idPlatby;
+                        command.Parameters.Add(":creditCardPaymentCardNumber", OracleDbType.Int32).Value = creditCardPayment.CardNumber;
+                        command.Parameters.Add(":creditCardPaymentAuthorizationCode", OracleDbType.Int32).Value = creditCardPayment.AuthorizationCode;
+                    }
+                    else if (payment.Type == PaymentType.KUPON)
+                    {
+                        Coupon couponPayment = payment as Coupon;
+
+                        command.CommandText = "INSERT INTO KUPONY (IDPLATBY, CISLO) VALUES (:idPlatby, :couponPaymentNumber)";
+
+                        command.Parameters.Clear();
+
+                        command.Parameters.Add(":idPlatby", OracleDbType.Int32).Value = idPlatby;
+                        command.Parameters.Add(":couponPaymentNumber", OracleDbType.Int32).Value = couponPayment.Number;
+                    }
+
+                    command.ExecuteNonQuery();
+                }  
+
             }
         }
 
-        public void Delete(int id, string type)
+        public void Delete(Payment payment)
         {
             using (OracleCommand command = _oracleConnection.CreateCommand())
             {
                 _oracleConnection.Open();
 
-                command.CommandText = $"DELETE FROM {type} WHERE idplatby = :paymentId";
-                command.Parameters.Add("paymentId", OracleDbType.Int32).Value = id;
+                command.CommandText = $"DELETE FROM {payment.Type} WHERE idplatby = :paymentId";
+                command.Parameters.Add("paymentId", OracleDbType.Int32).Value = payment.Id;
 
                 command.ExecuteNonQuery();
 
                 command.Parameters.Clear();
 
                 command.CommandText = $"DELETE FROM {TABLE} WHERE idplatby = :paymentId";
-                command.Parameters.Add("paymentId", OracleDbType.Int32).Value = id;
+                command.Parameters.Add("paymentId", OracleDbType.Int32).Value = payment.Id;
 
                 command.ExecuteNonQuery();
             }
@@ -172,7 +188,7 @@ namespace Repositories.Repositories
                         Id = id,
                         IsClubCard = isClubCard,
                         Returned = returned,
-                        Type = type
+                        Type = (PaymentType) Enum.Parse(typeof(PaymentType), type)
                     };
                     break;
 
@@ -185,7 +201,7 @@ namespace Repositories.Repositories
                         IsClubCard = isClubCard,
                         CardNumber = cardNumber,
                         AuthorizationCode = authorizationCode,
-                        Type = type
+                        Type = (PaymentType)Enum.Parse(typeof(PaymentType), type)
                     };
                     break;
 
@@ -196,7 +212,7 @@ namespace Repositories.Repositories
                         Id = id,
                         IsClubCard = isClubCard,
                         Number = couponNumber,
-                        Type = type
+                        Type = (PaymentType)Enum.Parse(typeof(PaymentType), type)
                     };
                     break;
 

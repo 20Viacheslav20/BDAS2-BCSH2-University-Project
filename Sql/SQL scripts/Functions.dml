@@ -17,100 +17,94 @@ END pocet_zamestnancu_na_pozici;
 
 create or replace FUNCTION validne_rc 
 (
-  rc IN VARCHAR2
+  RC IN NUMBER  
 ) RETURN NUMBER AS
-  zbytek NUMBER;
-  rok NUMBER;
-  mesic NUMBER;
-  den NUMBER;
-  datum_narozeni DATE;
-  kontrolni_cislice NUMBER;
-  rc_cislo NUMBER;
-BEGIN
-  
-  rc_cislo := TO_NUMBER(rc);
 
-  IF LENGTH(rc) NOT BETWEEN 9 AND 10 THEN
+  i_zbytek NUMBER;
+  i_mesic NUMBER;
+  i_rok NUMBER;
+  i_den NUMBER;
+  i_datum DATE;
+
+BEGIN
+
+  IF LENGTH(RC) NOT BETWEEN 9 AND 10 THEN
     RETURN 0;
   END IF;
 
-  IF LENGTH(rc) = 9 THEN
-    IF TO_NUMBER(SUBSTR(rc, 1, 2)) < 54 THEN
-      RETURN 1;
-    ELSE
-      RETURN 0;
-    END IF;
+  -- rodne cislo pred rokem 1954
+  IF LENGTH(RC) = 9 AND SUBSTR(RC,1,2) < 54 THEN
+    RETURN 1;
   END IF;
 
-  zbytek := MOD(TO_NUMBER(SUBSTR(rc, 1, 9)), 11);
 
-  IF zbytek = 10 THEN
-    zbytek := 0;
+  i_zbytek := MOD(SUBSTR(RC,1,9),11);
+
+  IF i_zbytek = 10 THEN
+    i_zbytek := 0;
   END IF;
 
-  rok := TO_NUMBER(SUBSTR(rc, 1, 2));
-  mesic := TO_NUMBER(SUBSTR(rc, 3, 2));
-  den := TO_NUMBER(SUBSTR(rc, 5, 2));
+  i_rok := TO_NUMBER(SUBSTR(RC,1,2));
+  i_mesic := TO_NUMBER(SUBSTR(RC,3,2));
+  i_den := TO_NUMBER(SUBSTR(RC,5,2));
 
-  rok := CASE
-    WHEN rok < 54 THEN rok + 2000
-    ELSE rok + 1900
-  END;
+  IF i_rok < 54 THEN
+    i_rok := i_rok + 2000;
+  ELSE
+    i_rok := i_rok + 1900;
+  END IF;
 
-  mesic := CASE
-    WHEN mesic > 70 AND rok > 2003 THEN mesic - 70
-    WHEN mesic > 50 THEN mesic - 50
-    WHEN mesic > 20 AND rok > 2003 THEN mesic - 20
-    ELSE mesic
-  END;
+
+  IF i_mesic > 70 AND i_rok > 2003 THEN
+    i_mesic := i_mesic - 70;
+  ELSIF i_mesic > 50 THEN
+    i_mesic := i_mesic - 50;
+  ELSIF i_mesic > 20 AND i_rok > 2003 THEN
+    i_mesic := i_mesic - 20;
+  END IF;
 
   BEGIN
-    datum_narozeni := TO_DATE(TO_CHAR(den, 'FM00') || TO_CHAR(mesic, 'FM00') || rok, 'DDMMYYYY');
-  EXCEPTION
-    WHEN OTHERS THEN
-      RETURN 0;
+    i_datum := TO_DATE(i_den || '.' || i_mesic || '.' || i_rok,'DD.MM.YYYY');
+  EXCEPTION WHEN OTHERS THEN
+    RETURN 0;
   END;
 
-  kontrolni_cislice := TO_NUMBER(SUBSTR(rc, 10, 1));
 
-  IF zbytek = kontrolni_cislice THEN
-    RETURN 1; -- RC je platné
+  IF i_zbytek = SUBSTR(RC,10,1) THEN
+    RETURN 1;
   ELSE
-    RETURN 0; -- RC je neplatné
+    RETURN 0;
   END IF;
 
 END validne_rc;
 
-CREATE OR REPLACE FUNCTION get_dostupnost_zbozi (
-  id_produktu IN zbozi.idzbozi%TYPE
-) RETURN VARCHAR2 AS
+CREATE OR REPLACE FUNCTION get_dostupnost_zbozi(id_produktu IN zbozi.idzbozi%TYPE) RETURN VARCHAR2 AS
   dostupnost_info VARCHAR2(4000);
   celkove_mnozstvi NUMBER;
   nazev_produktu VARCHAR2(32);
 BEGIN
  
-  SELECT z.nazev
-  INTO nazev_produktu
-  FROM zbozi z
-  WHERE z.idzbozi = id_produktu;
+    SELECT z.nazev
+    INTO nazev_produktu
+    FROM zbozi z
+    WHERE z.idzbozi = id_produktu;
 
+    SELECT SUM(zns.pocetzbozi)
+    INTO celkove_mnozstvi
+    FROM zbozi_na_sklade zns
+    WHERE zns.zbozi_idzbozi = id_produktu;
 
-  SELECT SUM(zns.pocetzbozi)
-  INTO celkove_mnozstvi
-  FROM zbozi_na_sklade zns
-  WHERE zns.zbozi_idzbozi = id_produktu;
+    IF celkove_mnozstvi IS NULL THEN
+        dostupnost_info := 'Produkt ' || nazev_produktu  || ' není aktuálně dostupný ve skladech.';
+    ELSE
+        dostupnost_info := 'Produkt ' || nazev_produktu || ' je dostupný ve skladech s celkovým množstvím: ' || TO_CHAR(celkove_mnozstvi);
+    END IF;
 
-  IF celkove_mnozstvi IS NULL THEN
-    dostupnost_info := 'Produkt ' || nazev_produktu  || ' není aktuálně dostupný ve skladech.';
-  ELSE
-    dostupnost_info := 'Produkt ' || nazev_produktu || ' je dostupný ve skladech s celkovým množstvím: ' || TO_CHAR(celkove_mnozstvi);
-  END IF;
-
-  RETURN dostupnost_info;
+    RETURN dostupnost_info;
 EXCEPTION
-  WHEN NO_DATA_FOUND THEN
-    RETURN 'Nebyly nalezeny žádné informace pro produkt ID: ' || TO_CHAR(id_produktu);
-  WHEN OTHERS THEN
-    RETURN 'Došlo k chybě při získávání informací o produktu.';
+    WHEN NO_DATA_FOUND THEN
+        RETURN 'Nebyly nalezeny žádné informace pro produkt ID: ' || TO_CHAR(id_produktu);
+    WHEN OTHERS THEN
+        RETURN 'Došlo k chybě při získávání informací o produktu.';
 END get_dostupnost_zbozi;
 

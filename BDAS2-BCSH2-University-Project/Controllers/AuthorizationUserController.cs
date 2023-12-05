@@ -115,7 +115,7 @@ namespace BDAS2_BCSH2_University_Project.Controllers
                     List<Claim> claims = new List<Claim>
                     {
                         new Claim(ClaimTypes.Name, $"Simulation ({simulatedUser.Login})"),
-                        new Claim(ClaimTypes.Role, UserRole.Admin.ToStringValue())
+                       // new Claim(ClaimTypes.Role, UserRole.Admin.ToStringValue())
                     };
 
                     foreach (UserRole role in simulatedUser.Roles)

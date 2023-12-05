@@ -6,9 +6,12 @@
 
 <h1> @ViewData["Title"]</h1>
 
-<p>
-    <a asp-action="Save" class="btn btn-success">Create</a>
-</p>
+<div style="display: flex; gap: 10px; ">
+    <a asp-action="AddCashPayment" class="btn btn-success">Add Cash Payment</a>
+    <a asp-action="AddCouponPayment" class="btn btn-success">Add Coupon Payment</a>
+    <a asp-action="AddCreditCardPayment" class="btn btn-success">Add Card Payment</a>
+</div>
+
 <table class="table">
     <thead>
         <tr>

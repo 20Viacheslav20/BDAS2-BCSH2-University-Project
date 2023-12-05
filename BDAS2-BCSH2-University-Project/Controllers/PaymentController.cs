@@ -3,12 +3,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Models.Models;
 using Models.Models.Login;
-using Models.Models.Product;
 using Repositories.IRepositories;
 
 namespace BDAS2_BCSH2_University_Project.Controllers
 {
-    public class PaymentController : Controller, IMainController<Payment>
+    public class PaymentController : Controller, IPaymentController
     {
         private readonly IPaymentRepository _paymentRepository;
 
@@ -20,7 +19,7 @@ namespace BDAS2_BCSH2_University_Project.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = nameof(UserRole.Admin))]
-        public IActionResult Delete(int? id)
+        public IActionResult Delete(int? id, Payment payment)
         {
             if (id == null)
             {
@@ -28,7 +27,7 @@ namespace BDAS2_BCSH2_University_Project.Controllers
             }
             try
             {
-                _paymentRepository.Delete(id.GetValueOrDefault(), "");
+                _paymentRepository.Delete(payment);
             }
             catch (Exception e)
             {
@@ -55,35 +54,22 @@ namespace BDAS2_BCSH2_University_Project.Controllers
             return View(payment);
         }
 
+
         [HttpGet]
         [Authorize(Roles = nameof(UserRole.Admin))]
-        public IActionResult Save(int? id)
+        public IActionResult AddCashPayment()
         {
-            if (id == null)
-            {
-                return View(new Payment());
-            }
-
-            Payment payment = _paymentRepository.GetPayment(id.GetValueOrDefault());
-            if (payment == null)
-            {
-                return NotFound();
-            }
-
-            return View(payment);
+            return View(new Cash());
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = nameof(UserRole.Admin))]
-        public IActionResult Save(int? id, Payment model)
+        public IActionResult AddCashPayment(int? id, Cash cashPayment)
         {
             if (id != null)
             {
-                if (id != model.Id)
-                {
-                    return NotFound();
-                }
+                return NotFound();
             }
 
             if (ModelState.IsValid)
@@ -92,7 +78,7 @@ namespace BDAS2_BCSH2_University_Project.Controllers
                 {
                     if (id == null)
                     {
-                        _paymentRepository.Create(model);
+                        _paymentRepository.Create(cashPayment);
                     }
 
                     return RedirectToAction(nameof(Index));
@@ -102,7 +88,80 @@ namespace BDAS2_BCSH2_University_Project.Controllers
                     ModelState.AddModelError("", e.Message);
                 }
             }
-            return View(model);
+            return View(cashPayment);
+        }
+
+
+        [HttpGet]
+        [Authorize(Roles = nameof(UserRole.Admin))]
+        public IActionResult AddCouponPayment()
+        {
+            return View(new Coupon());
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = nameof(UserRole.Admin))]
+        public IActionResult AddCouponPayment(int? id, Coupon couponPayment)
+        {
+            if (id != null)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    if (id == null)
+                    {
+                        _paymentRepository.Create(couponPayment);
+                    }
+
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (Exception e)
+                {
+                    ModelState.AddModelError("", e.Message);
+                }
+            }
+            return View(couponPayment);
+        }
+
+        [HttpGet]
+        [Authorize(Roles = nameof(UserRole.Admin))]
+        public IActionResult AddCreditCardPayment()
+        {
+            return View(new CreditCard());
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = nameof(UserRole.Admin))]
+        public IActionResult AddCreditCardPayment(int? id, CreditCard creditCardPayment)
+        {
+            if (id != null)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    if (id == null)
+                    {
+                        _paymentRepository.Create(creditCardPayment);
+                    }
+
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (Exception e)
+                {
+                    ModelState.AddModelError("", e.Message);
+                }
+            }
+            return View(creditCardPayment);
         }
 
         [HttpGet]
@@ -112,5 +171,6 @@ namespace BDAS2_BCSH2_University_Project.Controllers
             List<Payment> payments = _paymentRepository.GetAllPayments();
             return View(payments);
         }
+
     }
 }
