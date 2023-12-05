@@ -4,10 +4,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Models.Models;
 using Models.Models.Login;
+using Models.Models.Product;
 using Models.Models.Storage;
 using Repositories.IRepositories;
-using Repositories.Repositories;
-using System.Data;
 
 namespace BDAS2_BCSH2_University_Project.Controllers
 {
@@ -15,11 +14,13 @@ namespace BDAS2_BCSH2_University_Project.Controllers
     {
         private readonly IStorageRepository _storageRepository;
         private readonly IShopRepository _shopRepository;
+        private readonly IProductRepository _productRepository;
 
-        public StorageController(IStorageRepository storageRepository, IShopRepository shopRepository)
+        public StorageController(IStorageRepository storageRepository, IShopRepository shopRepository, IProductRepository productRepository)
         {
             _storageRepository = storageRepository;
             _shopRepository = shopRepository;
+            _productRepository = productRepository;
         }
 
 
@@ -133,7 +134,9 @@ namespace BDAS2_BCSH2_University_Project.Controllers
             {
                 return NotFound();
             }
-            return View(nameof(Order), new Order { StorageId = id.GetValueOrDefault() });
+            Order order = new() { StorageId = id.GetValueOrDefault() };
+            GetAllProducts();
+            return View(order);
         }
 
         [HttpPost]
@@ -144,13 +147,14 @@ namespace BDAS2_BCSH2_University_Project.Controllers
                 try
                 {
                     _storageRepository.AddProduct(order);
-                   return RedirectToAction(nameof(Details), new{order.StorageId});
+                   return RedirectToAction(nameof(Details), new{  id = order.StorageId });
                 }
                 catch (Exception e)
                 {
                     ModelState.AddModelError("", e.Message);
                 }
             }
+            GetAllProducts();
             return View(order);
         }
 
@@ -162,8 +166,11 @@ namespace BDAS2_BCSH2_University_Project.Controllers
             ViewBag.Shops = new SelectList(shops, nameof(Shop.Id), nameof(Shop.Contact));
         }
 
-        
-
-         
+        [NonAction]
+        private void GetAllProducts()
+        {
+            List<Product> products = _productRepository.GetAll();
+            ViewBag.Products = new SelectList(products, nameof(Product.Id), nameof(Product.Name));
+        }
     }
 }

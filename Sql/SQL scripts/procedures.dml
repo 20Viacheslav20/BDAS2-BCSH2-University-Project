@@ -9,18 +9,21 @@ BEGIN
 END;
 /
 
-CREATE OR REPLACE PROCEDURE update_zasoby_produktu (
+CREATE OR REPLACE PROCEDURE insert_produkt (
   id_produktu IN NUMBER,
   mnozstvi_zmeny IN NUMBER,
   id_skladu IN NUMBER
 ) AS
 BEGIN
-  UPDATE zbozi_na_sklade
-  SET pocetzbozi = pocetzbozi + mnozstvi_zmeny
-  WHERE zbozi_idzbozi = id_produktu AND sklady_idskladu=id_skladu;
+  MERGE INTO zbozi_na_sklade USING dual ON (zbozi_idzbozi = id_produktu AND sklady_idskladu = id_skladu)
+  WHEN MATCHED THEN
+    UPDATE SET pocetzbozi = pocetzbozi + mnozstvi_zmeny
+  WHEN NOT MATCHED THEN
+    INSERT (zbozi_idzbozi, sklady_idskladu, pocetzbozi)
+    VALUES (id_produktu, id_skladu, mnozstvi_zmeny);
 
   COMMIT;
-END update_zasoby_produktu;
+END insert_produkt;
 /
 
 CREATE OR REPLACE PROCEDURE delete_starsi_logy (

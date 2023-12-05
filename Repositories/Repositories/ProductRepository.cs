@@ -191,7 +191,7 @@ namespace Repositories.Repositories
             {
                 Id = int.Parse(reader["IDZBOZI"].ToString()),
                 Name = reader["NAZEV"].ToString(),
-                Count = int.Parse(reader["POCETZBOZI"].ToString())
+                Count = int.Parse(reader["POCETZBOZI"].ToString()),
             };
             return product;
         }
@@ -204,7 +204,7 @@ namespace Repositories.Repositories
                 if (_oracleConnection.State == ConnectionState.Closed)
                     _oracleConnection.Open();
 
-                command.CommandText = @$"SELECT z.IDZBOZI IDZBOZI,z.nazev NAZEV, zns.pocetZbozi POCETZBOZI 
+                command.CommandText = @$"SELECT z.IDZBOZI IDZBOZI, z.nazev NAZEV, zns.pocetZbozi POCETZBOZI 
                                         FROM SKLADY s
                                         JOIN ZBOZI_NA_SKLADE zns ON s.idSkladu = zns.SKLADY_idSkladu
                                         JOIN ZBOZI z ON zns.ZBOZI_idZbozi = z.idZbozi

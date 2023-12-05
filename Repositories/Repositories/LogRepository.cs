@@ -21,7 +21,7 @@ namespace Repositories.Repositories
             {
                 _oracleConnection.Open();
 
-                command.CommandText = $"SELECT * FROM {TABLE}";
+                command.CommandText = $"SELECT * FROM {TABLE} ORDER BY IDLOGU DESC";
 
                 List<Logs> logs = new List<Logs>();
 
