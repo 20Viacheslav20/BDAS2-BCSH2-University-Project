@@ -7,5 +7,7 @@ namespace BDAS2_BCSH2_University_Project.IControllers
         IActionResult Index();
 
         IActionResult Details(int? id);
+
+        IActionResult DeteleOldLogs(int? dayCount);
     }
 }

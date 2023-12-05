@@ -6,7 +6,18 @@
 
 <h1>@ViewData["Title"]</h1>
 
-</p>
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">
+        <strong>Error:</strong> @TempData["Error"]
+    </div>
+}
+<form asp-controller="Logs" asp-action="DeteleOldLogs" method="get">
+    <p>
+        How old? <input type="number" name="dayCount" min="1"/>
+        <input type="submit" value="Delete" />
+    </p>
+</form>
 <table class="table">
     <thead>
         <tr>

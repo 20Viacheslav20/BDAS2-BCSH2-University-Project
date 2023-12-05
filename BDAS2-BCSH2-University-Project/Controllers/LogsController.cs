@@ -42,6 +42,26 @@ namespace BDAS2_BCSH2_University_Project.Controllers
 
             return View(logs);
         }
-        
+
+        [HttpGet]
+        public IActionResult DeteleOldLogs(int? dayCount)
+        {
+            if (dayCount == null)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+            if (dayCount > 0)
+            {
+                try
+                {
+                    // TODO call function from rep _logRepository.DeteleOldLogs(dayCount.GetValueOrDefault())
+                }
+                catch (Exception e)
+                {
+                    TempData["Error"] = e.Message;
+                }
+            }
+            return RedirectToAction(nameof(Index));
+        }
     }
 }
