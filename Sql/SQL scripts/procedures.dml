@@ -24,44 +24,44 @@ END update_zasoby_produktu;
 /
 
 CREATE OR REPLACE PROCEDURE delete_starsi_logy (
-  days_old IN NUMBER
+  dny_stare IN NUMBER
 ) AS
-  cutoff_date DATE;
+  datum_vymezene DATE;
 BEGIN
-  cutoff_date := SYSDATE - days_old;
+  datum_vymezene := SYSDATE - dny_stare;
 
   DELETE FROM logy
-  WHERE cas < cutoff_date;
+  WHERE cas < datum_vymezene;
 
   COMMIT;
 END delete_starsi_logy;
 
 CREATE OR REPLACE PROCEDURE update_cena_zbozi_kategorii (
   kategorie_id IN kategorije.idkategorije%TYPE,
-  price_increase_percent IN NUMBER
+  procento_navyseni IN NUMBER
 ) AS
-  CURSOR product_cursor IS
+  CURSOR kurzor_produktu IS
     SELECT idzbozi, aktualnicena
     FROM zbozi
     WHERE kategorije_idkategorije = kategorie_id;
 
   v_product_id NUMBER;
-  v_current_price NUMBER;
+  v_aktualni_cena NUMBER;
 
 BEGIN
-  OPEN product_cursor;
+  OPEN kurzor_produktu;
 
   LOOP
-    FETCH product_cursor INTO v_product_id, v_current_price;
-    EXIT WHEN product_cursor%NOTFOUND;
+    FETCH kurzor_produktu INTO v_product_id, v_aktualni_cena;
+    EXIT WHEN kurzor_produktu%NOTFOUND;
 
     UPDATE zbozi
-    SET aktualnicena = v_current_price * (1 + price_increase_percent / 100)
+    SET aktualnicena = v_aktualni_cena * (1 + procento_navyseni / 100)
     WHERE idzbozi = v_product_id;
 
   END LOOP;
 
-  CLOSE product_cursor;
+  CLOSE kurzor_produktu;
 
   COMMIT;
 END update_cena_zbozi_kategorii;

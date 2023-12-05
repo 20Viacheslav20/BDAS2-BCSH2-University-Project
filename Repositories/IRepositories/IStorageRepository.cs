@@ -1,4 +1,4 @@
-﻿using Models.Models;
+﻿using Models.Models.Storage;
 
 namespace Repositories.IRepositories
 {
@@ -9,5 +9,6 @@ namespace Repositories.IRepositories
         void Create(Storage storage);
         void Edit(Storage storage);
         void Delete(int id);
+        void AddProduct(Order order);
     }
 }

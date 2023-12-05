@@ -4,12 +4,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Models.Models;
 using Models.Models.Login;
+using Models.Models.Storage;
 using Repositories.IRepositories;
+using Repositories.Repositories;
 using System.Data;
 
 namespace BDAS2_BCSH2_University_Project.Controllers
 {
-    public class StorageController : Controller, IMainController<Storage>
+    public class StorageController : Controller, IStorageController
     {
         private readonly IStorageRepository _storageRepository;
         private readonly IShopRepository _shopRepository;
@@ -19,6 +21,7 @@ namespace BDAS2_BCSH2_University_Project.Controllers
             _storageRepository = storageRepository;
             _shopRepository = shopRepository;
         }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -123,11 +126,44 @@ namespace BDAS2_BCSH2_University_Project.Controllers
             return View(model);
         }
 
+        [HttpGet]
+        public IActionResult AddProduct(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+            return View(nameof(Order), new Order { StorageId = id.GetValueOrDefault() });
+        }
+
+        [HttpPost]
+        public IActionResult AddProduct(Order order)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _storageRepository.AddProduct(order);
+                   return RedirectToAction(nameof(Details), new{order.StorageId});
+                }
+                catch (Exception e)
+                {
+                    ModelState.AddModelError("", e.Message);
+                }
+            }
+            return View(order);
+        }
+
+        
         [NonAction]
         private void GetAllShops(int id)
         {
             List<Shop> shops = _shopRepository.GetShopsForStorage(id);
             ViewBag.Shops = new SelectList(shops, nameof(Shop.Id), nameof(Shop.Contact));
         }
+
+        
+
+         
     }
 }
