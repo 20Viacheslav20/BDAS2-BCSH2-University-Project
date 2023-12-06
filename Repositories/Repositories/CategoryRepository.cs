@@ -134,7 +134,7 @@ namespace Repositories.Repositories
                 command.CommandText = "update_cena_zbozi_kategorii";
 
                 command.Parameters.Add("kategorie_id", OracleDbType.Varchar2).Value = increasePrice.CategoryId;
-                command.Parameters.Add("procento_navyseni", OracleDbType.Int32).Value = increasePrice.PerCent;
+                command.Parameters.Add("procento_navyseni", OracleDbType.Int32).Value = increasePrice.Percent;
                 
 
                 command.ExecuteNonQuery();

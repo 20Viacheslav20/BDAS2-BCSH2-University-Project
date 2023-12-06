@@ -118,8 +118,9 @@ namespace BDAS2_BCSH2_University_Project.Controllers
             {
                 return NotFound();
             }
-            IncreasePrice order = new() { CategoryId = id.GetValueOrDefault() };
-            return View(order);
+            IncreasePrice increasePrice = new() { CategoryId = id.GetValueOrDefault() };
+            increasePrice.Category = GetCategoryById(increasePrice.CategoryId);
+            return View(increasePrice);
         }
 
 
@@ -140,6 +141,7 @@ namespace BDAS2_BCSH2_University_Project.Controllers
                     ModelState.AddModelError("", e.Message);
                 }
             }
+            increasePrice.Category = GetCategoryById(increasePrice.CategoryId);
             return View(increasePrice);
         }
 
@@ -149,6 +151,12 @@ namespace BDAS2_BCSH2_University_Project.Controllers
         {
             List<Category> categories = _categoryRepository.GetAll();
             return View(categories);
+        }
+
+        [NonAction]
+        private Category GetCategoryById(int id)
+        {
+            return _categoryRepository.GetById(id);
         }
     }
 }

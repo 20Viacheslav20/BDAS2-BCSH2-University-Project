@@ -1,4 +1,4 @@
-﻿@model Models.Models.Categor.IncreasePrice
+﻿@model IncreasePrice
 
 @{
     ViewData["Title"] = "Increase Price";
@@ -11,10 +11,11 @@
         <form asp-action="IncreasePrice">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="CategoryId" />
+            <h4 class="control-label">@Model.Category.Name</h4>
             <div class="form-group">
-                <label asp-for="PerCent" class="control-label"></label>
-                <input asp-for="PerCent" class="form-control" min="1"/>
-                <span asp-validation-for="PerCent" class="text-danger"></span>
+                <label asp-for="Percent" class="control-label"></label>
+                <input asp-for="Percent" class="form-control" min="1"/>
+                <span asp-validation-for="Percent" class="text-danger"></span>
             </div>
             <br />
             <div class="form-group">

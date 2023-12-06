@@ -5,6 +5,8 @@ namespace Models.Models.Categor
     {
         public int CategoryId { get; set; }
 
-        public int PerCent { get; set; }
+        public int Percent { get; set; }
+
+        public Category Category { get; set; }
     }
 }
