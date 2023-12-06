@@ -1,5 +1,4 @@
-﻿using Models.Models.Logs;
-using Models.Models.Product;
+﻿using Models.Models;
 
 namespace Repositories.IRepositories
 {
@@ -8,6 +7,6 @@ namespace Repositories.IRepositories
         List<Logs> GetAll();
         Logs GetById(int id);
         
-        void DeleteOldLogs(DaysOld daysOld);
+        void DeleteOldLogs(int dayCount);
     }
 }

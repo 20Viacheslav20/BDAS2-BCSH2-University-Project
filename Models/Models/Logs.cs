@@ -1,4 +1,4 @@
-﻿namespace Models.Models.Logs
+﻿namespace Models.Models
 {
     public class Logs
     {

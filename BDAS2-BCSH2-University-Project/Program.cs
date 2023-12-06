@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Models.Models;
-using Models.Models.Category;
 using Models.Models.Login;
 using Oracle.ManagedDataAccess.Client;
 using Repositories.IRepositories;

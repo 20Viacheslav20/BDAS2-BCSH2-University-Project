@@ -53,13 +53,13 @@ namespace BDAS2_BCSH2_University_Project.Controllers
         }
 
         [HttpGet]
-
         public IActionResult Index()
         {
             List<Stand> stands = _standRepository.GetAll();
             return View(stands);
         }
 
+        [HttpGet]
         public IActionResult Save(int? id)
         {
             if (id == null)
@@ -111,5 +111,7 @@ namespace BDAS2_BCSH2_University_Project.Controllers
             }
             return View(model);
         }
+
+
     }
 }

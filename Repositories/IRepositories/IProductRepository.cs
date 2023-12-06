@@ -11,8 +11,6 @@ namespace Repositories.IRepositories
         void Delete(int id);
         List<StoragedProduct> GetProductsFromStorage(int storageId);
 
-        List<ProductOnStand> GetProductOnStands(int standId);
-
-
+        List<StoragedProduct> GetProductOnStands(int standId);
     }
 }

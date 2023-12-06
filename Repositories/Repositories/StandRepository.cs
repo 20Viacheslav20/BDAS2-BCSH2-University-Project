@@ -21,7 +21,6 @@ namespace Repositories.Repositories
         public StandRepository(OracleConnection oracleConnection, IProductRepository productRepository)
         {
             _oracleConnection = oracleConnection;
-
             _productRepository = productRepository;
         }
 
@@ -111,19 +110,6 @@ namespace Repositories.Repositories
             }
         }
 
-        private Stand CreateStandFromReader(OracleDataReader reader)
-        {
-            Stand stand = new()
-            {
-                Id = int.Parse(reader["IDPULTU"].ToString()),
-                Number = int.Parse(reader["CISLO"].ToString()),
-                CountOfShelves = int.Parse(reader["POCETPOLICEK"].ToString())
-
-            };
-            return stand;
-        }
-
-
         public List<Stand> GetAll()
         {
             using (OracleCommand command = _oracleConnection.CreateCommand())
@@ -145,7 +131,7 @@ namespace Repositories.Repositories
             }
         }
 
-            public Stand GetById(int id)
+        public Stand GetById(int id)
         {
             using (OracleCommand command = _oracleConnection.CreateCommand())
             {
@@ -155,5 +141,17 @@ namespace Repositories.Repositories
 
             }
         }
+
+        private Stand CreateStandFromReader(OracleDataReader reader)
+        {
+            Stand stand = new()
+            {
+                Id = int.Parse(reader["IDPULTU"].ToString()),
+                Number = int.Parse(reader["CISLO"].ToString()),
+                CountOfShelves = int.Parse(reader["POCETPOLICEK"].ToString())
+            };
+            return stand;
+        }
+
     }
 }

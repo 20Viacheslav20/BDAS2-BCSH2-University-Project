@@ -226,7 +226,7 @@ namespace Repositories.Repositories
             }
         }
 
-        public List<ProductOnStand>GetProductOnStands(int standId)
+        public List<StoragedProduct>GetProductOnStands(int standId)
         {
             using (OracleCommand command = _oracleConnection.CreateCommand())
             {
@@ -243,7 +243,7 @@ namespace Repositories.Repositories
 
                 command.Parameters.Add("idPultu", OracleDbType.Int32).Value = standId;
 
-                List<ProductOnStand> productsOnStand = new List<ProductOnStand>();
+                List<StoragedProduct> productsOnStand = new List<StoragedProduct>();
 
                 using (OracleDataReader reader = command.ExecuteReader())
                 {
@@ -256,9 +256,9 @@ namespace Repositories.Repositories
             }
         }
 
-        private ProductOnStand CreateProductOnStandFromReader(OracleDataReader reader)
+        private StoragedProduct CreateProductOnStandFromReader(OracleDataReader reader)
         {
-            ProductOnStand product = new()
+            StoragedProduct product = new()
             {
                 Id = int.Parse(reader["IDZBOZI"].ToString()),
                 Name = reader["NAZEV"].ToString(),

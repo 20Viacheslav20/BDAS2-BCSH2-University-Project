@@ -6,7 +6,7 @@ using Models.Models.Login;
 using System.Data;
 using Models.Models.Product;
 using Repositories.Repositories;
-using Models.Models.Logs;
+using Models.Models;
 
 namespace BDAS2_BCSH2_University_Project.Controllers
 {
@@ -54,7 +54,7 @@ namespace BDAS2_BCSH2_University_Project.Controllers
             {
                 try
                 {
-                    // TODO call function from rep _logRepository.DeteleOldLogs(dayCount.GetValueOrDefault())
+                    _logRepository.DeleteOldLogs(dayCount.GetValueOrDefault());
                 }
                 catch (Exception e)
                 {

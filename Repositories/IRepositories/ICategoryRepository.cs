@@ -1,9 +1,5 @@
-﻿using Models.Models.Category;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Models.Models.Categor;
+
 
 namespace Repositories.IRepositories
 {
@@ -14,7 +10,6 @@ namespace Repositories.IRepositories
         void Create(Category category);
         void Edit(Category category);
         void Delete(int id);
-
         void IncreasePrice(IncreasePrice increasePrice);
     }
 }

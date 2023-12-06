@@ -4,7 +4,7 @@ using BDAS2_BCSH2_University_Project.IControllers;
 using Microsoft.AspNetCore.Authorization;
 using Models.Models.Login;
 using System.Data;
-using Models.Models.Category;
+using Models.Models.Categor;
 
 namespace BDAS2_BCSH2_University_Project.Controllers
 {
