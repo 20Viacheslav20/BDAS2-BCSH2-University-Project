@@ -16,7 +16,7 @@
                 @Html.DisplayNameFor(model => model.Count)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.isSelf)
+                @Html.DisplayNameFor(model => model.IsSelf)
             </th>
             <th></th>
         </tr>
@@ -28,7 +28,7 @@
                 @Html.DisplayFor(modelItem => item.Count)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.isSelf)
+                @Html.DisplayFor(modelItem => item.IsSelf)
             </td>
                 <td>
                     <a asp-action="Save" asp-route-id="@item.Id" class="btn btn-secondary btn-sm">Edit</a> |

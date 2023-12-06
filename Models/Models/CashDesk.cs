@@ -10,6 +10,6 @@ namespace Models.Models
         public int Count { get; set; }
 
         [Display(Name = "Is self")]
-        public bool isSelf { get; set; }
+        public bool IsSelf { get; set; }
     }
 }

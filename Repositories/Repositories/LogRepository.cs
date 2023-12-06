@@ -60,20 +60,6 @@ namespace Repositories.Repositories
             }
         }
 
-        private Logs CreateLogFromReader(OracleDataReader reader)
-        {
-            Logs log = new()
-            {
-                Id = int.Parse(reader["IDLOGU"].ToString()),
-                Table = reader["TABULKA"].ToString(),
-                Operation = reader["OPERACE"].ToString(),
-                Time = DateTime.Parse(reader["CAS"].ToString()), 
-                User = reader["UZIVATEL"].ToString(),
-                Changes = reader["ZMENY"].ToString()
-            };
-            return log;
-        }
-
         public void DeleteOldLogs(int dayCount)
         {
             using (OracleCommand command = _oracleConnection.CreateCommand())
@@ -90,5 +76,20 @@ namespace Repositories.Repositories
                 command.ExecuteNonQuery();
             }
         }
+
+        private Logs CreateLogFromReader(OracleDataReader reader)
+        {
+            Logs log = new()
+            {
+                Id = int.Parse(reader["IDLOGU"].ToString()),
+                Table = reader["TABULKA"].ToString(),
+                Operation = reader["OPERACE"].ToString(),
+                Time = DateTime.Parse(reader["CAS"].ToString()),
+                User = reader["UZIVATEL"].ToString(),
+                Changes = reader["ZMENY"].ToString()
+            };
+            return log;
+        }
+
     }
 }

@@ -1,0 +1,51 @@
+﻿@model IEnumerable<Sale>
+
+@{
+    ViewData["Title"] = "Sales";
+}
+
+<h1> @ViewData["Title"]</h1>
+
+<p>
+    <a asp-action="Save" class="btn btn-success">Create</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.SaleDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TotalPrice)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Payment.DisplayInfo)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model) 
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SaleDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TotalPrice)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Payment.DisplayInfo)
+                </td>
+                <td>
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <a asp-action="Save" asp-route-id="@item.Id" class="btn btn-secondary btn-sm">Edit</a>
+                        <a>|</a>
+                    }
+                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-secondary btn-sm">Details</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

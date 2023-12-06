@@ -9,6 +9,9 @@ namespace Models.Models
         [Display(Name = "Is ClubCard")]
         public bool IsClubCard { get; set; }
         public PaymentType Type { get; set; }
+
+        [Display(Name = "Payment info")]
+        public virtual string DisplayInfo { get; set; }
     }
 
     public class Coupon : Payment
@@ -18,6 +21,8 @@ namespace Models.Models
             Type = PaymentType.KUPON;
         }
         public int Number { get; set; }
+
+        public override string DisplayInfo => $"Coupon number: {Number}";
     }
 
     public class Cash : Payment
@@ -27,6 +32,7 @@ namespace Models.Models
             Type = PaymentType.HOTOVE;
         }
         public int Returned { get; set; }
+        public override string DisplayInfo => $"Cash returned: {Returned}";
     }
 
     public class CreditCard : Payment
@@ -40,6 +46,8 @@ namespace Models.Models
 
         [Display(Name = "Authorization Code")]
         public int AuthorizationCode { get; set; }
+
+        public override string DisplayInfo => $"Card number: {CardNumber}, authorization code: {AuthorizationCode}";
     }
 
     public enum PaymentType

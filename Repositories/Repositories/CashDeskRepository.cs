@@ -30,8 +30,8 @@ namespace Repositories.Repositories
                                           VALUES(:cashDeskCount, :cashDeskIsSelf)";
 
                 command.Parameters.Add(":cashDeskCount", OracleDbType.Int32).Value = cashDesk.Count;
-                //TODO
-                command.Parameters.Add(":cashDeskIsSelf", OracleDbType.Int16).Value =cashDesk.isSelf ? 1 : 0;
+
+                command.Parameters.Add(":cashDeskIsSelf", OracleDbType.Int16).Value = cashDesk.IsSelf ? 1 : 0;
 
                 command.ExecuteNonQuery();
 
@@ -116,7 +116,7 @@ namespace Repositories.Repositories
             {
                 Id = int.Parse(reader["IDPOKLADNY"].ToString()),
                 Count = int.Parse(reader["CISLO"].ToString()),
-                isSelf = Convert.ToBoolean(int.Parse(reader["JESAMOOBSLUZNA"].ToString()))
+                IsSelf = Convert.ToBoolean(int.Parse(reader["JESAMOOBSLUZNA"].ToString()))
 
             };
             return cashDesk;

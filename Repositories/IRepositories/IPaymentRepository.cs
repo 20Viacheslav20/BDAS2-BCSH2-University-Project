@@ -9,5 +9,6 @@ namespace Repositories.IRepositories
         Payment GetPayment(int id);
         void Create(Payment payment);
         void Delete(Payment payment);
+        List<Payment> GetPaymentsForSales(int saleId);
     }
 }

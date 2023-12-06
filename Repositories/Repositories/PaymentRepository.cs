@@ -171,6 +171,58 @@ namespace Repositories.Repositories
                 }
             }
         }
+
+        public List<Payment> GetPaymentsForSales(int saleId)
+        {
+            using (OracleCommand command = _oracleConnection.CreateCommand())
+            {
+                if (_oracleConnection.State == ConnectionState.Closed)
+                    _oracleConnection.Open();
+
+                command.CommandText = @$"SELECT
+                                            p.idplatby AS IDPLATBY,
+                                            p.jeclubcarta AS JECLUBCARTA,
+                                            p.platba_type AS TYPPLATBY,
+                                            h.vraceno AS VRACENOHOTOVE,
+                                            k.cislokarty AS CISLOKARTY,
+                                            k.autorizacnikod AS AUTORIZACNIKOD,
+                                            ku.cislo AS CISLOKUPONU
+                                        FROM
+                                            {TABLE} p
+                                        LEFT JOIN
+                                            hotove h ON p.idplatby = h.idplatby
+                                        LEFT JOIN
+                                            karty k ON p.idplatby = k.idplatby
+                                        LEFT JOIN
+                                            kupony ku ON p.idplatby = ku.idplatby
+                                        WHERE
+                                            (
+                                                NOT EXISTS (
+                                                    SELECT 1
+                                                    FROM prodeje
+                                                    WHERE prodeje.platba_idplatby = p.idplatby
+                                                )
+                                                OR
+                                                p.idplatby = :idProdeje 
+                                            )";
+                command.Parameters.Clear();
+
+                command.Parameters.Add("idProdeje", OracleDbType.Int32).Value = saleId;
+
+                List<Payment> payments = new List<Payment>();
+
+                using (OracleDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        Payment payment = CreatePaymentFromReader(reader);
+                        payments.Add(payment);
+                    }
+                    return payments;
+                }
+            }
+        }
+
         private Payment CreatePaymentFromReader(OracleDataReader reader)
         {
             int id = int.Parse(reader["IDPLATBY"].ToString());
