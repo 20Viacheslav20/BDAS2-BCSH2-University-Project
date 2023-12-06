@@ -14,11 +14,15 @@ namespace Repositories.Repositories
     {
         private readonly OracleConnection _oracleConnection;
 
+        private readonly IProductRepository _productRepository;
+
         private const string TABLE = "PULTY";
 
-        public StandRepository(OracleConnection oracleConnection)
+        public StandRepository(OracleConnection oracleConnection, IProductRepository productRepository)
         {
             _oracleConnection = oracleConnection;
+
+            _productRepository = productRepository;
         }
 
         public void Create(Stand stand)

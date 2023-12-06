@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Models.Models.Product;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -15,5 +16,7 @@ namespace Models.Models
 
         [Display(Name = "Count of shelves")]
         public int CountOfShelves { get; set; }
+
+        public List<ProductOnStand> Products { get; set; }
     }
 }

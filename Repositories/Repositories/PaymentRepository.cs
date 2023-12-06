@@ -221,5 +221,10 @@ namespace Repositories.Repositories
             }
             return payment;
         }
+
+        public void Delete(int id, string type)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

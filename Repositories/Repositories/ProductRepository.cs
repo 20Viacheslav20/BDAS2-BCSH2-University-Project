@@ -1,4 +1,5 @@
 ﻿using Models.Models.Product;
+using Models.Models.Storage;
 using Oracle.ManagedDataAccess.Client;
 using Repositories.IRepositories;
 using System.Data;
@@ -224,6 +225,48 @@ namespace Repositories.Repositories
                 }
             }
         }
+
+        public List<ProductOnStand>GetProductOnStands(int standId)
+        {
+            using (OracleCommand command = _oracleConnection.CreateCommand())
+            {
+                if (_oracleConnection.State == ConnectionState.Closed)
+                    _oracleConnection.Open();
+
+                command.CommandText = @$"SELECT z.IDZBOZI IDZBOZI, z.nazev NAZEV, znp.pocetZbozi POCETZBOZI  
+                                        FROM PULTY p
+                                        JOIN ZBOZI_NA_PULTE znp ON p.IDPULTU = znp.PULTY_IDPULTU
+                                        JOIN ZBOZI z ON znp.ZBOZI_IDZBOZI = z.IDZBOZI
+                                        WHERE p.IDPULTU = :idPultu;
+ 
+                ";
+
+                command.Parameters.Add("idPultu", OracleDbType.Int32).Value = standId;
+
+                List<ProductOnStand> productsOnStand = new List<ProductOnStand>();
+
+                using (OracleDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        productsOnStand.Add(CreateProductOnStandFromReader(reader));
+                    }
+                    return productsOnStand;
+                }
+            }
+        }
+
+        private ProductOnStand CreateProductOnStandFromReader(OracleDataReader reader)
+        {
+            ProductOnStand product = new()
+            {
+                Id = int.Parse(reader["IDZBOZI"].ToString()),
+                Name = reader["NAZEV"].ToString(),
+                Count = int.Parse(reader["POCETZBOZI"].ToString()),
+            };
+            return product;
+        }
+
 
         private string GetAviability(int id)
         {

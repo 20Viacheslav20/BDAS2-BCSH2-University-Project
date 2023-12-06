@@ -30,6 +30,13 @@
         </dd>
 
     </dl>
+    <h5>Products</h5>
+    <ul>
+        @foreach (var storagedProduct in Model.Products)
+        {
+            <li>@storagedProduct.Name - @storagedProduct.Count units </li>
+        }
+    </ul>
 </div>
 <div>
     <div class="button-row">
