@@ -13,10 +13,10 @@
     </div>
 }
 <form asp-controller="Logs" asp-action="DeteleOldLogs" method="get">
-    <p>
-        How old? <input type="number" name="dayCount" min="1"/>
-        <input type="submit" value="Delete" />
-    </p>
+    <div style="width:400px; display:flex; gap:10px">
+        @*How old?*@ <input type="number" name="dayCount" min="1" placeholder="How old?" class="form-control"/>
+        <button type="submit" value="Delete" class="btn btn-success">Delete</button>
+    </div>
 </form>
 <table class="table">
     <thead>
