@@ -1,9 +1,9 @@
-﻿1=========================
-Сколько по категриям было продано
+﻿--1=========================
+--Сколько по категриям было продано
 
-Kolik bylo prodano zbozi podle kazde kategorije
+--Kolik bylo prodano zbozi podle kazde kategorije
 
-CREATE VIEW v_prodej_kategorie AS
+CREATE OR REPLACE VIEW v_prodej_kategorie AS
 SELECT k.nazev AS kategorie_nazev, SUM(pz.prodejnicena * pz.pocetzbozi) AS total_sales
 FROM prodane_zbozi pz
 JOIN zbozi z ON pz.zbozi_idzbozi = z.idzbozi
@@ -12,12 +12,12 @@ GROUP BY k.nazev;
 
 select * from v_prodej_kategorie;
 
-2===========================
-Показывает все продажи
+--2===========================
+--Показывает все продажи
 
-Ukazuje vsechny prodeje s detalni informace 
+--Ukazuje vsechny prodeje s detalni informace 
 
-CREATE VIEW v_prodeje AS
+CREATE OR REPLACE VIEW v_prodeje AS
 SELECT pr.idprodeje, pr.datumprodeje, pr.celkovacena, p.platba_type,
        z.nazev AS nazev_zbozi, pz.pocetzbozi
 FROM prodeje pr
@@ -28,12 +28,12 @@ JOIN zbozi z ON pz.zbozi_idzbozi = z.idzbozi;
 
 select * from v_prodeje;
 
-3==========================
-Показывает сколько товаров есть на складе и на полках
+--3==========================
+--Показывает сколько товаров есть на складе и на полках
 
-Ukazuje kolik je zbozi na skladech a pultech
+--Ukazuje kolik je zbozi na skladech a pultech
 
-CREATE VIEW v_zbozi_dostupnost AS
+CREATE OR REPLACE  VIEW v_zbozi_dostupnost AS
 SELECT z.idzbozi, z.nazev, z.aktualnicena,
        SUM(zns.pocetzbozi) AS celkem_na_skladech,
        SUM(znp.pocetzbozi) AS celkem_na_pulte

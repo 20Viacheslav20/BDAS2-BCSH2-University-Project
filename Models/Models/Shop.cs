@@ -7,10 +7,8 @@ namespace Models.Models
         public int Id { get; set; }
 
         [Display(Name = "Contact tel")]
-        public string Contact { get; set; }
-        
+        public string Contact { get; set; }  
         public double Square {  get; set; }
-
         public string StringAddress => Address != null ? $"{Address.City} - {Address.Street}" : "";
         public int AddressId { get; set; }
         public Address Address { get; set; }

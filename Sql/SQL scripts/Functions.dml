@@ -77,7 +77,7 @@ BEGIN
   END IF;
 
 END validne_rc;
-
+/
 CREATE OR REPLACE FUNCTION get_dostupnost_zbozi(id_produktu IN zbozi.idzbozi%TYPE) RETURN VARCHAR2 AS
   dostupnost_info VARCHAR2(4000);
   celkove_mnozstvi NUMBER;
