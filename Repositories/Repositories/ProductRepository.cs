@@ -237,9 +237,7 @@ namespace Repositories.Repositories
                                         FROM PULTY p
                                         JOIN ZBOZI_NA_PULTE znp ON p.IDPULTU = znp.PULTY_IDPULTU
                                         JOIN ZBOZI z ON znp.ZBOZI_IDZBOZI = z.IDZBOZI
-                                        WHERE p.IDPULTU = :idPultu;
- 
-                ";
+                                        WHERE p.IDPULTU = :idPultu";
 
                 command.Parameters.Add("idPultu", OracleDbType.Int32).Value = standId;
 
@@ -249,25 +247,14 @@ namespace Repositories.Repositories
                 {
                     while (reader.Read())
                     {
-                        productsOnStand.Add(CreateProductOnStandFromReader(reader));
+                        productsOnStand.Add(CreateStoragedProductFromReader(reader));
                     }
                     return productsOnStand;
                 }
             }
         }
 
-        private StoragedProduct CreateProductOnStandFromReader(OracleDataReader reader)
-        {
-            StoragedProduct product = new()
-            {
-                Id = int.Parse(reader["IDZBOZI"].ToString()),
-                Name = reader["NAZEV"].ToString(),
-                Count = int.Parse(reader["POCETZBOZI"].ToString()),
-            };
-            return product;
-        }
-
-
+ 
         private string GetAviability(int id)
         {
             using (OracleCommand command = _oracleConnection.CreateCommand())

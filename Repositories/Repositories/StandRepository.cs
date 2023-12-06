@@ -1,6 +1,7 @@
 ﻿using Models.Models;
 using Oracle.ManagedDataAccess.Client;
 using Repositories.IRepositories;
+using System.Data;
 
 
 namespace Repositories.Repositories
@@ -89,21 +90,6 @@ namespace Repositories.Repositories
             }
         }
 
-        private Stand GetByIdWithOracleCommand(OracleCommand command, object id)
-        {
-            command.CommandText = $"SELECT * FROM {TABLE} where IDPULTU = :standId";
-
-            command.Parameters.Add("standId", OracleDbType.Int32).Value = id;
-
-            using (OracleDataReader reader = command.ExecuteReader())
-            {
-                if (!reader.Read())
-                {
-                    return null;
-                }
-                return CreateStandFromReader(reader);
-            }
-        }
 
         public List<Stand> GetAll()
         {
@@ -130,10 +116,29 @@ namespace Repositories.Repositories
         {
             using (OracleCommand command = _oracleConnection.CreateCommand())
             {
-                _oracleConnection.Open();
+                if (_oracleConnection.State == ConnectionState.Closed)
+                    _oracleConnection.Open();
 
                 return GetByIdWithOracleCommand(command, id);
 
+            }
+        }
+        private Stand GetByIdWithOracleCommand(OracleCommand command, int id)
+        {
+            command.CommandText = $"SELECT * FROM {TABLE} where IDPULTU = :standId";
+
+            command.Parameters.Add("standId", OracleDbType.Int32).Value = id;
+
+            using (OracleDataReader reader = command.ExecuteReader())
+            {
+                if (!reader.Read())
+                {
+                    return null;
+                }
+                Stand stand = CreateStandFromReader(reader);
+
+                stand.Products = _productRepository.GetProductOnStands(id);
+                return stand ;
             }
         }
 

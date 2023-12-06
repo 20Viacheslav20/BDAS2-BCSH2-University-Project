@@ -29,9 +29,9 @@ namespace Repositories.Repositories
                 command.CommandText = $@"INSERT INTO {TABLE} (CISLO, JESAMOOBSLUZNA)
                                           VALUES(:cashDeskCount, :cashDeskIsSelf)";
 
-                command.Parameters.Add("cashDeskCount", OracleDbType.Int32).Value = cashDesk.Count;
+                command.Parameters.Add(":cashDeskCount", OracleDbType.Int32).Value = cashDesk.Count;
                 //TODO
-                command.Parameters.Add("cashDeskIsSelf", OracleDbType.Int32).Value = 1/*cashDesk.isSelf*/;
+                command.Parameters.Add(":cashDeskIsSelf", OracleDbType.Int16).Value =cashDesk.isSelf ? 1 : 0;
 
                 command.ExecuteNonQuery();
 
@@ -75,7 +75,6 @@ namespace Repositories.Repositories
                 //{
                 //    query += "JESAMOOBSLUZNA = :cashDeskIsSelf, ";
                 //    command.Parameters.Add("cashDeskIsSelf", OracleDbType.Boolean).Value = cashDesk.isSelf;
-
                   
                 //}
                 if (!string.IsNullOrEmpty(query))
