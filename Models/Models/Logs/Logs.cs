@@ -1,9 +1,8 @@
-﻿
-namespace Models.Models
+﻿namespace Models.Models.Logs
 {
     public class Logs
     {
-        public int  Id { get; set; }
+        public int Id { get; set; }
 
         public string Table { get; set; }
 
@@ -11,7 +10,7 @@ namespace Models.Models
 
         public DateTime Time { get; set; }
 
-        public string User {  get; set; }
+        public string User { get; set; }
 
         public string Changes { get; set; }
 

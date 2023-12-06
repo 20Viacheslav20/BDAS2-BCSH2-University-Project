@@ -1,6 +1,8 @@
-﻿using Models.Models;
+﻿using Models.Models.Category;
+using Models.Models.Logs;
 using Oracle.ManagedDataAccess.Client;
 using Repositories.IRepositories;
+using System.Data;
 
 namespace Repositories.Repositories
 {
@@ -70,6 +72,23 @@ namespace Repositories.Repositories
                 Changes = reader["ZMENY"].ToString()
             };
             return log;
+        }
+
+        public void DeleteOldLogs(DaysOld daysOld)
+        {
+            using (OracleCommand command = _oracleConnection.CreateCommand())
+            {
+                _oracleConnection.Open();
+
+                command.CommandType = CommandType.StoredProcedure;
+                command.CommandText = "delete_starsi_logy";
+
+                command.Parameters.Add("kategorie_id", OracleDbType.Varchar2).Value = daysOld.Days;
+               
+
+
+                command.ExecuteNonQuery();
+            }
         }
     }
 }

@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Models.Models;
+using Models.Models.Category;
 using Models.Models.Login;
 using Models.Models.Product;
 using Repositories.IRepositories;

@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Models.Models;
+using Models.Models.Category;
 using Models.Models.Login;
 using Oracle.ManagedDataAccess.Client;
 using Repositories.IRepositories;
@@ -11,7 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
-builder.Services.AddScoped<IMainRepository<Category>, CategoryRepository>();
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IShopRepository, ShopRepository>();
 builder.Services.AddScoped<IMainRepository<Position>, PositionRepository>();
 builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();

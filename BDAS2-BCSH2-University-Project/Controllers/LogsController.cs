@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Models.Models;
 using BDAS2_BCSH2_University_Project.IControllers;
 using Repositories.IRepositories;
 using Microsoft.AspNetCore.Authorization;
@@ -7,6 +6,7 @@ using Models.Models.Login;
 using System.Data;
 using Models.Models.Product;
 using Repositories.Repositories;
+using Models.Models.Logs;
 
 namespace BDAS2_BCSH2_University_Project.Controllers
 {

@@ -1,4 +1,4 @@
-﻿using Models.Models;
+﻿using Models.Models.Logs;
 using Models.Models.Product;
 
 namespace Repositories.IRepositories
@@ -7,5 +7,7 @@ namespace Repositories.IRepositories
     {
         List<Logs> GetAll();
         Logs GetById(int id);
+        
+        void DeleteOldLogs(DaysOld daysOld);
     }
 }

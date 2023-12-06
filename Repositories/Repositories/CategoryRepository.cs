@@ -1,11 +1,12 @@
-using Models.Models;
+using Models.Models.Category;
+using Models.Models.Storage;
 using Oracle.ManagedDataAccess.Client;
 using Repositories.IRepositories;
 using System.Data;
 
 namespace Repositories.Repositories
 {
-    public class CategoryRepository : IMainRepository<Category>
+    public class CategoryRepository : ICategoryRepository
     {
         private readonly OracleConnection _oracleConnection;
 
@@ -122,6 +123,23 @@ namespace Repositories.Repositories
                 Name = reader["NAZEV"].ToString()
             };
             return category;
+        }
+
+        public void IncreasePrice(IncreasePrice increasePrice)
+        {
+            using (OracleCommand command = _oracleConnection.CreateCommand())
+            {
+                _oracleConnection.Open();
+
+                command.CommandType = CommandType.StoredProcedure;
+                command.CommandText = "update_cena_zbozi_kategorii";
+
+                command.Parameters.Add("kategorie_id", OracleDbType.Varchar2).Value = increasePrice.CategoryId;
+                command.Parameters.Add("procento_navyseni", OracleDbType.Int32).Value = increasePrice.PerCent;
+                
+
+                command.ExecuteNonQuery();
+            }
         }
     }
 }
