@@ -38,7 +38,7 @@ BEGIN
 
   COMMIT;
 END delete_starsi_logy;
-
+/
 CREATE OR REPLACE PROCEDURE update_cena_zbozi_kategorii (
   kategorie_id IN kategorije.idkategorije%TYPE,
   procento_navyseni IN NUMBER

@@ -1,12 +1,7 @@
 ﻿using Models.Models;
-using Models.Models.CashDesk;
 using Oracle.ManagedDataAccess.Client;
 using Repositories.IRepositories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace Repositories.Repositories
 {

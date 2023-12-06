@@ -4,6 +4,11 @@ namespace Models.Models
 {
     public class Employee
     {
+        public Employee()
+        {
+            Subordinates = new List<Employee>();
+        }
+
         public int Id { get; set; }
         
         [Required]

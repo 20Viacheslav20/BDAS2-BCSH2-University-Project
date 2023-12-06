@@ -5,6 +5,10 @@ namespace Models.Models
 {
     public class Stand
     {
+        public Stand()
+        {
+            Products = new List<StoragedProduct>();
+        }
         public int Id { get; set; }
 
         public int Number { get; set; }

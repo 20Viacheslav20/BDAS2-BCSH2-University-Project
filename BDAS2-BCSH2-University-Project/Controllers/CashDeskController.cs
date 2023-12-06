@@ -1,6 +1,6 @@
 ﻿using BDAS2_BCSH2_University_Project.IControllers;
 using Microsoft.AspNetCore.Mvc;
-using Models.Models.CashDesk;
+using Models.Models;
 using Repositories.IRepositories;
 using Repositories.Repositories;
 

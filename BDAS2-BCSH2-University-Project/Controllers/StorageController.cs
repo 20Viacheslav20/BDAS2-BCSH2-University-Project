@@ -62,13 +62,6 @@ namespace BDAS2_BCSH2_University_Project.Controllers
             return View(storage);
         }
 
-        [HttpGet]
-        [Authorize]
-        public IActionResult Index()
-        {
-            List<Storage> storages = _storageRepository.GetAll();
-            return View(storages);
-        }
 
         [HttpGet]
         [Authorize(Roles = nameof(UserRole.Admin) + ", " + nameof(UserRole.ShiftLeader))]
@@ -140,6 +133,8 @@ namespace BDAS2_BCSH2_University_Project.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = nameof(UserRole.ShiftLeader))]
         public IActionResult AddProduct(Order order)
         {
             if (ModelState.IsValid)
@@ -158,7 +153,15 @@ namespace BDAS2_BCSH2_University_Project.Controllers
             return View(order);
         }
 
-        
+        [HttpGet]
+        [Authorize]
+        public IActionResult Index()
+        {
+            List<Storage> storages = _storageRepository.GetAll();
+            return View(storages);
+        }
+
+
         [NonAction]
         private void GetAllShops(int id)
         {

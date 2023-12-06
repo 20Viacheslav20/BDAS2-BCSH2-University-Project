@@ -5,6 +5,10 @@ namespace Models.Models.Storage
 {
     public class Storage
     {
+        public Storage()
+        {
+            Products = new List<StoragedProduct>();
+        }
         public int Id { get; set; }
 
         [Display(Name = "Number of shelves")]

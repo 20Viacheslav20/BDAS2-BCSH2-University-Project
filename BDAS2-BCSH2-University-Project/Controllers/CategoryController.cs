@@ -3,16 +3,15 @@ using Repositories.IRepositories;
 using BDAS2_BCSH2_University_Project.IControllers;
 using Microsoft.AspNetCore.Authorization;
 using Models.Models.Login;
-using System.Data;
 using Models.Models.Categor;
 
 namespace BDAS2_BCSH2_University_Project.Controllers
 {
-    public class CategoryController : Controller, IMainController<Category>
+    public class CategoryController : Controller, ICategoryController
     {
-        private readonly IMainRepository<Category> _categoryRepository;
+        private readonly ICategoryRepository _categoryRepository;
 
-        public CategoryController(IMainRepository<Category> categoryRepository)
+        public CategoryController(ICategoryRepository categoryRepository)
         {
             _categoryRepository = categoryRepository;
         }
@@ -110,6 +109,39 @@ namespace BDAS2_BCSH2_University_Project.Controllers
             return View(model);
         }
 
+
+        [HttpGet]
+        [Authorize(Roles = nameof(UserRole.Admin))]
+        public IActionResult IncreasePrice(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+            IncreasePrice order = new() { CategoryId = id.GetValueOrDefault() };
+            return View(order);
+        }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = nameof(UserRole.Admin))]
+        public IActionResult IncreasePrice(IncreasePrice increasePrice)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _categoryRepository.IncreasePrice(increasePrice);
+                    return RedirectToAction(nameof(Details), new { id = increasePrice.CategoryId });
+                }
+                catch (Exception e)
+                {
+                    ModelState.AddModelError("", e.Message);
+                }
+            }
+            return View(increasePrice);
+        }
 
         [HttpGet]
         [Authorize]
