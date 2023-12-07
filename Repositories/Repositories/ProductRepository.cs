@@ -270,7 +270,6 @@ namespace Repositories.Repositories
                 }
             }
         }
-        }
 
         private List<Product> SearchProduct(string search)
         {
