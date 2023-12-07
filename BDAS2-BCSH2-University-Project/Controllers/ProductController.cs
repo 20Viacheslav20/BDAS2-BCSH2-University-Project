@@ -9,7 +9,7 @@ using Repositories.IRepositories;
 
 namespace BDAS2_BCSH2_University_Project.Controllers
 {
-    public class ProductController : Controller, IMainController<Product>
+    public class ProductController : Controller, IProductController
     {
         private readonly IProductRepository _productRepository;
         private readonly ICategoryRepository _categoryRepository;
@@ -124,6 +124,14 @@ namespace BDAS2_BCSH2_University_Project.Controllers
         {
             List<Category> categories = _categoryRepository.GetAll();
             ViewBag.Categories = new SelectList(categories, nameof(Category.Id), nameof(Category.Name));
+        }
+
+        [HttpGet]
+        [Authorize]
+        public IActionResult Stats()
+        {
+            List<ProductStats> productStats = _productRepository.GetProductStats();
+            return View(productStats);
         }
     }
 }

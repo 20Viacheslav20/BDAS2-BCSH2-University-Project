@@ -13,9 +13,10 @@
 }
 @if (User.Identity.IsAuthenticated)
 {
-    <p>
+    <div style="display:flex; gap:10px;">
         <a asp-action="Save" class="btn btn-success">Create</a>
-    </p>
+        <a asp-action="Stats" class="btn btn-success">Stats</a>
+    </div>
 }
 <table class="table">
     <thead>

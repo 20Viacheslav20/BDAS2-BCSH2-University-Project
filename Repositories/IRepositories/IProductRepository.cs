@@ -10,7 +10,7 @@ namespace Repositories.IRepositories
         void Edit(Product product);
         void Delete(int id);
         List<StoragedProduct> GetProductsFromStorage(int storageId);
-
         List<StoragedProduct> GetProductOnStands(int standId);
+        List<ProductStats> GetProductStats();
     }
 }
