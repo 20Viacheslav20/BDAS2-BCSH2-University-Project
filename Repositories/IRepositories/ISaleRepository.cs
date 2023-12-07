@@ -11,5 +11,7 @@ namespace Repositories.IRepositories
         void Create(Sale sale);
         void Edit(Sale sale);
         void Delete(int id);
+
+        List<Sale> GetNotUsedSales();
     }
 }

@@ -130,7 +130,6 @@ namespace Repositories.Repositories
                 if (_oracleConnection.State == ConnectionState.Closed)
                     _oracleConnection.Open();
 
-
                 command.CommandText = @$"SELECT IDPRODEJE, DATUMPRODEJE, 
                                         CELKOVACENA, PLATBA_IDPLATBY 
                                         FROM {TABLE} WHERE IDPRODEJE = :saleId";
@@ -144,6 +143,31 @@ namespace Repositories.Repositories
                         return null;
                     }
                     return CreateSaleFromReader(reader);
+                }
+            }
+        }
+
+        public List<Sale> GetNotUsedSales()
+        {
+            using (OracleCommand command = _oracleConnection.CreateCommand())
+            {
+                if (_oracleConnection.State == ConnectionState.Closed)
+                    _oracleConnection.Open();
+
+                command.CommandText = @$"SELECT * FROM {TABLE} p 
+                                        WHERE NOT EXISTS 
+                                            (SELECT 1 FROM prodane_zbozi pz 
+                                              WHERE pz.prodeje_idprodeje = p.idprodeje)";
+
+                List<Sale> sales = new List<Sale>();
+
+                using (OracleDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        sales.Add(CreateSaleFromReader(reader));
+                    }
+                    return sales;
                 }
             }
         }

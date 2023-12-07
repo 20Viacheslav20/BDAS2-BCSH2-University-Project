@@ -15,5 +15,7 @@ namespace Models.Models
         public int TotalPrice { get; set; }
         public int PaymentId { get; set; }
         public Payment Payment { get; set; }
+
+        public string Displayinfo => $"{SaleDate.ToString("dd.MM.yyyy")} | {TotalPrice} | {Payment.Type}";
     }
 }

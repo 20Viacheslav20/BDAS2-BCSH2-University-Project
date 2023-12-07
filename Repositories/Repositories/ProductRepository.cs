@@ -21,7 +21,8 @@ namespace Repositories.Repositories
         {
             using (OracleCommand command = _oracleConnection.CreateCommand())
             {
-                _oracleConnection.Open();
+                if (_oracleConnection.State == ConnectionState.Closed)
+                    _oracleConnection.Open();
 
                 command.CommandText = @$"SELECT z.idzbozi IDZBOZI, z.nazev NAZEV,
                     z.aktualnicena AKTUALNICENA, z.cenazeclubcartou CENAZECLUBCARTOU,
@@ -165,6 +166,110 @@ namespace Repositories.Repositories
             }
         }
 
+        public List<StoragedProduct> GetProductsFromStorage(int storageId)
+        {
+            using (OracleCommand command = _oracleConnection.CreateCommand())
+            {
+                if (_oracleConnection.State == ConnectionState.Closed)
+                    _oracleConnection.Open();
+
+                command.CommandText = @$"SELECT z.IDZBOZI IDZBOZI, z.nazev NAZEV, zns.pocetZbozi POCETZBOZI 
+                                        FROM SKLADY s
+                                        JOIN ZBOZI_NA_SKLADE zns ON s.idSkladu = zns.SKLADY_idSkladu
+                                        JOIN ZBOZI z ON zns.ZBOZI_idZbozi = z.idZbozi
+                                        WHERE zns.SKLADY_idSkladu =:idSkladu ";
+
+                command.Parameters.Add("idSkladu", OracleDbType.Int32).Value = storageId;
+
+                List<StoragedProduct> storagedProducts = new List<StoragedProduct>();
+
+                using (OracleDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        storagedProducts.Add(CreateStoragedProductFromReader(reader));
+                    }
+                    return storagedProducts;
+                }
+            }
+        }
+
+        public List<StoragedProduct> GetProductOnStands(int standId)
+        {
+            using (OracleCommand command = _oracleConnection.CreateCommand())
+            {
+                if (_oracleConnection.State == ConnectionState.Closed)
+                    _oracleConnection.Open();
+
+                command.CommandText = @$"SELECT z.IDZBOZI IDZBOZI, z.nazev NAZEV, znp.pocetZbozi POCETZBOZI  
+                                        FROM PULTY p
+                                        JOIN ZBOZI_NA_PULTE znp ON p.IDPULTU = znp.PULTY_IDPULTU
+                                        JOIN ZBOZI z ON znp.ZBOZI_IDZBOZI = z.IDZBOZI
+                                        WHERE p.IDPULTU = :idPultu";
+
+                command.Parameters.Add("idPultu", OracleDbType.Int32).Value = standId;
+
+                List<StoragedProduct> productsOnStand = new List<StoragedProduct>();
+
+                using (OracleDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        productsOnStand.Add(CreateStoragedProductFromReader(reader));
+                    }
+                    return productsOnStand;
+                }
+            }
+        }
+ 
+        private string GetAviability(int id)
+        {
+            using (OracleCommand command = _oracleConnection.CreateCommand())
+            {
+                if (_oracleConnection.State == ConnectionState.Closed)
+                    _oracleConnection.Open();
+
+                command.CommandText = $"SELECT GET_DOSTUPNOST_ZBOZI(:p_idzbozi) FROM DUAL";
+                command.Parameters.Add("p_idzbozi", OracleDbType.Int32).Value = id;
+
+                string aviability = command.ExecuteScalar().ToString();
+
+                return aviability;
+            }
+        }
+
+        private List<Product> SearchProduct(string search)
+        {
+            using (OracleCommand command = _oracleConnection.CreateCommand())
+            {
+                if (_oracleConnection.State == ConnectionState.Closed)
+                    _oracleConnection.Open();
+
+                command.CommandText = @$"SELECT z.idzbozi IDZBOZI, z.nazev NAZEV,
+                    z.aktualnicena AKTUALNICENA, z.cenazeclubcartou CENAZECLUBCARTOU,
+                    k.nazev KATEGORIJE, k.idkategorije IDKATEGORIJE,
+                    z.hmotnost HMOTNOST FROM {TABLE} z 
+                    JOIN KATEGORIJE k ON z.kategorije_idkategorije = k.idkategorije WHERE ";
+                // TODO
+/*                SELECT z.idzbozi IDZBOZI, z.nazev NAZEV,
+z.aktualnicena AKTUALNICENA, z.cenazeclubcartou CENAZECLUBCARTOU,
+k.nazev KATEGORIJE, k.idkategorije IDKATEGORIJE,
+z.hmotnost HMOTNOST FROM ZBOZI z
+JOIN KATEGORIJE k ON z.kategorije_idkategorije = k.idkategorije WHERE LOWER(z.nazev) = 'M';*/
+
+                List<Product> products = new List<Product>();
+
+                using (OracleDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        products.Add(CreateProductFromReader(reader));
+                    }
+                    return products;
+                }
+            }
+        }
+
         private Product CreateProductFromReader(OracleDataReader reader)
         {
             string price = reader["CENAZECLUBCARTOU"].ToString();
@@ -196,79 +301,6 @@ namespace Repositories.Repositories
             return product;
         }
 
-
-        public List<StoragedProduct> GetProductsFromStorage(int storageId)
-        {
-            using (OracleCommand command = _oracleConnection.CreateCommand())
-            {
-                if (_oracleConnection.State == ConnectionState.Closed)
-                    _oracleConnection.Open();
-
-                command.CommandText = @$"SELECT z.IDZBOZI IDZBOZI, z.nazev NAZEV, zns.pocetZbozi POCETZBOZI 
-                                        FROM SKLADY s
-                                        JOIN ZBOZI_NA_SKLADE zns ON s.idSkladu = zns.SKLADY_idSkladu
-                                        JOIN ZBOZI z ON zns.ZBOZI_idZbozi = z.idZbozi
-                                        WHERE zns.SKLADY_idSkladu =:idSkladu ";
-
-                command.Parameters.Add("idSkladu", OracleDbType.Int32).Value = storageId;
-
-                List<StoragedProduct> storagedProducts = new List<StoragedProduct>();
-
-                using (OracleDataReader reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        storagedProducts.Add(CreateStoragedProductFromReader(reader));
-                    }
-                    return storagedProducts;
-                }
-            }
-        }
-
-        public List<StoragedProduct>GetProductOnStands(int standId)
-        {
-            using (OracleCommand command = _oracleConnection.CreateCommand())
-            {
-                if (_oracleConnection.State == ConnectionState.Closed)
-                    _oracleConnection.Open();
-
-                command.CommandText = @$"SELECT z.IDZBOZI IDZBOZI, z.nazev NAZEV, znp.pocetZbozi POCETZBOZI  
-                                        FROM PULTY p
-                                        JOIN ZBOZI_NA_PULTE znp ON p.IDPULTU = znp.PULTY_IDPULTU
-                                        JOIN ZBOZI z ON znp.ZBOZI_IDZBOZI = z.IDZBOZI
-                                        WHERE p.IDPULTU = :idPultu";
-
-                command.Parameters.Add("idPultu", OracleDbType.Int32).Value = standId;
-
-                List<StoragedProduct> productsOnStand = new List<StoragedProduct>();
-
-                using (OracleDataReader reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        productsOnStand.Add(CreateStoragedProductFromReader(reader));
-                    }
-                    return productsOnStand;
-                }
-            }
-        }
-
- 
-        private string GetAviability(int id)
-        {
-            using (OracleCommand command = _oracleConnection.CreateCommand())
-            {
-                if (_oracleConnection.State == ConnectionState.Closed)
-                    _oracleConnection.Open();
-
-                command.CommandText = $"SELECT GET_DOSTUPNOST_ZBOZI(:p_idzbozi) FROM DUAL";
-                command.Parameters.Add("p_idzbozi", OracleDbType.Int32).Value = id;
-
-                string aviability = command.ExecuteScalar().ToString();
-
-                return aviability;
-            }
-        }
 
     }
 }
