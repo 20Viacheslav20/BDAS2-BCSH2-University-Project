@@ -38,4 +38,15 @@ body {
 .main-content {
     margin-left: 160px; 
 }
+.nav-item {
+    margin-bottom: -5px;
+   
+}
+.nav-item > a {
+    transition: background-color 0.3s ease;
+}
+.nav-item > a:hover {
+    background-color: #f0f0f0; 
+}
+
 

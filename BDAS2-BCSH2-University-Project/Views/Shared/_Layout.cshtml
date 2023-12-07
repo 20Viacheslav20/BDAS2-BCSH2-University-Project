@@ -13,9 +13,9 @@
     <div class="container-fluid">
         <div class="row">
             <nav class="col-md-2 d-none d-md-block bg-light sidebar">
-                <div class="sidebar-sticky">
-
+              
                     <ul class="nav flex-column">
+                       
                         @if (!User.Identity.IsAuthenticated)
                         {
                             <li class="nav-item">
@@ -78,28 +78,28 @@
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-controller="Position" asp-action="Index">Positions</a>
                             </li>
-                            <li>
+                            <li class="nav-item">
                                 <a class="nav-link text-dark" asp-controller="AuthorizationUser" asp-action="Index">Autorised users</a>
                             </li>
-                            <li>
+                            <li class="nav-item">
                                 <a class="nav-link text-dark" asp-controller="AuthorizationUser" asp-action="AllImages">Images</a>
                             </li>
-                            <li>
+                            <li class="nav-item">
                                 <a class="nav-link text-dark" asp-controller="CashDesk" asp-action="Index">Cash desks</a>
                             </li>
-                            <li>
+                            <li class="nav-item">
                                 <a class="nav-link text-dark" asp-controller="Stand" asp-action="Index">Stands</a>
                             </li>
-                            <li>
+                            <li class="nav-item">
                                 <a class="nav-link text-dark" asp-controller="Payment" asp-action="Index">Payments</a>
                             </li>
-                            <li>
+                            <li class="nav-item">
                                 <a class="nav-link text-dark" asp-controller="Sale" asp-action="Index">Sales</a>
                             </li>
-                            <li>
+                            <li class="nav-item">
                                 <a class="nav-link text-dark" asp-controller="SystemCatalog" asp-action="Index">System Catalog</a>
                             </li>
-                            <li>
+                            <li class="nav-item">
                                 <a class="nav-link text-dark" asp-controller="SoldProduct" asp-action="Index">Sold products</a>
                             </li>
                         }
