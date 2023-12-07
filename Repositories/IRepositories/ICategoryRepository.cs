@@ -11,5 +11,7 @@ namespace Repositories.IRepositories
         void Edit(Category category);
         void Delete(int id);
         void IncreasePrice(IncreasePrice increasePrice);
+
+        void ShowStats();
     }
 }

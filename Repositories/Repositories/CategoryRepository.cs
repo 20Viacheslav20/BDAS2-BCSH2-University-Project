@@ -140,5 +140,10 @@ namespace Repositories.Repositories
                 command.ExecuteNonQuery();
             }
         }
+
+        public void ShowStats()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
