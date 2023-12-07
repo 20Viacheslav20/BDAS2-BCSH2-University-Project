@@ -43,22 +43,21 @@
                 @Html.DisplayFor(model => model.Address.Street)
             </dd>
         }
-        <h5>Stands</h5>
-        <ul>
-            @foreach (var stands in Model.Stands)
-            {
-                <li>@stands.Number - @stands.CountOfShelves shelves </li>
-            }
-        </ul>
-        <h5>Cash desks</h5>
-        <ul>
-            @foreach (var cashDesks in Model.CashDesks)
-            {
-                <li>@cashDesks.Count - @cashDesks.IsSelf </li>
-            }
-        </ul>
-
     </dl>
+    <h5>Stands</h5>
+    <ul>
+        @foreach (var stands in Model.Stands)
+        {
+            <li>Stand number @stands.Number - @stands.CountOfShelves shelves </li>
+        }
+    </ul>
+    <h5>Cash desks</h5>
+    <ul>
+        @foreach (var cashDesk in Model.CashDesks)
+        {
+            <li>Cash desk number @cashDesk.Number - Is self? @cashDesk.IsSelf </li>
+        }
+    </ul>
 </div>
 <div>
     <div class="button-row">

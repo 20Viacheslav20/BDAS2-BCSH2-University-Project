@@ -1,34 +1,27 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using BDAS2_BCSH2_University_Project.IControllers;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Models.Models;
+using Models.Models.Login;
 using Repositories.IRepositories;
 
 namespace BDAS2_BCSH2_University_Project.Controllers
 {
-    public class SystemCatalogController : Controller, ISystemCatalogRepository
+    [Authorize(Roles = nameof(UserRole.Admin))]
+    public class SystemCatalogController : Controller, ISystemCatalogController
     {
-        public void Create(SystemCatalog systemCatalog)
+        private readonly ISystemCatalogRepository _systemCatalogRepository;
+
+        public SystemCatalogController(ISystemCatalogRepository systemCatalogRepository)
         {
-            throw new NotImplementedException();
+            _systemCatalogRepository = systemCatalogRepository;
         }
 
-        public void Delete(int id)
+        [HttpGet]
+        public IActionResult Index()
         {
-            throw new NotImplementedException();
-        }
-
-        public void Edit(SystemCatalog systemCatalog)
-        {
-            throw new NotImplementedException();
-        }
-
-        public List<SystemCatalog> GetAll()
-        {
-            throw new NotImplementedException();
-        }
-
-        public SystemCatalog GetById(int id)
-        {
-            throw new NotImplementedException();
+            List<SystemCatalog> systemCatalogs = _systemCatalogRepository.GetAll();
+            return View(systemCatalogs);
         }
     }
 }

@@ -7,7 +7,7 @@ namespace Models.Models
         public int Id { get; set; }
 
         [Display(Name = "Cash desk number")]
-        public int Count { get; set; }
+        public int Number { get; set; }
 
         [Display(Name = "Is self")]
         public bool IsSelf { get; set; }

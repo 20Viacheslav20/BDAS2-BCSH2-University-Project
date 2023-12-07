@@ -30,7 +30,7 @@ namespace Repositories.Repositories
                 command.CommandText = $@"INSERT INTO {TABLE} (CISLO, JESAMOOBSLUZNA)
                                           VALUES(:cashDeskCount, :cashDeskIsSelf)";
 
-                command.Parameters.Add(":cashDeskCount", OracleDbType.Int32).Value = cashDesk.Count;
+                command.Parameters.Add(":cashDeskCount", OracleDbType.Int32).Value = cashDesk.Number;
 
                 command.Parameters.Add(":cashDeskIsSelf", OracleDbType.Int16).Value = cashDesk.IsSelf ? 1 : 0;
 
@@ -65,10 +65,10 @@ namespace Repositories.Repositories
                 command.Parameters.Clear();
 
                 string query = "";
-                if (dbCashDesk.Count != cashDesk.Count)
+                if (dbCashDesk.Number != cashDesk.Number)
                 {
                     query += "CISLO = :cashDeskCount, ";
-                    command.Parameters.Add("cashDeskCount", OracleDbType.Int32).Value = cashDesk.Count;
+                    command.Parameters.Add("cashDeskCount", OracleDbType.Int32).Value = cashDesk.Number;
                           
                 }
 
@@ -111,18 +111,6 @@ namespace Repositories.Repositories
             }
         }
 
-        private CashDesk CreateCashDeskFromReader(OracleDataReader reader)
-        {
-            CashDesk cashDesk = new()
-            {
-                Id = int.Parse(reader["IDPOKLADNY"].ToString()),
-                Count = int.Parse(reader["CISLO"].ToString()),
-                IsSelf = Convert.ToBoolean(int.Parse(reader["JESAMOOBSLUZNA"].ToString()))
-
-            };
-            return cashDesk;
-        }
-
         public CashDesk GetById(int id)
         {
             using(OracleCommand command = _oracleConnection.CreateCommand())
@@ -150,17 +138,14 @@ namespace Repositories.Repositories
             }
         }
 
-        public CashDesk GetCashDesksForShop(int shopId)
+        public List<CashDesk> GetCashDesksForShop(int shopId)
         {
             using(OracleCommand command = _oracleConnection.CreateCommand())
             {
                 if (_oracleConnection.State == ConnectionState.Closed)
                     _oracleConnection.Open();
 
-                command.CommandText = $@"SELECT p.idpokladny, p.cislo, p.prodejny_idprodejny, pr.kontaktnicislo
-                                        FROM pokladny p
-                                        JOIN prodejny pr ON p.prodejny_idprodejny = pr.idprodejny
-                                        WHERE p.PRODEJNY_idprodejny =:shopId";
+                command.CommandText = $@"SELECT * FROM {TABLE} WHERE PRODEJNY_idprodejny = :shopId";
 
                 command.Parameters.Add("shopId", OracleDbType.Int32).Value = shopId;
 
@@ -175,6 +160,17 @@ namespace Repositories.Repositories
                     return cashDesks;
                 }
             }
+        }
+
+        private CashDesk CreateCashDeskFromReader(OracleDataReader reader)
+        {
+            CashDesk cashDesk = new()
+            {
+                Id = int.Parse(reader["IDPOKLADNY"].ToString()),
+                Number = int.Parse(reader["CISLO"].ToString()),
+                IsSelf = Convert.ToBoolean(int.Parse(reader["JESAMOOBSLUZNA"].ToString()))
+            };
+            return cashDesk;
         }
     }
 }

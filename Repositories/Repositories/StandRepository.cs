@@ -142,29 +142,14 @@ namespace Repositories.Repositories
             }
         }
 
-        private Stand CreateStandFromReader(OracleDataReader reader)
-        {
-            Stand stand = new()
-            {
-                Id = int.Parse(reader["IDPULTU"].ToString()),
-                Number = int.Parse(reader["CISLO"].ToString()),
-                CountOfShelves = int.Parse(reader["POCETPOLICEK"].ToString())
-            };
-            return stand;
-        }
-
-        public CashDesk GetStandsForShop(int shopId)
+        public List<Stand> GetStandsForShop(int shopId)
         {
             using (OracleCommand command = _oracleConnection.CreateCommand())
             {
                 if (_oracleConnection.State == ConnectionState.Closed)
                     _oracleConnection.Open();
 
-                command.CommandText = $@"SELECT pu.idpultu, pu.cislo,pu.pocetpolicek, pu.prodejny_idprodejny, pr.kontaktnicislo
-                                        FROM pulty pu
-                                        JOIN prodejny pr ON pu.prodejny_idprodejny = pr.idprodejny
-                                        ORDER BY pr.idprodejny, pu.idpultu;
-                                        WHERE pu.PRODEJNY_idprodejny =:shopId";
+                command.CommandText = $@"SELECT * FROM {TABLE} WHERE PRODEJNY_idprodejny = :shopId";
 
                 command.Parameters.Add("shopId", OracleDbType.Int32).Value = shopId;
 
@@ -179,6 +164,17 @@ namespace Repositories.Repositories
                     return stands;
                 }
             }
+        }
+
+        private Stand CreateStandFromReader(OracleDataReader reader)
+        {
+            Stand stand = new()
+            {
+                Id = int.Parse(reader["IDPULTU"].ToString()),
+                Number = int.Parse(reader["CISLO"].ToString()),
+                CountOfShelves = int.Parse(reader["POCETPOLICEK"].ToString())
+            };
+            return stand;
         }
 
     }

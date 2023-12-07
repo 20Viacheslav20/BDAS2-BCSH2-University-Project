@@ -10,9 +10,5 @@ namespace Repositories.IRepositories
     public interface ISystemCatalogRepository
     {
         List<SystemCatalog> GetAll();
-        SystemCatalog GetById(int id);
-        void Create(SystemCatalog systemCatalog);
-        void Edit(SystemCatalog systemCatalog);
-        void Delete(int id);
     }
 }
