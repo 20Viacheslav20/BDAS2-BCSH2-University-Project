@@ -141,9 +141,45 @@ namespace Repositories.Repositories
             }
         }
 
-        public void ShowStats()
+        public List<Stats> ShowStats()
         {
-            throw new NotImplementedException();
+            using (OracleCommand command = _oracleConnection.CreateCommand())
+            {
+                _oracleConnection.Open();
+                
+                command.CommandText = @$"CREATE OR REPLACE VIEW v_prodej_kategorie AS
+                                        SELECT k.nazev AS kategorie_nazev, SUM(pz.prodejnicena * pz.pocetzbozi) AS total_sales
+                                        FROM prodane_zbozi pz
+                                        JOIN zbozi z ON pz.zbozi_idzbozi = z.idzbozi
+                                        JOIN kategorije k ON z.kategorije_idkategorije = k.idkategorije
+                                        GROUP BY k.nazev";
+
+                command.ExecuteNonQuery();
+
+                command.CommandText = $"SELECT * FROM v_prodej_kategorie";
+
+                List<Stats> stats = new List<Stats>();
+
+                using (OracleDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        stats.Add(CreateStatsFromReader(reader));
+                    }
+                    return stats;
+                }
+            }
         }
+
+        private Stats CreateStatsFromReader(OracleDataReader reader)
+        {
+            Stats stats = new()
+            {
+                CategoryName = reader["kategorie_nazev"].ToString(),
+                TotalSales = int.Parse(reader["total_sales"].ToString())
+            };
+            return stats;
+        }
+
     }
 }

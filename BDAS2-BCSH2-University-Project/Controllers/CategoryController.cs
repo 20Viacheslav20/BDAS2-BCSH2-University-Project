@@ -158,5 +158,13 @@ namespace BDAS2_BCSH2_University_Project.Controllers
         {
             return _categoryRepository.GetById(id);
         }
+
+        [HttpGet]
+        [Authorize]
+        public IActionResult Stats()
+        {
+            List<Stats> stats = _categoryRepository.ShowStats();
+            return View(stats);
+        }
     }
 }

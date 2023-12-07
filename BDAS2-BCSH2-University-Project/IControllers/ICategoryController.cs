@@ -12,5 +12,6 @@ namespace BDAS2_BCSH2_University_Project.IControllers
         IActionResult Delete(int? id);
         IActionResult IncreasePrice(int? id);
         IActionResult IncreasePrice(IncreasePrice increasePrice);
+        IActionResult Stats();
     }
 }
