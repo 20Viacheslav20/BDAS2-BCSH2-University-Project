@@ -1,8 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Models.Models
+
+namespace Models.Models.CashDesks
 {
-    public class CashDesk
+    public class ShopCashDesk
     {
         public int Id { get; set; }
 
@@ -11,5 +12,6 @@ namespace Models.Models
 
         [Display(Name = "Is self")]
         public bool IsSelf { get; set; }
+        public int ShopId { get; set; }
     }
 }

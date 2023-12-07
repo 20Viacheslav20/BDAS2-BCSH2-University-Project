@@ -93,7 +93,10 @@ namespace Repositories.Repositories
             {
                 _oracleConnection.Open();
 
-                command.CommandText = $"SELECT * FROM {TABLE}";
+                command.CommandText = @$"SELECT sk.IDSKLADU IDSKLADU, sk.POCETPOLICEK POCETPOLICEK, 
+                                        sk.PRODEJNY_IDPRODEJNY PRODEJNY_IDPRODEJNY, pr.kontaktnicislo KONTAKTNICISLO 
+                                        FROM {TABLE} sk                           
+                                        JOIN prodejny pr ON pr.idprodejny = sk.prodejny_idprodejny";
 
                 List<Storage> storages = new List<Storage>();
 
@@ -122,7 +125,11 @@ namespace Repositories.Repositories
 
         private Storage GetByIdWithOracleCommand(OracleCommand command, int id)
         {
-            command.CommandText = $"SELECT * FROM {TABLE} WHERE IDSKLADU = :storageId";
+            command.CommandText = @$"SELECT sk.IDSKLADU IDSKLADU, sk.POCETPOLICEK POCETPOLICEK,
+                                    sk.PRODEJNY_IDPRODEJNY PRODEJNY_IDPRODEJNY, pr.kontaktnicislo KONTAKTNICISLO 
+                                    FROM {TABLE} sk 
+                                    JOIN prodejny pr ON pr.idprodejny = sk.prodejny_idprodejny 
+                                    WHERE IDSKLADU = :storageId";
 
             command.Parameters.Add("storageId", OracleDbType.Int32).Value = id;
 
@@ -162,7 +169,12 @@ namespace Repositories.Repositories
             {
                 Id = int.Parse(reader["IDSKLADU"].ToString()),
                 NumberOfShelves = int.Parse(reader["POCETPOLICEK"].ToString()),
-                ShopId = int.Parse(reader["PRODEJNY_IDPRODEJNY"].ToString())
+                ShopId = int.Parse(reader["PRODEJNY_IDPRODEJNY"].ToString()),
+                Shop = new()
+                {
+                    Id = int.Parse(reader["PRODEJNY_IDPRODEJNY"].ToString()),
+                    Contact = reader["KONTAKTNICISLO"].ToString(),
+                }
             };
             return Storage;
         }

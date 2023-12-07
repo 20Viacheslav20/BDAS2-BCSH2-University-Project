@@ -16,8 +16,9 @@
                 @Html.DisplayNameFor(model => model.NumberOfShelves)
             </th>
             <th>
-
+                Shop contact tel
             </th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
@@ -26,6 +27,9 @@
             <tr>
                 <td>
                     @Html.DisplayFor(modelItem => item.NumberOfShelves)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Shop.Contact)
                 </td>
                 <td>
                     <a asp-action="Save" asp-route-id="@item.Id" class="btn btn-secondary btn-sm">Edit</a> |

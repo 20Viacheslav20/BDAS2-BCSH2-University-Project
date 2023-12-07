@@ -1,18 +1,22 @@
 ﻿using BDAS2_BCSH2_University_Project.IControllers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Models.Models;
+using Models.Models.CashDesks;
 using Repositories.IRepositories;
-using Repositories.Repositories;
 
 namespace BDAS2_BCSH2_University_Project.Controllers
 {
     public class CashDeskController : Controller, IMainController<CashDesk>
     {
         private readonly ICashDeskRepository _cashDeskRepository;
+        private readonly IShopRepository _shopRepository;
 
-        public CashDeskController(ICashDeskRepository cashDeskrepository)
+        public CashDeskController(ICashDeskRepository cashDeskrepository, IShopRepository shopRepository)
         {
             _cashDeskRepository = cashDeskrepository;
+            _shopRepository = shopRepository;
         }
 
         [HttpPost]
@@ -52,15 +56,9 @@ namespace BDAS2_BCSH2_University_Project.Controllers
             return View(cashDesk);
         }
 
-        [HttpGet]
-        public IActionResult Index()
-        {
-            List<CashDesk> cashDesks = _cashDeskRepository.GetAll();
-            return View(cashDesks);
-        }
-
         public IActionResult Save(int? id)
         {
+            GetAllShops();
             if (id == null)
             {
                 return View(new CashDesk());
@@ -108,7 +106,23 @@ namespace BDAS2_BCSH2_University_Project.Controllers
                     ModelState.AddModelError("", e.Message);
                 }
             }
+            GetAllShops();
             return View(model);
+        }
+
+        [HttpGet]
+        [Authorize]
+        public IActionResult Index()
+        {
+            List<CashDesk> cashDesks = _cashDeskRepository.GetAll();
+            return View(cashDesks);
+        }
+
+        [NonAction]
+        private void GetAllShops()
+        {
+            List<Shop> shops = _shopRepository.GetAll();
+            ViewBag.Shops = new SelectList(shops, nameof(Shop.Id), nameof(Shop.Contact));
         }
     }
 }

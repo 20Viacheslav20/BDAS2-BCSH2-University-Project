@@ -1,8 +1,7 @@
 ﻿CREATE OR REPLACE FUNCTION pocet_zamestnancu_na_pozici(p_idpozice IN NUMBER) RETURN NUMBER IS
     v_count NUMBER;
 BEGIN
-    SELECT COUNT(*)
-    INTO v_count
+    SELECT COUNT(*) INTO v_count
     FROM zamestnanci
     WHERE pozice_idpozice = p_idpozice;
 
@@ -15,73 +14,68 @@ EXCEPTION
 END pocet_zamestnancu_na_pozici;
 /
 
-create or replace FUNCTION validne_rc 
-(
-  RC IN NUMBER  
-) RETURN NUMBER AS
-
-  i_zbytek NUMBER;
-  i_mesic NUMBER;
-  i_rok NUMBER;
-  i_den NUMBER;
-  i_datum DATE;
+create or replace FUNCTION validne_rc(RC IN NUMBER) RETURN NUMBER AS
+    i_zbytek NUMBER;
+    i_mesic NUMBER;
+    i_rok NUMBER;
+    i_den NUMBER;
+    i_datum DATE;
 
 BEGIN
+    IF LENGTH(RC) NOT BETWEEN 9 AND 10 THEN
+        RETURN 0;
+    END IF;
 
-  IF LENGTH(RC) NOT BETWEEN 9 AND 10 THEN
-    RETURN 0;
-  END IF;
-
-  -- rodne cislo pred rokem 1954
-  IF LENGTH(RC) = 9 AND SUBSTR(RC,1,2) < 54 THEN
-    RETURN 1;
-  END IF;
-
-
-  i_zbytek := MOD(SUBSTR(RC,1,9),11);
-
-  IF i_zbytek = 10 THEN
-    i_zbytek := 0;
-  END IF;
-
-  i_rok := TO_NUMBER(SUBSTR(RC,1,2));
-  i_mesic := TO_NUMBER(SUBSTR(RC,3,2));
-  i_den := TO_NUMBER(SUBSTR(RC,5,2));
-
-  IF i_rok < 54 THEN
-    i_rok := i_rok + 2000;
-  ELSE
-    i_rok := i_rok + 1900;
-  END IF;
+    -- rodne cislo pred rokem 1954
+    IF LENGTH(RC) = 9 AND SUBSTR(RC,1,2) < 54 THEN
+        RETURN 1;
+    END IF;
 
 
-  IF i_mesic > 70 AND i_rok > 2003 THEN
-    i_mesic := i_mesic - 70;
-  ELSIF i_mesic > 50 THEN
-    i_mesic := i_mesic - 50;
-  ELSIF i_mesic > 20 AND i_rok > 2003 THEN
-    i_mesic := i_mesic - 20;
-  END IF;
+    i_zbytek := MOD(SUBSTR(RC,1,9),11);
 
-  BEGIN
-    i_datum := TO_DATE(i_den || '.' || i_mesic || '.' || i_rok,'DD.MM.YYYY');
-  EXCEPTION WHEN OTHERS THEN
-    RETURN 0;
-  END;
+    IF i_zbytek = 10 THEN
+        i_zbytek := 0;
+    END IF;
+
+    i_rok := TO_NUMBER(SUBSTR(RC,1,2));
+    i_mesic := TO_NUMBER(SUBSTR(RC,3,2));
+    i_den := TO_NUMBER(SUBSTR(RC,5,2));
+
+    IF i_rok < 54 THEN
+        i_rok := i_rok + 2000;
+    ELSE
+        i_rok := i_rok + 1900;
+    END IF;
 
 
-  IF i_zbytek = SUBSTR(RC,10,1) THEN
-    RETURN 1;
-  ELSE
-    RETURN 0;
-  END IF;
+    IF i_mesic > 70 AND i_rok > 2003 THEN
+        i_mesic := i_mesic - 70;
+    ELSIF i_mesic > 50 THEN
+        i_mesic := i_mesic - 50;
+    ELSIF i_mesic > 20 AND i_rok > 2003 THEN
+        i_mesic := i_mesic - 20;
+    END IF;
+
+    BEGIN
+        i_datum := TO_DATE(i_den || '.' || i_mesic || '.' || i_rok,'DD.MM.YYYY');
+    EXCEPTION WHEN OTHERS THEN
+        RETURN 0;
+    END;
+
+
+    IF i_zbytek = SUBSTR(RC,10,1) THEN
+        RETURN 1;
+    ELSE
+        RETURN 0;
+    END IF;
 
 END validne_rc;
 /
 CREATE OR REPLACE FUNCTION get_dostupnost_zbozi(id_produktu IN zbozi.idzbozi%TYPE) RETURN VARCHAR2 AS
-  dostupnost_info VARCHAR2(4000);
-  celkove_mnozstvi NUMBER;
-  nazev_produktu VARCHAR2(32);
+    dostupnost_info VARCHAR2(4000);
+    celkove_mnozstvi NUMBER;
+    nazev_produktu VARCHAR2(32);
 BEGIN
  
     SELECT z.nazev
@@ -89,8 +83,7 @@ BEGIN
     FROM zbozi z
     WHERE z.idzbozi = id_produktu;
 
-    SELECT SUM(zns.pocetzbozi)
-    INTO celkove_mnozstvi
+    SELECT SUM(zns.pocetzbozi) INTO celkove_mnozstvi
     FROM zbozi_na_sklade zns
     WHERE zns.zbozi_idzbozi = id_produktu;
 
@@ -107,4 +100,4 @@ EXCEPTION
     WHEN OTHERS THEN
         RETURN 'Došlo k chybě při získávání informací o produktu.';
 END get_dostupnost_zbozi;
-
+/

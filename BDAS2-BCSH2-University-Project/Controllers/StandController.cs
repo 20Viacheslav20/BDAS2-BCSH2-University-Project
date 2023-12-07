@@ -1,17 +1,22 @@
 ﻿using BDAS2_BCSH2_University_Project.IControllers;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Models.Models;
+using Models.Models.Stands;
 using Repositories.IRepositories;
+using Repositories.Repositories;
 
 namespace BDAS2_BCSH2_University_Project.Controllers
 {
     public class StandController : Controller, IMainController<Stand>
     {
         private readonly IStandRepository _standRepository;
+        private readonly IShopRepository _shopRepository;
 
-        public StandController(IStandRepository standRepository)
+        public StandController(IStandRepository standRepository, IShopRepository shopRepository)
         {
             _standRepository = standRepository;
+            _shopRepository = shopRepository;
         }
 
         [HttpPost]
@@ -60,6 +65,7 @@ namespace BDAS2_BCSH2_University_Project.Controllers
         [HttpGet]
         public IActionResult Save(int? id)
         {
+            GetAllShops();
             if (id == null)
             {
                 return View(new Stand());
@@ -107,9 +113,15 @@ namespace BDAS2_BCSH2_University_Project.Controllers
                     ModelState.AddModelError("", e.Message);
                 }
             }
+            GetAllShops();
             return View(model);
         }
 
-
+        [NonAction]
+        private void GetAllShops()
+        {
+            List<Shop> shops = _shopRepository.GetAll();
+            ViewBag.Shops = new SelectList(shops, nameof(Shop.Id), nameof(Shop.Contact));
+        }
     }
 }

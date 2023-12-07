@@ -1,4 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Models.Models.CashDesks;
+using Models.Models.Stands;
+using System.ComponentModel.DataAnnotations;
+
 
 namespace Models.Models
 {
@@ -12,7 +15,7 @@ namespace Models.Models
         public string StringAddress => Address != null ? $"{Address.City} - {Address.Street}" : "";
         public int AddressId { get; set; }
         public Address Address { get; set; }
-        public List<Stand> Stands { get; set; }
-        public List<CashDesk> CashDesks { get; set; }
+        public List<ShopStand> Stands { get; set; }
+        public List<ShopCashDesk> CashDesks { get; set; }
     }
 }

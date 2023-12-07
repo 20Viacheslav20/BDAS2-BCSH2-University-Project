@@ -11,6 +11,7 @@ namespace Repositories.Repositories
         private readonly IAddressRepository _addressRepository;
         private readonly IStandRepository _standRepository;
         private readonly ICashDeskRepository _cashDeskRepository;
+
         private const string TABLE = "PRODEJNY";
 
         public ShopRepository(OracleConnection oracleConnection, IAddressRepository addressRepository, IStandRepository standRepository, ICashDeskRepository cashDeskRepository)
@@ -19,7 +20,6 @@ namespace Repositories.Repositories
             _addressRepository = addressRepository;
             _standRepository = standRepository;
             _cashDeskRepository = cashDeskRepository;
-
         }
 
         public List<Shop> GetAll()
@@ -54,6 +54,7 @@ namespace Repositories.Repositories
                     _oracleConnection.Open();
 
                 Shop shop = GetByIdWithOracleCommand(command, id);
+
                 shop.Stands = _standRepository.GetStandsForShop(id);
                 shop.CashDesks = _cashDeskRepository.GetCashDesksForShop(id);
                 return shop;
@@ -172,8 +173,7 @@ namespace Repositories.Repositories
                 command.CommandText = @$"SELECT p.idprodejny IDPRODEJNY, p.kontaktnicislo KONTAKTNICISLO, p.plocha PLOCHA
                                         FROM {TABLE} p
                                         LEFT JOIN sklady s ON p.idprodejny = s.prodejny_idprodejny
-                                        WHERE s.idskladu IS NULL
-                                           OR s.idskladu = :storageId";
+                                        WHERE s.idskladu IS NULL OR s.idskladu = :storageId";
 
                 command.Parameters.Add(":storageId", OracleDbType.Int32).Value = storageId;
 

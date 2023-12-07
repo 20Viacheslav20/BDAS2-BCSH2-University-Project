@@ -1,4 +1,4 @@
-﻿using Models.Models;
+﻿using Models.Models.Stands;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,6 +14,6 @@ namespace Repositories.IRepositories
         void Create(Stand stand);
         void Edit(Stand stand);
         void Delete(int id);
-        List<Stand> GetStandsForShop(int shopId);
+        List<ShopStand> GetStandsForShop(int shopId);
     }
 }

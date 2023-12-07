@@ -24,7 +24,6 @@ builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
 builder.Services.AddScoped<ISaleRepository, SaleRepository>();
 builder.Services.AddScoped<ISystemCatalogRepository, SystemCatalogRepository>();
 
-
 builder.Services.AddScoped<IAuthorizationUserRepository, AuthorizationUserRepository>();
 
 builder.Services.AddScoped<OracleConnection>(provider =>

@@ -1,7 +1,7 @@
-﻿
+﻿using Models.Models.Categor;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Models.Models.Categor;
+
 
 namespace Models.Models.Product
 {

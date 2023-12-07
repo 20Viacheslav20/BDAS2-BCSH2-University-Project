@@ -1,12 +1,7 @@
 ﻿using Oracle.ManagedDataAccess.Client;
 using Repositories.IRepositories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Data;
-using Models.Models;
+using Models.Models.CashDesks;
 
 namespace Repositories.Repositories
 {
@@ -27,12 +22,13 @@ namespace Repositories.Repositories
             {
                 _oracleConnection.Open();
 
-                command.CommandText = $@"INSERT INTO {TABLE} (CISLO, JESAMOOBSLUZNA)
-                                          VALUES(:cashDeskCount, :cashDeskIsSelf)";
+                command.CommandText = $@"INSERT INTO {TABLE} (CISLO, JESAMOOBSLUZNA, PRODEJNY_idProdejny)
+                                          VALUES(:cashDeskCount, :cashDeskIsSelf, :shopId)";
 
                 command.Parameters.Add(":cashDeskCount", OracleDbType.Int32).Value = cashDesk.Number;
-
                 command.Parameters.Add(":cashDeskIsSelf", OracleDbType.Int16).Value = cashDesk.IsSelf ? 1 : 0;
+                command.Parameters.Add(":shopId", OracleDbType.Int32).Value = cashDesk.ShopId;
+
 
                 command.ExecuteNonQuery();
 
@@ -78,6 +74,13 @@ namespace Repositories.Repositories
                     command.Parameters.Add("cashDeskIsSelf", OracleDbType.Int16).Value = cashDesk.IsSelf ? 1 : 0;
 
                 }
+
+                if (dbCashDesk.Id != cashDesk.Id)
+                {
+                    query += "PRODEJNY_idProdejny = :shopId, ";
+                    command.Parameters.Add(":shopId", OracleDbType.Int32).Value = cashDesk.ShopId;
+                }
+
                 if (!string.IsNullOrEmpty(query))
                 {
                     query = query.TrimEnd(',', ' ');
@@ -96,7 +99,11 @@ namespace Repositories.Repositories
             {
                 _oracleConnection.Open();
 
-                command.CommandText = @$"SELECT * FROM {TABLE}";
+                command.CommandText = @$"SELECT p.idpokladny IDPOKLADNY, p.cislo CISLO, 
+                                    p.jesamoobsluzna JESAMOOBSLUZNA, p.prodejny_idprodejny PRODEJNY_IDPRODEJNY, 
+                                    pr.kontaktnicislo KONTAKTNICISLO
+                                    FROM {TABLE} p 
+                                    JOIN PRODEJNY pr ON pr.idprodejny = p.prodejny_idprodejny";
 
                 List<CashDesk> cashDesks = new List<CashDesk>();
 
@@ -115,16 +122,21 @@ namespace Repositories.Repositories
         {
             using(OracleCommand command = _oracleConnection.CreateCommand())
             {
-                _oracleConnection.Open();
+                if (_oracleConnection.State == ConnectionState.Closed)
+                    _oracleConnection.Open();
 
-               return GetByIdWithOracleCommand(command, id);
-
+                return GetByIdWithOracleCommand(command, id);
             }
         }
 
         private CashDesk GetByIdWithOracleCommand(OracleCommand command, int id)
         {
-            command.CommandText = $"SELECT * FROM {TABLE} where IDPOKLADNY = :cashDeskId";
+            command.CommandText = @$"SELECT p.idpokladny IDPOKLADNY, p.cislo CISLO, 
+                                    p.jesamoobsluzna JESAMOOBSLUZNA, p.prodejny_idprodejny PRODEJNY_IDPRODEJNY, 
+                                    pr.kontaktnicislo KONTAKTNICISLO
+                                    FROM {TABLE} p 
+                                    JOIN PRODEJNY pr ON pr.idprodejny = p.prodejny_idprodejny 
+                                    WHERE IDPOKLADNY = :cashDeskId";
 
             command.Parameters.Add("cashDeskId", OracleDbType.Int32).Value = id;
 
@@ -138,7 +150,7 @@ namespace Repositories.Repositories
             }
         }
 
-        public List<CashDesk> GetCashDesksForShop(int shopId)
+        public List<ShopCashDesk> GetCashDesksForShop(int shopId)
         {
             using(OracleCommand command = _oracleConnection.CreateCommand())
             {
@@ -149,17 +161,29 @@ namespace Repositories.Repositories
 
                 command.Parameters.Add("shopId", OracleDbType.Int32).Value = shopId;
 
-                List<CashDesk> cashDesks = new List<CashDesk>();
+                List<ShopCashDesk> cashDesks = new List<ShopCashDesk>();
 
                 using(OracleDataReader reader = command.ExecuteReader())
                 {
                     while (reader.Read())
                     {
-                        cashDesks.Add(CreateCashDeskFromReader(reader));
+                        cashDesks.Add(CreateShopCashDeskFromReader(reader));
                     }
                     return cashDesks;
                 }
             }
+        }
+
+        private ShopCashDesk CreateShopCashDeskFromReader(OracleDataReader reader)
+        {
+            ShopCashDesk cashDesk = new()
+            {
+                Id = int.Parse(reader["IDPOKLADNY"].ToString()),
+                Number = int.Parse(reader["CISLO"].ToString()),
+                IsSelf = Convert.ToBoolean(int.Parse(reader["JESAMOOBSLUZNA"].ToString())),
+                ShopId = int.Parse(reader["PRODEJNY_IDPRODEJNY"].ToString()),
+            };
+            return cashDesk;
         }
 
         private CashDesk CreateCashDeskFromReader(OracleDataReader reader)
@@ -168,7 +192,13 @@ namespace Repositories.Repositories
             {
                 Id = int.Parse(reader["IDPOKLADNY"].ToString()),
                 Number = int.Parse(reader["CISLO"].ToString()),
-                IsSelf = Convert.ToBoolean(int.Parse(reader["JESAMOOBSLUZNA"].ToString()))
+                IsSelf = Convert.ToBoolean(int.Parse(reader["JESAMOOBSLUZNA"].ToString())),
+                ShopId = int.Parse(reader["PRODEJNY_IDPRODEJNY"].ToString()),
+                Shop = new()
+                {
+                    Id = int.Parse(reader["PRODEJNY_IDPRODEJNY"].ToString()),
+                    Contact = reader["KONTAKTNICISLO"].ToString(),
+                }
             };
             return cashDesk;
         }

@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Models.Models.Stand>
+﻿@model IEnumerable<Stand>
 
 @{
     ViewData["Title"] = "Stands";
@@ -18,24 +18,31 @@
             <th>
                 @Html.DisplayNameFor(model => model.CountOfShelves)
             </th>
+            <th>
+                Shop contact tel
+            </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>   
-            <td>
-                @Html.DisplayFor(modelItem => item.Number)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CountOfShelves)
-            </td>
-             <td>
+        @foreach (var item in Model) 
+        {
+            <tr>   
+                <td>
+                    @Html.DisplayFor(modelItem => item.Number)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CountOfShelves)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Shop.Contact)
+                </td>
+                <td>
                     <a asp-action="Save" asp-route-id="@item.Id" class="btn btn-secondary btn-sm">Edit</a> |
                     <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-secondary btn-sm">Details</a>
                 </td>
             
-        </tr>
-}
+            </tr>
+        }
     </tbody>
 </table>

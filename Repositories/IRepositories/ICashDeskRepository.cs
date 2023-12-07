@@ -1,9 +1,4 @@
-﻿using Models.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Models.Models.CashDesks;
 
 namespace Repositories.IRepositories
 {
@@ -14,6 +9,6 @@ namespace Repositories.IRepositories
         void Create(CashDesk cashDesk);
         void Edit(CashDesk cashDesk);
         void Delete(int id);
-        List<CashDesk> GetCashDesksForShop(int shopId);
+        List<ShopCashDesk> GetCashDesksForShop(int shopId);
     }
 }

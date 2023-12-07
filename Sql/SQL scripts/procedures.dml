@@ -10,46 +10,44 @@ END;
 /
 
 CREATE OR REPLACE PROCEDURE insert_produkt (
-  id_produktu IN NUMBER,
-  mnozstvi_zmeny IN NUMBER,
-  id_skladu IN NUMBER
+    id_produktu IN NUMBER,
+    mnozstvi_zmeny IN NUMBER,
+    id_skladu IN NUMBER
 ) AS
 BEGIN
-  MERGE INTO zbozi_na_sklade USING dual ON (zbozi_idzbozi = id_produktu AND sklady_idskladu = id_skladu)
-  WHEN MATCHED THEN
-    UPDATE SET pocetzbozi = pocetzbozi + mnozstvi_zmeny
-  WHEN NOT MATCHED THEN
-    INSERT (zbozi_idzbozi, sklady_idskladu, pocetzbozi)
-    VALUES (id_produktu, id_skladu, mnozstvi_zmeny);
+    MERGE INTO zbozi_na_sklade USING dual ON (zbozi_idzbozi = id_produktu AND sklady_idskladu = id_skladu)
+    WHEN MATCHED THEN
+        UPDATE SET pocetzbozi = pocetzbozi + mnozstvi_zmeny
+    WHEN NOT MATCHED THEN
+        INSERT (zbozi_idzbozi, sklady_idskladu, pocetzbozi)
+        VALUES (id_produktu, id_skladu, mnozstvi_zmeny);
 
-  COMMIT;
+    COMMIT;
 END insert_produkt;
 /
 
-CREATE OR REPLACE PROCEDURE delete_starsi_logy (
-  dny_stare IN NUMBER
-) AS
-  datum_vymezene DATE;
+CREATE OR REPLACE PROCEDURE delete_starsi_logy (dny_stare IN NUMBER) AS
+    datum_vymezene DATE;
 BEGIN
-  datum_vymezene := SYSDATE - dny_stare;
+    datum_vymezene := SYSDATE - dny_stare;
 
-  DELETE FROM logy
-  WHERE cas < datum_vymezene;
+    DELETE FROM logy WHERE cas < datum_vymezene;
 
-  COMMIT;
+    COMMIT;
 END delete_starsi_logy;
 /
+
 CREATE OR REPLACE PROCEDURE update_cena_zbozi_kategorii (
-  kategorie_id IN kategorije.idkategorije%TYPE,
-  procento_navyseni IN NUMBER
+    kategorie_id IN kategorije.idkategorije%TYPE,
+    procento_navyseni IN NUMBER
 ) AS
   CURSOR kurzor_produktu IS
     SELECT idzbozi, aktualnicena
     FROM zbozi
     WHERE kategorije_idkategorije = kategorie_id;
 
-  v_product_id NUMBER;
-  v_aktualni_cena NUMBER;
+    v_product_id NUMBER;
+    v_aktualni_cena NUMBER;
 
 BEGIN
   OPEN kurzor_produktu;

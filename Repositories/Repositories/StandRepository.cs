@@ -1,4 +1,4 @@
-﻿using Models.Models;
+﻿using Models.Models.Stands;
 using Oracle.ManagedDataAccess.Client;
 using Repositories.IRepositories;
 using System.Data;
@@ -26,11 +26,12 @@ namespace Repositories.Repositories
             {
                 _oracleConnection.Open();
 
-                command.CommandText = $@"INSERT INTO {TABLE} (CISLO, POCETPOLICEK)
-                                          VALUES(:standNumber, :standShelves)";
+                command.CommandText = $@"INSERT INTO {TABLE} (CISLO, POCETPOLICEK, PRODEJNY_idProdejny)
+                                          VALUES(:standNumber, :standShelves, :shopId)";
 
                 command.Parameters.Add("standNumber", OracleDbType.Int32).Value = stand.Number;
                 command.Parameters.Add("standShelves", OracleDbType.Int32).Value = stand.CountOfShelves;
+                command.Parameters.Add("shopId", OracleDbType.Int32).Value = stand.ShopId;
 
                 command.ExecuteNonQuery();
 
@@ -74,10 +75,15 @@ namespace Repositories.Repositories
                 if (dbStand.CountOfShelves != stand.CountOfShelves)
                 {
                     query += "POCETPOLICEK = :standShelves, ";
-                    command.Parameters.Add("standShelves", OracleDbType.Int32).Value = stand.CountOfShelves;
-
-                    
+                    command.Parameters.Add("standShelves", OracleDbType.Int32).Value = stand.CountOfShelves;                    
                 }
+
+                if (dbStand.ShopId !=  stand.ShopId)
+                {
+                    query += "PRODEJNY_idProdejny = :shopId";
+                    command.Parameters.Add("shopId", OracleDbType.Int32).Value = stand.ShopId;
+                }
+
                 if (!string.IsNullOrEmpty(query))
                 {
                     query = query.TrimEnd(',', ' ');
@@ -97,7 +103,11 @@ namespace Repositories.Repositories
             {
                 _oracleConnection.Open();
 
-                command.CommandText = @$"SELECT * FROM {TABLE}";
+                command.CommandText = @$"SELECT pu.idpultu IDPULTU, pu.pocetpolicek POCETPOLICEK, 
+                                        pu.cislo CISLO, pu.prodejny_idprodejny PRODEJNY_IDPRODEJNY,
+                                        pr.kontaktnicislo KONTAKTNICISLO
+                                        FROM {TABLE} pu
+                                        JOIN prodejny pr ON pr.idprodejny = pu.prodejny_idprodejny";
 
                 List<Stand> stands = new List<Stand>();
 
@@ -125,7 +135,12 @@ namespace Repositories.Repositories
         }
         private Stand GetByIdWithOracleCommand(OracleCommand command, int id)
         {
-            command.CommandText = $"SELECT * FROM {TABLE} where IDPULTU = :standId";
+            command.CommandText = @$"SELECT pu.idpultu IDPULTU, pu.pocetpolicek POCETPOLICEK,
+                                    pu.cislo CISLO, pu.prodejny_idprodejny PRODEJNY_IDPRODEJNY,
+                                    pr.kontaktnicislo KONTAKTNICISLO
+                                    FROM {TABLE} pu
+                                    JOIN prodejny pr ON pr.idprodejny = pu.prodejny_idprodejny
+                                    WHERE IDPULTU = :standId";
 
             command.Parameters.Add("standId", OracleDbType.Int32).Value = id;
 
@@ -136,13 +151,13 @@ namespace Repositories.Repositories
                     return null;
                 }
                 Stand stand = CreateStandFromReader(reader);
-
                 stand.Products = _productRepository.GetProductOnStands(id);
+
                 return stand ;
             }
         }
 
-        public List<Stand> GetStandsForShop(int shopId)
+        public List<ShopStand> GetStandsForShop(int shopId)
         {
             using (OracleCommand command = _oracleConnection.CreateCommand())
             {
@@ -153,17 +168,29 @@ namespace Repositories.Repositories
 
                 command.Parameters.Add("shopId", OracleDbType.Int32).Value = shopId;
 
-                List<Stand> stands = new List<Stand>();
+                List<ShopStand> shopStands = new List<ShopStand>();
 
                 using (OracleDataReader reader = command.ExecuteReader())
                 {
                     while (reader.Read())
                     {
-                        stands.Add(CreateStandFromReader(reader));
+                        shopStands.Add(CreateShopStandFromReader(reader));
                     }
-                    return stands;
+                    return shopStands;
                 }
             }
+        }
+
+        private ShopStand CreateShopStandFromReader(OracleDataReader reader)
+        {
+            ShopStand stand = new()
+            {
+                Id = int.Parse(reader["IDPULTU"].ToString()),
+                Number = int.Parse(reader["CISLO"].ToString()),
+                CountOfShelves = int.Parse(reader["POCETPOLICEK"].ToString()),
+                ShopId = int.Parse(reader["PRODEJNY_IDPRODEJNY"].ToString()),
+            };
+            return stand;
         }
 
         private Stand CreateStandFromReader(OracleDataReader reader)
@@ -172,7 +199,13 @@ namespace Repositories.Repositories
             {
                 Id = int.Parse(reader["IDPULTU"].ToString()),
                 Number = int.Parse(reader["CISLO"].ToString()),
-                CountOfShelves = int.Parse(reader["POCETPOLICEK"].ToString())
+                CountOfShelves = int.Parse(reader["POCETPOLICEK"].ToString()),
+                ShopId = int.Parse(reader["PRODEJNY_IDPRODEJNY"].ToString()),
+                Shop = new()
+                {
+                    Id = int.Parse(reader["PRODEJNY_IDPRODEJNY"].ToString()),
+                    Contact = reader["KONTAKTNICISLO"].ToString(),
+                }
             };
             return stand;
         }

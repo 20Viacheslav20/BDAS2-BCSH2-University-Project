@@ -161,7 +161,6 @@ namespace BDAS2_BCSH2_University_Project.Controllers
             return View(storages);
         }
 
-
         [NonAction]
         private void GetAllShops(int id)
         {
@@ -175,5 +174,6 @@ namespace BDAS2_BCSH2_University_Project.Controllers
             List<Product> products = _productRepository.GetAll();
             ViewBag.Products = new SelectList(products, nameof(Product.Id), nameof(Product.Name));
         }
+
     }
 }

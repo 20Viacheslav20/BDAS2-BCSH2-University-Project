@@ -14,6 +14,7 @@ namespace Models.Models.Storage
         [Display(Name = "Number of shelves")]
         public int NumberOfShelves { get; set; }
         public List<StoragedProduct> Products { get; set; }
+        public Shop Shop { get; set; }
         public int ShopId { get; set; }
     }
 }
