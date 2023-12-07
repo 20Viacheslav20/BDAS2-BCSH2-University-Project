@@ -71,12 +71,12 @@ namespace Repositories.Repositories
                           
                 }
 
-                //if (dbCashDesk.isSelf != cashDesk.isSelf)
-                //{
-                //    query += "JESAMOOBSLUZNA = :cashDeskIsSelf, ";
-                //    command.Parameters.Add("cashDeskIsSelf", OracleDbType.Boolean).Value = cashDesk.isSelf;
-                  
-                //}
+                if (dbCashDesk.IsSelf != cashDesk.IsSelf)
+                {
+                    query += "JESAMOOBSLUZNA = :cashDeskIsSelf, ";
+                    command.Parameters.Add("cashDeskIsSelf", OracleDbType.Int16).Value = cashDesk.IsSelf ? 1 : 0;
+
+                }
                 if (!string.IsNullOrEmpty(query))
                 {
                     query = query.TrimEnd(',', ' ');
