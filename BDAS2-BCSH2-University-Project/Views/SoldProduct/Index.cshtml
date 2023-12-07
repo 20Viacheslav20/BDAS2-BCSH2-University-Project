@@ -1,0 +1,54 @@
+﻿@model IEnumerable<Models.Models.Product.SoldProduct>
+
+@{
+    ViewData["Title"] = "Sold Product";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-success">Create</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.SoldDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ProductsCount)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SoldPrice)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ProductName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PaymentType)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.SoldDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ProductsCount)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SoldPrice) kČ
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ProductName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PaymentType)
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
