@@ -1,4 +1,5 @@
-﻿using Models.Models.Product;
+﻿using Models.Models.Categor;
+using Models.Models.Product;
 using Oracle.ManagedDataAccess.Client;
 using Repositories.IRepositories;
 using System.Data;
@@ -238,6 +239,39 @@ namespace Repositories.Repositories
             }
         }
 
+        public List<ProductStats> GetProductStats()
+        {
+            using (OracleCommand command = _oracleConnection.CreateCommand())
+            {
+                _oracleConnection.Open();
+
+                command.CommandText = @$"CREATE OR REPLACE VIEW v_zbozi_dostupnost AS
+                                        SELECT z.idzbozi, z.nazev NAZEV,
+                                        SUM(zns.pocetzbozi) AS celkem_na_skladech,
+                                        SUM(znp.pocetzbozi) AS celkem_na_pulte
+                                        FROM zbozi z
+                                        LEFT JOIN zbozi_na_sklade zns ON z.idzbozi = zns.zbozi_idzbozi
+                                        LEFT JOIN zbozi_na_pulte znp ON z.idzbozi = znp.zbozi_idzbozi
+                                        GROUP BY z.idzbozi, z.nazev";
+
+                command.ExecuteNonQuery();
+
+                command.CommandText = $"SELECT * FROM v_zbozi_dostupnost";
+
+                List<ProductStats> productStats = new List<ProductStats>();
+
+                using (OracleDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        productStats.Add(CreateProductStatsFromReader(reader));
+                    }
+                    return productStats;
+                }
+            }
+        }
+        }
+
         private List<Product> SearchProduct(string search)
         {
             using (OracleCommand command = _oracleConnection.CreateCommand())
@@ -301,6 +335,18 @@ JOIN KATEGORIJE k ON z.kategorije_idkategorije = k.idkategorije WHERE LOWER(z.na
             return product;
         }
 
-
+        private ProductStats CreateProductStatsFromReader(OracleDataReader reader)
+        {
+            var a = reader["NAZEV"].ToString();
+            var b = int.Parse(reader["celkem_na_skladech"].ToString());
+            var c = int.Parse(reader["celkem_na_pulte"].ToString());
+            ProductStats productStats = new()
+            {
+                Name = reader["NAZEV"].ToString(),
+                StorageCount = int.Parse(reader["celkem_na_skladech"].ToString()),
+                StandCount = int.Parse(reader["celkem_na_pulte"].ToString())
+            };
+            return productStats;
+        }
     }
 }
