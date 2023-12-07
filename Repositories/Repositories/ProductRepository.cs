@@ -271,7 +271,7 @@ namespace Repositories.Repositories
             }
         }
 
-        private List<Product> SearchProduct(string search)
+        public List<Product> SearchProduct(string search)
         {
             using (OracleCommand command = _oracleConnection.CreateCommand())
             {
@@ -284,11 +284,11 @@ namespace Repositories.Repositories
                     z.hmotnost HMOTNOST FROM {TABLE} z 
                     JOIN KATEGORIJE k ON z.kategorije_idkategorije = k.idkategorije WHERE ";
                 // TODO
-/*                SELECT z.idzbozi IDZBOZI, z.nazev NAZEV,
-z.aktualnicena AKTUALNICENA, z.cenazeclubcartou CENAZECLUBCARTOU,
-k.nazev KATEGORIJE, k.idkategorije IDKATEGORIJE,
-z.hmotnost HMOTNOST FROM ZBOZI z
-JOIN KATEGORIJE k ON z.kategorije_idkategorije = k.idkategorije WHERE LOWER(z.nazev) = 'M';*/
+                command.CommandText = $@"SELECT z.idzbozi IDZBOZI, z.nazev NAZEV,
+                                        z.aktualnicena AKTUALNICENA, z.cenazeclubcartou CENAZECLUBCARTOU,
+                                        k.nazev KATEGORIJE, k.idkategorije IDKATEGORIJE,
+                                        z.hmotnost HMOTNOST FROM ZBOZI z
+                                        JOIN KATEGORIJE k ON z.kategorije_idkategorije = k.idkategorije WHERE LOWER(z.NAZEV) LIKE LOWER(:searchTerm)";
 
                 List<Product> products = new List<Product>();
 
@@ -336,9 +336,6 @@ JOIN KATEGORIJE k ON z.kategorije_idkategorije = k.idkategorije WHERE LOWER(z.na
 
         private ProductStats CreateProductStatsFromReader(OracleDataReader reader)
         {
-            var a = reader["NAZEV"].ToString();
-            var b = int.Parse(reader["celkem_na_skladech"].ToString());
-            var c = int.Parse(reader["celkem_na_pulte"].ToString());
             ProductStats productStats = new()
             {
                 Name = reader["NAZEV"].ToString(),

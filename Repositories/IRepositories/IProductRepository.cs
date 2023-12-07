@@ -12,5 +12,6 @@ namespace Repositories.IRepositories
         List<StoragedProduct> GetProductsFromStorage(int storageId);
         List<StoragedProduct> GetProductOnStands(int standId);
         List<ProductStats> GetProductStats();
+        List<Product> SearchProduct(string search);
     }
 }

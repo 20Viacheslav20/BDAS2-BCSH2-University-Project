@@ -113,11 +113,25 @@ namespace BDAS2_BCSH2_University_Project.Controllers
         }
 
         [HttpGet]
-        public IActionResult Index()
+        public IActionResult Index(string searchText)
         {
-            List<Product> products = _productRepository.GetAll();
+            List<Product> products = new List<Product>();
+            if (!string.IsNullOrEmpty(searchText))
+            {
+                products = _productRepository.SearchProduct(searchText);
+                return View(products);
+            }
+            products = _productRepository.GetAll();
             return View(products);
         }
+
+
+        //[HttpGet]
+        //public IActionResult Index(string searchText)
+        //{
+        //    List<Product> products = _productRepository.SearchProduct(searchText);
+        //    return View(products);
+        //}
 
         [NonAction]
         private void GetCategories()
@@ -133,5 +147,6 @@ namespace BDAS2_BCSH2_University_Project.Controllers
             List<ProductStats> productStats = _productRepository.GetProductStats();
             return View(productStats);
         }
+
     }
 }
