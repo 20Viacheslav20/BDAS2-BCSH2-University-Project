@@ -1,4 +1,5 @@
 ﻿using Models.Models;
+using Oracle.ManagedDataAccess.Client;
 using Repositories.IRepositories;
 using System;
 using System.Collections.Generic;
@@ -10,29 +11,44 @@ namespace Repositories.Repositories
 {
     public class SystemCatalogRepository : ISystemCatalogRepository
     {
-        public void Create(SystemCatalog systemCatalog)
-        {
-            throw new NotImplementedException();
-        }
+        private readonly OracleConnection _oracleConnection;
+        private const string TABLE = "ALL_OBJECTS";  
 
-        public void Delete(int id)
+        public SystemCatalogRepository(OracleConnection oracleConnection)
         {
-            throw new NotImplementedException();
+            _oracleConnection = oracleConnection;
         }
-
-        public void Edit(SystemCatalog systemCatalog)
-        {
-            throw new NotImplementedException();
-        }
-
         public List<SystemCatalog> GetAll()
         {
-            throw new NotImplementedException();
+            using(OracleCommand command =_oracleConnection.CreateCommand())
+            {
+                _oracleConnection.Open();
+
+                command.CommandText = $@"SELECT * FROM {TABLE} WHERE OWNER = 'ST67020' ";
+
+                List<SystemCatalog> systemCatalogs = new List<SystemCatalog>();
+
+                using (OracleDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        systemCatalogs.Add(CreateSystemCatalogFromReader(reader));
+                    }
+                    return systemCatalogs;
+                }
+            }
         }
 
-        public SystemCatalog GetById(int id)
+        private SystemCatalog CreateSystemCatalogFromReader(OracleDataReader reader)
         {
-            throw new NotImplementedException();
+            SystemCatalog systemCatalog = new()
+            {
+                Id = int.Parse(reader["OBJECT_ID"].ToString()),
+                Name = reader["OBJECT_NAME"].ToString(),
+                Owner = reader["OWNER"].ToString(),
+                Type = reader["OBJECT_TYPE"].ToString(),
+            };
+            return systemCatalog;
         }
     }
 }
