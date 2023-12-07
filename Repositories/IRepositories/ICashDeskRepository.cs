@@ -14,5 +14,6 @@ namespace Repositories.IRepositories
         void Create(CashDesk cashDesk);
         void Edit(CashDesk cashDesk);
         void Delete(int id);
+        List<CashDesk> GetCashDesksForShop(int shopId);
     }
 }

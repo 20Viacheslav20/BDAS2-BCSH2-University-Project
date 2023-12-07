@@ -153,5 +153,33 @@ namespace Repositories.Repositories
             return stand;
         }
 
+        public CashDesk GetStandsForShop(int shopId)
+        {
+            using (OracleCommand command = _oracleConnection.CreateCommand())
+            {
+                if (_oracleConnection.State == ConnectionState.Closed)
+                    _oracleConnection.Open();
+
+                command.CommandText = $@"SELECT pu.idpultu, pu.cislo,pu.pocetpolicek, pu.prodejny_idprodejny, pr.kontaktnicislo
+                                        FROM pulty pu
+                                        JOIN prodejny pr ON pu.prodejny_idprodejny = pr.idprodejny
+                                        ORDER BY pr.idprodejny, pu.idpultu;
+                                        WHERE pu.PRODEJNY_idprodejny =:shopId";
+
+                command.Parameters.Add("shopId", OracleDbType.Int32).Value = shopId;
+
+                List<Stand> stands = new List<Stand>();
+
+                using (OracleDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        stands.Add(CreateStandFromReader(reader));
+                    }
+                    return stands;
+                }
+            }
+        }
+
     }
 }

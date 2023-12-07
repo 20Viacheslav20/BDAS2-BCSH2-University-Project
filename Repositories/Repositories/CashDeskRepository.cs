@@ -1,11 +1,12 @@
-﻿using Models.Models;
-using Oracle.ManagedDataAccess.Client;
+﻿using Oracle.ManagedDataAccess.Client;
 using Repositories.IRepositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Data;
+using Models.Models;
 
 namespace Repositories.Repositories
 {
@@ -146,6 +147,33 @@ namespace Repositories.Repositories
                     return null;
                 }
                 return CreateCashDeskFromReader(reader);
+            }
+        }
+
+        public CashDesk GetCashDesksForShop(int shopId)
+        {
+            using(OracleCommand command = _oracleConnection.CreateCommand())
+            {
+                if (_oracleConnection.State == ConnectionState.Closed)
+                    _oracleConnection.Open();
+
+                command.CommandText = $@"SELECT p.idpokladny, p.cislo, p.prodejny_idprodejny, pr.kontaktnicislo
+                                        FROM pokladny p
+                                        JOIN prodejny pr ON p.prodejny_idprodejny = pr.idprodejny
+                                        WHERE p.PRODEJNY_idprodejny =:shopId";
+
+                command.Parameters.Add("shopId", OracleDbType.Int32).Value = shopId;
+
+                List<CashDesk> cashDesks = new List<CashDesk>();
+
+                using(OracleDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        cashDesks.Add(CreateCashDeskFromReader(reader));
+                    }
+                    return cashDesks;
+                }
             }
         }
     }

@@ -7,13 +7,12 @@ using System.Threading.Tasks;
 
 namespace Repositories.IRepositories
 {
-    public interface IStandRepository
+    public interface ISystemCatalogRepository
     {
-        List<Stand> GetAll();
-        Stand GetById(int id);
-        void Create(Stand stand);
-        void Edit(Stand stand);
+        List<SystemCatalog> GetAll();
+        SystemCatalog GetById(int id);
+        void Create(SystemCatalog systemCatalog);
+        void Edit(SystemCatalog systemCatalog);
         void Delete(int id);
-        List<Stand> GetStandsForShop(int shopId);
     }
 }

@@ -12,5 +12,7 @@ namespace Models.Models
         public string StringAddress => Address != null ? $"{Address.City} - {Address.Street}" : "";
         public int AddressId { get; set; }
         public Address Address { get; set; }
+        public List<Stand> Stands { get; set; }
+        public List<CashDesk> CashDesks { get; set; }
     }
 }

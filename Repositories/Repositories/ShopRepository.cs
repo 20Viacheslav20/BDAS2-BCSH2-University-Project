@@ -9,13 +9,17 @@ namespace Repositories.Repositories
     {
         private readonly OracleConnection _oracleConnection;
         private readonly IAddressRepository _addressRepository;
-
+        private readonly IStandRepository _standRepository;
+        private readonly ICashDeskRepository _cashDeskRepository;
         private const string TABLE = "PRODEJNY";
 
-        public ShopRepository(OracleConnection oracleConnection, IAddressRepository addressRepository)
+        public ShopRepository(OracleConnection oracleConnection, IAddressRepository addressRepository, IStandRepository standRepository, ICashDeskRepository cashDeskRepository)
         {
             _oracleConnection = oracleConnection;
             _addressRepository = addressRepository;
+            _standRepository = standRepository;
+            _cashDeskRepository = cashDeskRepository;
+
         }
 
         public List<Shop> GetAll()
@@ -49,10 +53,12 @@ namespace Repositories.Repositories
                 if (_oracleConnection.State == ConnectionState.Closed)
                     _oracleConnection.Open();
 
-                return GetByIdWithOracleCommand(command, id);
+                Shop shop = GetByIdWithOracleCommand(command, id);
+                shop.Stands = _standRepository.GetStandsForShop(id);
+                shop.CashDesks = _cashDeskRepository.GetCashDesksForShop(id);
+                return shop;
             }
         }
-
         private Shop GetByIdWithOracleCommand(OracleCommand command, int id)
         {
             command.CommandText = @$"SELECT p.idprodejny IDPRODEJNY, p.kontaktnicislo KONTAKTNICISLO, 
