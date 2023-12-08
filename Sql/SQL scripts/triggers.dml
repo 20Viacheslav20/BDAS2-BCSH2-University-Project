@@ -1,4 +1,5 @@
-﻿CREATE OR REPLACE TRIGGER pridej_zaznam_AUTUZIVATEL_ROLE
+﻿•	Je triggeře typu "AFTER INSERT", který se spustí po vložení nového záznamu do tabulky AUTUZIVATELE. Trigger vloží nový záznam do tabulky AUTUZIVATEL_ROLE s hodnotou ROLE_IDROLE rovnou 3 a AUTUZIVATELE_IDAUTUZ z nově vloženého záznamu v tabulce AUTUZIVATELE.
+CREATE OR REPLACE TRIGGER pridej_zaznam_AUTUZIVATEL_ROLE
 AFTER INSERT ON AUTUZIVATELE
 FOR EACH ROW
 BEGIN
@@ -6,6 +7,7 @@ BEGIN
   VALUES (3, :NEW.IDAUTUZ);
 END;
 /
+Je triggeře typu "BEFORE INSERT OR UPDATE", který se spustí před vložením nebo aktualizací záznamu v tabulce zamestnanci. Trigger kontroluje, zda délka telefonního čísla (telefonnicislo) je menší než 9 znaků nebo zda rodné číslo (rodnecislo) není platné podle funkce validne_rc. Pokud jsou tyto podmínky nesplněny, trigger vyvolá chybovou zprávu s kódem -20001 a textem 'invalid data', což zabrání vložení nebo aktualizaci záznamu s neplatnými daty.
 CREATE OR REPLACE TRIGGER zam_validace
 BEFORE INSERT OR UPDATE ON zamestnanci
 FOR EACH ROW

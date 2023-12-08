@@ -1,4 +1,5 @@
-﻿CREATE OR REPLACE PROCEDURE smazat_autuzivatele(p_IDAUTUZ IN NUMBER) AS
+﻿smaže záznamy o uživatelích, jejich rolích a souborech pro zadaného uživatele s identifikátorem p_IDAUTUZ 
+CREATE OR REPLACE PROCEDURE smazat_autuzivatele(p_IDAUTUZ IN NUMBER) AS
 BEGIN
     delete from autuzivatel_role where autuzivatele_idautuz = p_IDAUTUZ;
 
@@ -9,6 +10,7 @@ BEGIN
 END;
 /
 
+provádí vkládání nebo aktualizaci množství zboží na skladě. Pokud zboží s identifikátorem id_produktu a skladem id_skladu existuje, aktualizuje jeho počet na skladě o mnozstvi_zmeny, jinak vytvoří nový záznam
 CREATE OR REPLACE PROCEDURE insert_produkt (
     id_produktu IN NUMBER,
     mnozstvi_zmeny IN NUMBER,
@@ -26,6 +28,7 @@ BEGIN
 END insert_produkt;
 /
 
+smaže záznamy v tabulce logů, které jsou starší než určený počet dní dny_stare
 CREATE OR REPLACE PROCEDURE delete_starsi_logy (dny_stare IN NUMBER) AS
     datum_vymezene DATE;
 BEGIN
@@ -36,7 +39,7 @@ BEGIN
     COMMIT;
 END delete_starsi_logy;
 /
-
+aktualizuje ceny produktů v určité kategorii (kategorie_id) o určené procento zvýšení procento_navyseni. 
 CREATE OR REPLACE PROCEDURE update_cena_zbozi_kategorii (
     kategorie_id IN kategorije.idkategorije%TYPE,
     procento_navyseni IN NUMBER
