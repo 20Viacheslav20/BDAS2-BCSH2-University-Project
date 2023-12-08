@@ -1,4 +1,5 @@
-﻿CREATE OR REPLACE FUNCTION pocet_zamestnancu_na_pozici(p_idpozice IN NUMBER) RETURN NUMBER IS
+﻿Vrátí počet zaměstnanců, kteří mají zadanou pozici s identifikátorem p_idpozice. Pokud nejsou žádné záznamy nalezeny, funkce vrátí 0.
+CREATE OR REPLACE FUNCTION pocet_zamestnancu_na_pozici(p_idpozice IN NUMBER) RETURN NUMBER IS
     v_count NUMBER;
 BEGIN
     SELECT COUNT(*) INTO v_count
@@ -13,7 +14,7 @@ EXCEPTION
         RAISE;
 END pocet_zamestnancu_na_pozici;
 /
-
+Ověřuje platnost rodného čísla. Pokud je zadané rodné číslo platné, vrátí 1; v opačném případě vrátí 0. Platné rodné číslo musí mít délku 9 nebo 10 číslic a splňovat určité podmínky.
 create or replace FUNCTION validne_rc(RC IN NUMBER) RETURN NUMBER AS
     i_zbytek NUMBER;
     i_mesic NUMBER;
@@ -72,6 +73,7 @@ BEGIN
 
 END validne_rc;
 /
+Zjistí dostupnost zboží podle jeho identifikátoru id_produktu. Vrací informaci o dostupnosti zboží a celkovém množství na skladech. Pokud zboží není dostupné, vrátí informaci o nedostupnosti. Pokud nejsou nalezeny žádné informace pro zadaný identifikátor, funkce vrátí chybovou zprávu.
 CREATE OR REPLACE FUNCTION get_dostupnost_zbozi(id_produktu IN zbozi.idzbozi%TYPE) RETURN VARCHAR2 AS
     dostupnost_info VARCHAR2(4000);
     celkove_mnozstvi NUMBER;
