@@ -4,14 +4,12 @@ using Repositories.IRepositories;
 using BDAS2_BCSH2_University_Project.IControllers;
 using Microsoft.AspNetCore.Authorization;
 using Models.Models.Login;
-using System.Data;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Repositories.Repositories;
-using static System.Formats.Asn1.AsnWriter;
+
 
 namespace BDAS2_BCSH2_University_Project.Controllers
 {
-    public class EmployeeController : Controller, IMainController<Employee>
+    public class EmployeeController : Controller, IEmployeeController
     {
         private readonly IEmployeeRepository _employeeRepository;
         private readonly IMainRepository<Position> _positionRepository;
@@ -124,9 +122,15 @@ namespace BDAS2_BCSH2_University_Project.Controllers
 
         [HttpGet]
         [Authorize]
-        public IActionResult Index()
+        public IActionResult Index(string searchText)
         {
-            List<Employee> employers = _employeeRepository.GetAll();
+            List<Employee> employers = new List<Employee>();
+            if (!string.IsNullOrEmpty(searchText))
+            {
+                employers = _employeeRepository.SearchEmployee(searchText);
+                return View(employers);
+            }
+            employers = _employeeRepository.GetAll();
             return View(employers);
         }
 

@@ -121,6 +121,7 @@ namespace BDAS2_BCSH2_University_Project.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = nameof(UserRole.Admin) + ", " + nameof(UserRole.ShiftLeader))]
         public IActionResult AddProduct(int? id)
         {
             if (id == null)
@@ -134,7 +135,7 @@ namespace BDAS2_BCSH2_University_Project.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = nameof(UserRole.ShiftLeader))]
+        [Authorize(Roles = nameof(UserRole.Admin) + ", " + nameof(UserRole.ShiftLeader))]
         public IActionResult AddProduct(Order order)
         {
             if (ModelState.IsValid)
@@ -174,6 +175,5 @@ namespace BDAS2_BCSH2_University_Project.Controllers
             List<Product> products = _productRepository.GetAll();
             ViewBag.Products = new SelectList(products, nameof(Product.Id), nameof(Product.Name));
         }
-
     }
 }

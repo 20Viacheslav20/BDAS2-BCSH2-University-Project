@@ -142,7 +142,7 @@ namespace Repositories.Repositories
             {
                 Id = int.Parse(reader["IDPOZICE"].ToString()),
                 Name = reader["NAZEV"].ToString(),
-                Salary = double.Parse(reader["MZDA"].ToString())
+                Salary = int.Parse(reader["MZDA"].ToString())
             };
             return Position;
         }

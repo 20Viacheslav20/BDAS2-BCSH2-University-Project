@@ -18,9 +18,15 @@ namespace BDAS2_BCSH2_University_Project.Controllers
         }
 
         [HttpGet]
-        public IActionResult Index()
+        public IActionResult Index(string searchText)
         {
-            List<SystemCatalog> systemCatalogs = _systemCatalogRepository.GetAll();
+            List<SystemCatalog> systemCatalogs = new List<SystemCatalog>();
+            if (!string.IsNullOrEmpty(searchText))
+            {
+                systemCatalogs = _systemCatalogRepository.SearchSystemCatalog(searchText);
+                return View(systemCatalogs);
+            }
+            systemCatalogs = _systemCatalogRepository.GetAll();
             return View(systemCatalogs);
         }
     }

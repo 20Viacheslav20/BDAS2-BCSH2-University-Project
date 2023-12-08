@@ -9,10 +9,17 @@
 
 @if (User.IsInRole(UserRole.Admin.ToStringValue()))
 {
-    <p>
+    <div>
         <a asp-action="Save" class="btn btn-success">Create</a>
-    </p>
+    </div>
 }
+<br />
+<form asp-controller="Employee" asp-action="Index" method="get">
+    <div style="width:400px; display:flex; gap:10px">
+        <input type="text" name="searchText" placeholder="Search..." class="form-control" />
+        <button type="submit" value="Search" class="btn btn-secondary">Search</button>
+    </div>
+</form>
 <table class="table">
     <thead>
         <tr>

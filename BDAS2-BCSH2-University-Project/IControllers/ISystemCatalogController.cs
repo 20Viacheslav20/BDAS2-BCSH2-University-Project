@@ -5,6 +5,6 @@ namespace BDAS2_BCSH2_University_Project.IControllers
 {
     public interface ISystemCatalogController
     {
-        IActionResult Index();
+        IActionResult Index(string searchText);
     }
 }

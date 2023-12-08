@@ -263,6 +263,33 @@ namespace Repositories.Repositories
             }
         }
 
+        public List<Employee> SearchEmployee(string search)
+        {
+            using (OracleCommand command = _oracleConnection.CreateCommand())
+            {
+                _oracleConnection.Open();
+
+                command.CommandText = @$"SELECT z.IDZAMESTNANCE IDZAMESTNANCE, 
+                    z.JMENO JMENO, z.PRIJMENI PRIJMENI, z.RODNECISLO RODNECISLO, 
+                    z.PRODEJNY_IDPRODEJNY IDPRODEJNY,
+                    z.TELEFONNICISLO TELEFONNICISLO, poz.Nazev POZICE, poz.IDPOZICE IDPOZICE
+                    FROM {TABLE} z
+                    JOIN POZICE poz ON poz.IDPOZICE = z.POZICE_IDPOZICE WHERE LOWER(z.JMENO) LIKE LOWER('{search}%') 
+                    OR LOWER(z.PRIJMENI) LIKE LOWER('{search}%')";
+
+                List<Employee> employers = new List<Employee>();
+
+                using (OracleDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        employers.Add(CreateEmployeeFromReader(reader));
+                    }
+                    return employers;
+                }
+            }
+        }
+
         private Employee CreateSimpleEmployee(OracleDataReader reader)
         {
             Employee employee = new()

@@ -6,8 +6,9 @@ namespace Models.Models.Categor
     {
         public int Id { get; set; }
 
-        [Required]
         [Display(Name = "Category")]
+        [Required(ErrorMessage = "Category is required.")]
+        [MinLength(4, ErrorMessage = "Category must be at least 4 characters.")]
         public string Name { get; set; }
 
     }

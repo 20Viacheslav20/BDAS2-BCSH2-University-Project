@@ -20,6 +20,8 @@ namespace Models.Models
         {
             Type = PaymentType.KUPON;
         }
+
+        [Range(1, int.MaxValue, ErrorMessage = "Please write a valid number.")]
         public int Number { get; set; }
 
         public override string DisplayInfo => $"Coupon number: {Number}";
@@ -31,6 +33,8 @@ namespace Models.Models
         {
             Type = PaymentType.HOTOVE;
         }
+
+        [Range(1, int.MaxValue, ErrorMessage = "Please write a valid number.")]
         public int Returned { get; set; }
         public override string DisplayInfo => $"Cash returned: {Returned}";
     }
@@ -41,10 +45,13 @@ namespace Models.Models
         {
             Type = PaymentType.KARTA;
         }
+
         [Display(Name = "Card Number")]
+        [Range(1, int.MaxValue, ErrorMessage = "Please write a valid number.")]
         public int CardNumber { get; set; }
 
         [Display(Name = "Authorization Code")]
+        [Range(1, int.MaxValue, ErrorMessage = "Please write a valid number.")]
         public int AuthorizationCode { get; set; }
 
         public override string DisplayInfo => $"Card number: {CardNumber}, authorization code: {AuthorizationCode}";

@@ -1,16 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Models.Models.Categor
 {
     public class Stats
     {
+        [Display(Name = "Category")]
         public string CategoryName {  get; set; }
 
+        [Display(Name = "Total Sales")]
         public int TotalSales {  get; set; }
     }
 }

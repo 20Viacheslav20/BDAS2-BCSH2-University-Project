@@ -11,5 +11,6 @@ namespace Repositories.IRepositories
         void Edit(Employee employee);
         void Delete(int id);
         List<Employee> GetEmployeesWithoutAuth();
+        List<Employee> SearchEmployee(string search);
     }
 }

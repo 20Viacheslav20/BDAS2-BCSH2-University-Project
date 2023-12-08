@@ -88,7 +88,7 @@ namespace Repositories.Repositories
                 command.CommandText = $"INSERT INTO {TABLE} (KONTAKTNICISLO, PLOCHA) VALUES (:entityContact, :entitySquare)";
 
                 command.Parameters.Add("entityContact", OracleDbType.Varchar2).Value = entity.Contact;
-                command.Parameters.Add("entitySquare", OracleDbType.Varchar2).Value = entity.Square;
+                command.Parameters.Add("entitySquare", OracleDbType.Int32).Value = entity.Square;
 
                 command.ExecuteNonQuery();
             }
@@ -156,7 +156,7 @@ namespace Repositories.Repositories
             {
                 Id = int.Parse(reader["IDPRODEJNY"].ToString()),
                 Contact = reader["KONTAKTNICISLO"].ToString(),
-                Square = double.Parse(reader["PLOCHA"].ToString()),
+                Square = int.Parse(reader["PLOCHA"].ToString()),
             };
             shop.Address = _addressRepository.GetShopAddress(shop.Id);
             return shop;

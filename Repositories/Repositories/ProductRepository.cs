@@ -90,10 +90,10 @@ namespace Repositories.Repositories
                               "VALUES (:productName, :productActualPrice, :productClubCardPrice, :productHmotnost, :productCategoryId)";
 
                 command.Parameters.Add("productName", OracleDbType.Varchar2).Value = product.Name;
-                command.Parameters.Add("productActualPrice", OracleDbType.Int32).Value = product.ActualPrice;
-                command.Parameters.Add("productClubCardPrice", OracleDbType.Int32).Value = product.ClubCardPrice;
+                command.Parameters.Add("productActualPrice", OracleDbType.Decimal).Value = product.ActualPrice;
+                command.Parameters.Add("productClubCardPrice", OracleDbType.Decimal).Value = product.ClubCardPrice;
                 command.Parameters.Add("productHmotnost", OracleDbType.Decimal).Value = product.Weight;
-                command.Parameters.Add("productCategoryId", OracleDbType.Decimal).Value = product.CategoryId;
+                command.Parameters.Add("productCategoryId", OracleDbType.Int32).Value = product.CategoryId;
 
                 command.ExecuteNonQuery();
             }
@@ -121,13 +121,13 @@ namespace Repositories.Repositories
                 if (dbProduct.ActualPrice != product.ActualPrice)
                 {
                     query += "AKTUALNICENA = :productActualPrice, ";
-                    command.Parameters.Add("productActualPrice", OracleDbType.Int32).Value = product.ActualPrice;
+                    command.Parameters.Add("productActualPrice", OracleDbType.Decimal).Value = product.ActualPrice;
                 }
 
                 if (dbProduct.ClubCardPrice != product.ClubCardPrice)
                 {
                     query += "CENAZECLUBCARTOU = :productClubCardPrice, ";
-                    command.Parameters.Add("productClubCardPrice", OracleDbType.Int32).Value = product.ClubCardPrice;
+                    command.Parameters.Add("productClubCardPrice", OracleDbType.Decimal).Value = product.ClubCardPrice;
                 }
 
                 if (dbProduct.Weight != product.Weight)
@@ -278,17 +278,13 @@ namespace Repositories.Repositories
                 if (_oracleConnection.State == ConnectionState.Closed)
                     _oracleConnection.Open();
 
-                command.CommandText = @$"SELECT z.idzbozi IDZBOZI, z.nazev NAZEV,
-                    z.aktualnicena AKTUALNICENA, z.cenazeclubcartou CENAZECLUBCARTOU,
-                    k.nazev KATEGORIJE, k.idkategorije IDKATEGORIJE,
-                    z.hmotnost HMOTNOST FROM {TABLE} z 
-                    JOIN KATEGORIJE k ON z.kategorije_idkategorije = k.idkategorije WHERE ";
-                // TODO
+
                 command.CommandText = $@"SELECT z.idzbozi IDZBOZI, z.nazev NAZEV,
                                         z.aktualnicena AKTUALNICENA, z.cenazeclubcartou CENAZECLUBCARTOU,
                                         k.nazev KATEGORIJE, k.idkategorije IDKATEGORIJE,
-                                        z.hmotnost HMOTNOST FROM ZBOZI z
-                                        JOIN KATEGORIJE k ON z.kategorije_idkategorije = k.idkategorije WHERE LOWER(z.NAZEV) LIKE LOWER(:searchTerm)";
+                                        z.hmotnost HMOTNOST FROM {TABLE} z
+                                        JOIN KATEGORIJE k ON z.kategorije_idkategorije = k.idkategorije 
+                                        WHERE LOWER(z.NAZEV) LIKE LOWER('{search}%')";
 
                 List<Product> products = new List<Product>();
 
@@ -311,14 +307,14 @@ namespace Repositories.Repositories
                 Id = int.Parse(reader["IDZBOZI"].ToString()),
                 Name = reader["NAZEV"].ToString(),
                 ActualPrice = double.Parse(reader["AKTUALNICENA"].ToString()),
-                ClubCardPrice = !string.IsNullOrEmpty(price) ? int.Parse(price) : null,
+                ClubCardPrice = !string.IsNullOrEmpty(price) ? double.Parse(price) : null,
                 CategoryId = int.Parse(reader["IDKATEGORIJE"].ToString()),
                 Category = new()
                 {
                     Id = int.Parse(reader["IDKATEGORIJE"].ToString()),
                     Name = reader["KATEGORIJE"].ToString()
                 },
-                Weight = decimal.Parse(reader["HMOTNOST"].ToString())
+                Weight = double.Parse(reader["HMOTNOST"].ToString())
             };
             return product;
         }

@@ -51,7 +51,7 @@ namespace Repositories.Repositories
             {
                 _oracleConnection.Open();
 
-                command.CommandText = @$"INSERT INTO {TABLE}(POCETZBOZI, PRODEJE_IDPRODEJE, ZBOZI_IDZBOZI, PRODEJNICENA)
+                command.CommandText = @$"INSERT INTO {TABLE} (POCETZBOZI, PRODEJE_IDPRODEJE, ZBOZI_IDZBOZI, PRODEJNICENA)
                                         VALUES (:soldProductCount, :soldProductSaleId, :soldProductProductId, :soldProductPrice)";
 
                 command.Parameters.Add("soldProductCount", OracleDbType.Int32).Value = soldProduct.ProductsCount;

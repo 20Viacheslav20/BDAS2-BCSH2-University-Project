@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Models.Models.Product.ProductStats>
+﻿@model IEnumerable<ProductStats>
 
 @{
     ViewData["Title"] = "Stats";
@@ -23,19 +23,20 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.StorageCount)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.StandCount)
-            </td>
-        </tr>
-}
+        @foreach (var item in Model) 
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.StorageCount)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.StandCount)
+                </td>
+            </tr>
+        }
         <div>
             <a asp-action="Index" class="btn btn-secondary btn-sm">Back</a>
         </div>

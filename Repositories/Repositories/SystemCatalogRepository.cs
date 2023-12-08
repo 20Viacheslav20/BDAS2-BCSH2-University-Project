@@ -1,11 +1,7 @@
 ﻿using Models.Models;
 using Oracle.ManagedDataAccess.Client;
 using Repositories.IRepositories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace Repositories.Repositories
 {
@@ -18,13 +14,39 @@ namespace Repositories.Repositories
         {
             _oracleConnection = oracleConnection;
         }
+
         public List<SystemCatalog> GetAll()
         {
             using(OracleCommand command =_oracleConnection.CreateCommand())
             {
                 _oracleConnection.Open();
 
-                command.CommandText = $@"SELECT * FROM {TABLE} WHERE OWNER = 'ST67020' ";
+                command.CommandText = $@"SELECT * FROM {TABLE} WHERE OWNER = 'ST67020'";
+
+                List<SystemCatalog> systemCatalogs = new List<SystemCatalog>();
+
+                using (OracleDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        systemCatalogs.Add(CreateSystemCatalogFromReader(reader));
+                    }
+                    return systemCatalogs;
+                }
+            }
+        }
+
+        public List<SystemCatalog> SearchSystemCatalog(string search)
+        {
+            using (OracleCommand command = _oracleConnection.CreateCommand())
+            {
+                _oracleConnection.Open();
+
+                command.CommandText = $@"SELECT OBJECT_ID, OBJECT_NAME, OWNER, OBJECT_TYPE
+                                        FROM ALL_OBJECTS
+                                        WHERE OWNER = 'ST67020' 
+                                        AND (LOWER(OBJECT_NAME) LIKE LOWER('{search}%') 
+                                        OR LOWER(OBJECT_TYPE) LIKE LOWER('{search}%'))";
 
                 List<SystemCatalog> systemCatalogs = new List<SystemCatalog>();
 
@@ -50,5 +72,7 @@ namespace Repositories.Repositories
             };
             return systemCatalog;
         }
+
+
     }
 }

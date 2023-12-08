@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Models.Models.SystemCatalog>
+﻿@model IEnumerable<SystemCatalog>
 
 @{
     ViewData["Title"] = "System Catalog";
@@ -6,6 +6,12 @@
 
 <h1>@ViewData["Title"]</h1>
 
+<form asp-controller="SystemCatalog" asp-action="Index" method="get">
+    <div style="width:400px; display:flex; gap:10px">
+        <input type="text" name="searchText" placeholder="Search..." class="form-control" />
+        <button type="submit" value="Search" class="btn btn-secondary">Search</button>
+    </div>
+</form>
 <table class="table">
     <thead>
         <tr>
@@ -22,18 +28,19 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Owner)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Type)
-            </td>
-        </tr>
-}
+        @foreach (var item in Model) 
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Owner)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Type)
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
