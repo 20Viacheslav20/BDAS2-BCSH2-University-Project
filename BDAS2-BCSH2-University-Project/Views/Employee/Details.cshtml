@@ -27,41 +27,42 @@
             @Html.DisplayFor(model => model.Surname)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.PhoneNumber)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.PhoneNumber)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.BornNumber)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.BornNumber)
-        </dd>
-        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Position.Name)
         </dt>
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Position.Name)
         </dd>
-
-        @if (Model.Address != null)
-        {
-            <h5>Address</h5>
+        @if (User.IsInRole(UserRole.Admin.ToStringValue()))
+        {            
             <dt class="col-sm-2">
-                @Html.DisplayNameFor(model => model.Address.City)
+                @Html.DisplayNameFor(model => model.PhoneNumber)
             </dt>
             <dd class="col-sm-10">
-                @Html.DisplayFor(model => model.Address.City)
+                @Html.DisplayFor(model => model.PhoneNumber)
             </dd>
             <dt class="col-sm-2">
-                @Html.DisplayNameFor(model => model.Address.Street)
+                @Html.DisplayNameFor(model => model.BornNumber)
             </dt>
             <dd class="col-sm-10">
-                @Html.DisplayFor(model => model.Address.Street)
+                @Html.DisplayFor(model => model.BornNumber)
             </dd>
-        } 
-
+            @if (Model.Address != null)
+            {
+                <h5>Address</h5>
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.Address.City)
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => model.Address.City)
+                </dd>
+                <dt class="col-sm-2">
+                    @Html.DisplayNameFor(model => model.Address.Street)
+                </dt>
+                <dd class="col-sm-10">
+                    @Html.DisplayFor(model => model.Address.Street)
+                </dd>
+            }
+        }
     </dl>
     @if (Model.Subordinates.Count != 0)
     {

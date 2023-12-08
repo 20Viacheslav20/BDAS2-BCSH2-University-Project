@@ -37,8 +37,12 @@
 </div>
 <div>
     <div class="button-row">
-        <a asp-action="Save" asp-route-id="@Model.Id" class="btn btn-secondary">Edit</a>
-        <a asp-action="AddProduct" asp-route-id="@Model.Id" class="btn btn-secondary">Order</a>
+        @if (User.IsInRole(UserRole.ShiftLeader.ToStringValue()) || User.IsInRole(UserRole.Admin.ToStringValue()))
+        {
+            <a asp-action="Save" asp-route-id="@Model.Id" class="btn btn-secondary btn-sm">Edit</a>
+            <a>|</a>
+            <a asp-action="AddProduct" asp-route-id="@Model.Id" class="btn btn-secondary">Order</a>
+        }
 
         @if (User.IsInRole(UserRole.Admin.ToStringValue()))
         {

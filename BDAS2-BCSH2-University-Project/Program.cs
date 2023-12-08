@@ -10,6 +10,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+// Initialization of repositories using dependency injection
+builder.Services.AddScoped<IAuthorizationUserRepository, AuthorizationUserRepository>();
+
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IShopRepository, ShopRepository>();
@@ -25,19 +28,23 @@ builder.Services.AddScoped<ISaleRepository, SaleRepository>();
 builder.Services.AddScoped<ISystemCatalogRepository, SystemCatalogRepository>();
 builder.Services.AddScoped<ISoldProductRepository, SoldProductRepository>();
 
-builder.Services.AddScoped<IAuthorizationUserRepository, AuthorizationUserRepository>();
-
+// Initialization of connection for db
 builder.Services.AddScoped<OracleConnection>(provider =>
 {
     return new OracleConnection(builder.Configuration.GetConnectionString("DatabaseConnection"));
 });
 
+// Adding the authentication service to the application's dependency injection container.
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options =>
 {
+    // Setting the path to which the user will be redirected for login.
     options.LoginPath = "/AuthorizationUser/Login";
+
+    // Setting the path to which the user will be redirected if access is denied.
     options.AccessDeniedPath = "/";
 });
 
+// Add authorization policy
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy(UserRole.Admin.ToStringValue(), policy => policy.RequireRole(UserRole.Admin.ToStringValue()));

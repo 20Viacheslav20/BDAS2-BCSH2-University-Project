@@ -1,10 +1,12 @@
 ﻿using BDAS2_BCSH2_University_Project.IControllers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Models.Models;
+using Models.Models.Login;
 using Models.Models.Stands;
 using Repositories.IRepositories;
-using Repositories.Repositories;
+
 
 namespace BDAS2_BCSH2_University_Project.Controllers
 {
@@ -21,6 +23,7 @@ namespace BDAS2_BCSH2_University_Project.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = nameof(UserRole.Admin))]
         public IActionResult Delete(int? id)
         {
             if (id == null)
@@ -40,6 +43,7 @@ namespace BDAS2_BCSH2_University_Project.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public IActionResult Details(int? id)
         {
             if (id == null)
@@ -56,6 +60,7 @@ namespace BDAS2_BCSH2_University_Project.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public IActionResult Index()
         {
             List<Stand> stands = _standRepository.GetAll();
@@ -63,6 +68,7 @@ namespace BDAS2_BCSH2_University_Project.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = nameof(UserRole.Admin) + ", " + nameof(UserRole.ShiftLeader))]
         public IActionResult Save(int? id)
         {
             GetAllShops();
@@ -83,6 +89,7 @@ namespace BDAS2_BCSH2_University_Project.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = nameof(UserRole.Admin) + ", " + nameof(UserRole.ShiftLeader))]
         public IActionResult Save(int? id, Stand model)
         {
             if (id != null)

@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Models.Models;
 using Models.Models.Login;
 using Repositories.IRepositories;
-using System.Data;
 
 namespace BDAS2_BCSH2_University_Project.Controllers
 {
@@ -59,7 +58,7 @@ namespace BDAS2_BCSH2_University_Project.Controllers
         }
 
         [HttpGet]
-        [Authorize]
+        [Authorize(Roles = nameof(UserRole.Admin))]
         public IActionResult Save(int? id)
         {
             GetAddresses(id.GetValueOrDefault());
@@ -80,7 +79,7 @@ namespace BDAS2_BCSH2_University_Project.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize]
+        [Authorize(Roles = nameof(UserRole.Admin))]
         public IActionResult Save(int? id, Shop model)
         {
             if (id != null)

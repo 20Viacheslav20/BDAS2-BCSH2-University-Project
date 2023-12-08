@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Models.Models;
 using Models.Models.CashDesks;
+using Models.Models.Login;
 using Repositories.IRepositories;
 
 namespace BDAS2_BCSH2_University_Project.Controllers
@@ -21,6 +22,7 @@ namespace BDAS2_BCSH2_University_Project.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = nameof(UserRole.Admin))]
         public IActionResult Delete(int? id)
         {
             if (id == null)
@@ -40,7 +42,7 @@ namespace BDAS2_BCSH2_University_Project.Controllers
         }
 
         [HttpGet]
-
+        [Authorize]
         public IActionResult Details(int? id)
         {
             if (id == null)
@@ -56,6 +58,8 @@ namespace BDAS2_BCSH2_University_Project.Controllers
             return View(cashDesk);
         }
 
+        [HttpGet]
+        [Authorize(Roles = nameof(UserRole.Admin))]
         public IActionResult Save(int? id)
         {
             GetAllShops();
@@ -76,6 +80,7 @@ namespace BDAS2_BCSH2_University_Project.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = nameof(UserRole.Admin))]
         public IActionResult Save(int? id, CashDesk model)
         {
             if (id != null)

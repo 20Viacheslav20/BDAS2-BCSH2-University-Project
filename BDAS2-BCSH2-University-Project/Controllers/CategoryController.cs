@@ -111,7 +111,7 @@ namespace BDAS2_BCSH2_University_Project.Controllers
 
 
         [HttpGet]
-        [Authorize(Roles = nameof(UserRole.Admin))]
+        [Authorize(Roles = nameof(UserRole.Admin) + ", " + nameof(UserRole.ShiftLeader))]
         public IActionResult IncreasePrice(int? id)
         {
             if (id == null)
@@ -126,7 +126,7 @@ namespace BDAS2_BCSH2_University_Project.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = nameof(UserRole.Admin))]
+        [Authorize(Roles = nameof(UserRole.Admin) + ", " + nameof(UserRole.ShiftLeader))]
         public IActionResult IncreasePrice(IncreasePrice increasePrice)
         {
             if (ModelState.IsValid)
@@ -153,12 +153,6 @@ namespace BDAS2_BCSH2_University_Project.Controllers
             return View(categories);
         }
 
-        [NonAction]
-        private Category GetCategoryById(int id)
-        {
-            return _categoryRepository.GetById(id);
-        }
-
         [HttpGet]
         [Authorize]
         public IActionResult Stats()
@@ -166,5 +160,12 @@ namespace BDAS2_BCSH2_University_Project.Controllers
             List<Stats> stats = _categoryRepository.ShowStats();
             return View(stats);
         }
+
+        [NonAction]
+        private Category GetCategoryById(int id)
+        {
+            return _categoryRepository.GetById(id);
+        }
+
     }
 }

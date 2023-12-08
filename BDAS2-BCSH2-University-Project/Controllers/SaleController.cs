@@ -42,7 +42,7 @@ namespace BDAS2_BCSH2_University_Project.Controllers
 
 
         [HttpGet]
-        [Authorize]
+        [Authorize(Roles = nameof(UserRole.Admin) + ", " + nameof(UserRole.ShiftLeader))]
         public IActionResult Details(int? id)
         {
             if (id == null)
@@ -59,7 +59,7 @@ namespace BDAS2_BCSH2_University_Project.Controllers
         }
 
         [HttpGet]
-        [Authorize]
+        [Authorize(Roles = nameof(UserRole.Admin) + ", " + nameof(UserRole.ShiftLeader))]
         public IActionResult Save(int? id)
         {
             GetPayments(id.GetValueOrDefault());
@@ -80,7 +80,7 @@ namespace BDAS2_BCSH2_University_Project.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize]
+        [Authorize(Roles = nameof(UserRole.Admin) + ", " + nameof(UserRole.ShiftLeader))]
         public IActionResult Save(int? id, Sale model)
         {
             if (id != null)
@@ -116,7 +116,7 @@ namespace BDAS2_BCSH2_University_Project.Controllers
         }
 
         [HttpGet]
-        [Authorize]
+        [Authorize(Roles = nameof(UserRole.Admin) + ", " + nameof(UserRole.ShiftLeader))]
         public IActionResult Index()
         {
             List<Sale> sales = _saleRepository.GetAll();

@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Models.Models.Product.SoldProduct>
+﻿@model IEnumerable<SoldProduct>
 
 @{
     ViewData["Title"] = "Sold Product";
@@ -6,9 +6,13 @@
 
 <h1>@ViewData["Title"]</h1>
 
-<p>
-    <a asp-action="Create" class="btn btn-success">Create</a>
-</p>
+@if (User.IsInRole(UserRole.ShiftLeader.ToStringValue()) || User.IsInRole(UserRole.Admin.ToStringValue()))
+{
+    <p>
+        <a asp-action="Create" class="btn btn-success">Create</a>
+    </p>
+}
+
 <table class="table">
     <thead>
         <tr>

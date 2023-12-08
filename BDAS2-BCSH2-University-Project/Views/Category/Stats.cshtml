@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Models.Models.Categor.Stats>
+﻿@model IEnumerable<Stats>
 
 @{
     ViewData["Title"] = "Stats";
@@ -19,17 +19,18 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.CategoryName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.TotalSales)
-            </td>
+        @foreach (var item in Model) 
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CategoryName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TotalSales)
+                </td>
             
-        </tr>
-}
+            </tr>
+        }
         <div>
             <a asp-action="Index" class="btn btn-secondary btn-sm">Back</a>
         </div>

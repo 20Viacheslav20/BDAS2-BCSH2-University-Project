@@ -3,6 +3,7 @@ using Models.Models.Product;
 using Oracle.ManagedDataAccess.Client;
 using Repositories.IRepositories;
 using System.Data;
+using System.Diagnostics;
 
 
 namespace Repositories.Repositories
@@ -284,7 +285,7 @@ namespace Repositories.Repositories
                                         k.nazev KATEGORIJE, k.idkategorije IDKATEGORIJE,
                                         z.hmotnost HMOTNOST FROM {TABLE} z
                                         JOIN KATEGORIJE k ON z.kategorije_idkategorije = k.idkategorije 
-                                        WHERE LOWER(z.NAZEV) LIKE LOWER('{search}%')";
+                                        WHERE LOWER(z.NAZEV) LIKE LOWER('{search}%') OR LOWER(k.nazev) LIKE LOWER('{search}%')";
 
                 List<Product> products = new List<Product>();
 
@@ -332,11 +333,13 @@ namespace Repositories.Repositories
 
         private ProductStats CreateProductStatsFromReader(OracleDataReader reader)
         {
+            var stCount = reader["celkem_na_skladech"].ToString();
+            var standCount = reader["celkem_na_pulte"].ToString();
             ProductStats productStats = new()
             {
                 Name = reader["NAZEV"].ToString(),
-                StorageCount = int.Parse(reader["celkem_na_skladech"].ToString()),
-                StandCount = int.Parse(reader["celkem_na_pulte"].ToString())
+                StorageCount = !string.IsNullOrEmpty(stCount) ? int.Parse(stCount) : 0,
+                StandCount = !string.IsNullOrEmpty(standCount) ? int.Parse(standCount) : 0
             };
             return productStats;
         }

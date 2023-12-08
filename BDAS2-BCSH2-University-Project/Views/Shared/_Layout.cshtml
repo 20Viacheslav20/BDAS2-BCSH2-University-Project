@@ -55,13 +55,28 @@
                         <li class="nav-item">
                             <a class=" nav-link text-dark" asp-controller="Employee" asp-action="Index">Employees</a>
                         </li>
-                    }
-
-
-                    @if (User.IsInRole(UserRole.ShiftLeader.ToStringValue()) || User.IsInRole(UserRole.Admin.ToStringValue()))
-                    {                            
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-controller="CashDesk" asp-action="Index">Cash desks</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-controller="SoldProduct" asp-action="Index">Sold products</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-controller="Stand" asp-action="Index">Stands</a>
+                        </li>
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-controller="Storage" asp-action="Index">Storages</a>
+                        </li>
+                    }
+
+                    @if (User.IsInRole(UserRole.ShiftLeader.ToStringValue()) || User.IsInRole(UserRole.Admin.ToStringValue()))
+                    {
+
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-controller="Payment" asp-action="Index">Payments</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-controller="Sale" asp-action="Index">Sales</a>
                         </li>
                     }
 
@@ -72,10 +87,7 @@
                             <a class="nav-link text-dark" asp-controller="Address" asp-action="Index">Addresses</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="Logs" asp-action="Index">Logs</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="Position" asp-action="Index">Positions</a>
+                            <a class="nav-link text-dark" asp-controller="AuthorizationUser" asp-action="Registrate">Registrate</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-controller="AuthorizationUser" asp-action="Index">Autorised users</a>
@@ -84,25 +96,13 @@
                             <a class="nav-link text-dark" asp-controller="AuthorizationUser" asp-action="AllImages">Images</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="CashDesk" asp-action="Index">Cash desks</a>
+                            <a class="nav-link text-dark" asp-controller="Position" asp-action="Index">Positions</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="Stand" asp-action="Index">Stands</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="Payment" asp-action="Index">Payments</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="Sale" asp-action="Index">Sales</a>
+                            <a class="nav-link text-dark" asp-controller="Logs" asp-action="Index">Logs</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-controller="SystemCatalog" asp-action="Index">System Catalog</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="SoldProduct" asp-action="Index">Sold products</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-controller="AuthorizationUser" asp-action="Registrate">Registrate</a>
                         </li>
                     }
 

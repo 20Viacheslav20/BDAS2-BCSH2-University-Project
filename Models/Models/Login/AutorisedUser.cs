@@ -15,7 +15,6 @@ namespace Models.Models.Login
         public string Password { get; set; }
 
         [Display(Name = "Employee")]
-        [Range(1, int.MaxValue, ErrorMessage = "Please select a valid employee.")]
         public int EmployeeId { get; set; }
         public Employee Employee { get; set; }
         public List<UserRole> Roles { get; set; }

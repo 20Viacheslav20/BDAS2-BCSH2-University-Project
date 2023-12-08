@@ -113,7 +113,6 @@ namespace BDAS2_BCSH2_University_Project.Controllers
             List<Position> positions = _positionRepository.GetAll();
             return View(positions);
         }
-
     }
 }
 
