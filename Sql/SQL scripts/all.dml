@@ -1,1 +1,2596 @@
 ﻿
+CREATE TABLE adresy (
+    idadresy                  NUMBER NOT NULL,
+    mesto                     VARCHAR2(32) NOT NULL,
+    ulice                     VARCHAR2(32),
+    prodejny_idprodejny       NUMBER,
+    zamestnanci_idzamestnance NUMBER
+);
+
+ALTER TABLE adresy
+    ADD CONSTRAINT fkarc_3 CHECK ( ( ( zamestnanci_idzamestnance IS NOT NULL )
+                                     AND ( prodejny_idprodejny IS NULL ) )
+                                   OR ( ( prodejny_idprodejny IS NOT NULL )
+                                        AND ( zamestnanci_idzamestnance IS NULL ) )
+                                   OR ( ( zamestnanci_idzamestnance IS NULL )
+                                        AND ( prodejny_idprodejny IS NULL ) ) );
+
+ALTER TABLE adresy ADD CONSTRAINT adresa_pk PRIMARY KEY ( idadresy );
+
+CREATE TABLE autuzivatel_role (
+    role_idrole          NUMBER NOT NULL,
+    autuzivatele_idautuz NUMBER NOT NULL
+);
+
+ALTER TABLE autuzivatel_role ADD CONSTRAINT autuzivatel_role_pk PRIMARY KEY ( role_idrole,
+                                                                              autuzivatele_idautuz );
+
+CREATE TABLE autuzivatele (
+    idautuz                   NUMBER NOT NULL,
+    jmeno                     VARCHAR2(20) NOT NULL,
+    heslohash                 VARCHAR2(64) NOT NULL,
+    heslosalt                 VARCHAR2(24) NOT NULL,
+    zamestnanci_idzamestnance NUMBER NOT NULL
+);
+
+CREATE UNIQUE INDEX autuzivatel__idx ON
+    autuzivatele (
+        zamestnanci_idzamestnance
+    ASC );
+
+ALTER TABLE autuzivatele ADD CONSTRAINT autuzivatele_pk PRIMARY KEY ( idautuz );
+
+CREATE TABLE hotove (
+    idplatby NUMBER NOT NULL,
+    vraceno  NUMBER NOT NULL
+);
+
+ALTER TABLE hotove ADD CONSTRAINT hotove_pk PRIMARY KEY ( idplatby );
+
+CREATE TABLE karty (
+    idplatby       NUMBER NOT NULL,
+    cislokarty     NUMBER NOT NULL,
+    autorizacnikod NUMBER NOT NULL
+);
+
+ALTER TABLE karty ADD CONSTRAINT karta_pk PRIMARY KEY ( idplatby );
+
+CREATE TABLE kategorije (
+    idkategorije NUMBER NOT NULL,
+    nazev        VARCHAR2(32) NOT NULL
+);
+
+ALTER TABLE kategorije ADD CONSTRAINT kategorije_pk PRIMARY KEY ( idkategorije );
+
+CREATE TABLE kupony (
+    idplatby NUMBER NOT NULL,
+    cislo    NUMBER NOT NULL
+);
+
+ALTER TABLE kupony ADD CONSTRAINT kupon_pk PRIMARY KEY ( idplatby );
+
+CREATE TABLE logy (
+    idlogu   NUMBER NOT NULL,
+    tabulka  VARCHAR2(30) NOT NULL,
+    operace  VARCHAR2(400) NOT NULL,
+    cas      DATE NOT NULL,
+    uzivatel VARCHAR2(20) NOT NULL,
+    zmeny VARCHAR2(4000) NOT NULL
+);
+
+ALTER TABLE logy ADD CONSTRAINT log_pk PRIMARY KEY ( idlogu );
+
+CREATE TABLE platby (
+    idplatby    NUMBER NOT NULL,
+    jeclubcarta NUMBER(1) NOT NULL,
+    platba_type VARCHAR2(6) NOT NULL
+);
+
+ALTER TABLE platby
+    ADD CHECK ( jeclubcarta IN ( 0, 1 ) );
+
+ALTER TABLE platby
+    ADD CONSTRAINT ch_inh_platba CHECK ( platba_type IN ( 'HOTOVE', 'KARTA', 'KUPON', 'PLATBA' ) );
+
+ALTER TABLE platby ADD CONSTRAINT platby_pk PRIMARY KEY ( idplatby );
+
+CREATE TABLE pokladny (
+    idpokladny          NUMBER NOT NULL,
+    prodejny_idprodejny NUMBER,
+    cislo               NUMBER NOT NULL,
+    jesamoobsluzna      NUMBER(1) NOT NULL
+);
+
+ALTER TABLE pokladny
+    ADD CHECK ( jesamoobsluzna IN ( 0, 1 ) );
+
+ALTER TABLE pokladny ADD CONSTRAINT pokladny_pk PRIMARY KEY ( idpokladny );
+
+CREATE TABLE pozice (
+    idpozice NUMBER NOT NULL,
+    nazev    VARCHAR2(32) NOT NULL,
+    mzda     NUMBER NOT NULL
+);
+
+ALTER TABLE pozice ADD CONSTRAINT pozice_pk PRIMARY KEY ( idpozice );
+
+CREATE TABLE prodane_zbozi (
+    pocetzbozi        NUMBER NOT NULL,
+    prodeje_idprodeje NUMBER NOT NULL,
+    zbozi_idzbozi     NUMBER NOT NULL,
+    prodejnicena      NUMBER NOT NULL
+);
+
+ALTER TABLE prodane_zbozi ADD CONSTRAINT prodane_zbozi_pk PRIMARY KEY ( prodeje_idprodeje,
+                                                                        zbozi_idzbozi );
+
+CREATE TABLE prodeje (
+    idprodeje       NUMBER NOT NULL,
+    datumprodeje    DATE NOT NULL,
+    celkovacena     NUMBER NOT NULL,
+    platba_idplatby NUMBER NOT NULL
+);
+
+CREATE UNIQUE INDEX prodej__idx ON
+    prodeje (
+        platba_idplatby
+    ASC );
+
+ALTER TABLE prodeje ADD CONSTRAINT prodeje_pk PRIMARY KEY ( idprodeje );
+
+CREATE TABLE prodejny (
+    idprodejny     NUMBER NOT NULL,
+    kontaktnicislo VARCHAR2(32),
+    plocha         NUMBER NOT NULL
+);
+
+ALTER TABLE prodejny ADD CONSTRAINT prodejny_pk PRIMARY KEY ( idprodejny );
+
+CREATE TABLE pulty (
+    idpultu             NUMBER NOT NULL,
+    prodejny_idprodejny NUMBER,
+    cislo               NUMBER NOT NULL,
+    pocetpolicek        NUMBER NOT NULL
+);
+
+ALTER TABLE pulty ADD CONSTRAINT pulty_pk PRIMARY KEY ( idpultu );
+
+CREATE TABLE role (
+    idrole NUMBER NOT NULL,
+    nazev  VARCHAR2(20) NOT NULL
+);
+
+ALTER TABLE role ADD CONSTRAINT role_pk PRIMARY KEY ( idrole );
+
+CREATE TABLE sklady (
+    idskladu            NUMBER NOT NULL,
+    pocetpolicek        NUMBER NOT NULL,
+    prodejny_idprodejny NUMBER NOT NULL
+);
+
+CREATE UNIQUE INDEX sklad__idx ON
+    sklady (
+        prodejny_idprodejny
+    ASC );
+
+ALTER TABLE sklady ADD CONSTRAINT sklady_pk PRIMARY KEY ( idskladu );
+
+CREATE TABLE soubory (
+    idsouboru            NUMBER NOT NULL,
+    jmeno                VARCHAR2(60) NOT NULL,
+    soubor               BLOB NOT NULL,
+    pripona              VARCHAR2(10) NOT NULL,
+    autuzivatele_idautuz NUMBER NOT NULL
+);
+
+CREATE UNIQUE INDEX soubor__idx ON
+    soubory (
+        autuzivatele_idautuz
+    ASC );
+
+ALTER TABLE soubory ADD CONSTRAINT soubor_pk PRIMARY KEY ( idsouboru );
+
+CREATE TABLE zamestnanci (
+    idzamestnance             NUMBER NOT NULL,
+    pozice_idpozice           NUMBER NOT NULL,
+    jmeno                     VARCHAR2(32) NOT NULL,
+    prijmeni                  VARCHAR2(32),
+    rodnecislo                VARCHAR2(32) NOT NULL,
+    telefonnicislo            VARCHAR2(32) NOT NULL,
+    prodejny_idprodejny       NUMBER NOT NULL,
+    zamestnanci_idzamestnance NUMBER
+);
+
+ALTER TABLE zamestnanci ADD CONSTRAINT zamestnanci_pk PRIMARY KEY ( idzamestnance );
+
+CREATE TABLE zbozi (
+    idzbozi                 NUMBER NOT NULL,
+    nazev                   VARCHAR2(32) NOT NULL,
+    aktualnicena            NUMBER NOT NULL,
+    cenazeclubcartou        NUMBER,
+    kategorije_idkategorije NUMBER NOT NULL,
+    hmotnost                NUMBER NOT NULL
+);
+
+ALTER TABLE zbozi ADD CONSTRAINT zbozi_pk PRIMARY KEY ( idzbozi );
+
+CREATE TABLE zbozi_na_pulte (
+    pulty_idpultu NUMBER NOT NULL,
+    zbozi_idzbozi NUMBER NOT NULL,
+    pocetzbozi    NUMBER NOT NULL
+);
+
+ALTER TABLE zbozi_na_pulte ADD CONSTRAINT zbozi_na_pulte_pk PRIMARY KEY ( pulty_idpultu,
+                                                                          zbozi_idzbozi );
+
+CREATE TABLE zbozi_na_sklade (
+    pocetzbozi      NUMBER NOT NULL,
+    sklady_idskladu NUMBER NOT NULL,
+    zbozi_idzbozi   NUMBER NOT NULL
+);
+
+ALTER TABLE zbozi_na_sklade ADD CONSTRAINT zbozi_na_sklade_pk PRIMARY KEY ( zbozi_idzbozi,
+                                                                            sklady_idskladu );
+
+ALTER TABLE adresy
+    ADD CONSTRAINT adresy_prodejny_fk FOREIGN KEY ( prodejny_idprodejny )
+        REFERENCES prodejny ( idprodejny );
+
+ALTER TABLE adresy
+    ADD CONSTRAINT adresy_zamestnanci_fk FOREIGN KEY ( zamestnanci_idzamestnance )
+        REFERENCES zamestnanci ( idzamestnance );
+
+ALTER TABLE autuzivatel_role
+    ADD CONSTRAINT autuzivatele_fk FOREIGN KEY ( autuzivatele_idautuz )
+        REFERENCES autuzivatele ( idautuz );
+
+ALTER TABLE autuzivatele
+    ADD CONSTRAINT autuzivatele_zamestnanci_fk FOREIGN KEY ( zamestnanci_idzamestnance )
+        REFERENCES zamestnanci ( idzamestnance );
+
+ALTER TABLE hotove
+    ADD CONSTRAINT hotove_platba_fk FOREIGN KEY ( idplatby )
+        REFERENCES platby ( idplatby );
+
+ALTER TABLE karty
+    ADD CONSTRAINT karta_platba_fk FOREIGN KEY ( idplatby )
+        REFERENCES platby ( idplatby );
+
+ALTER TABLE kupony
+    ADD CONSTRAINT kupon_platba_fk FOREIGN KEY ( idplatby )
+        REFERENCES platby ( idplatby );
+
+ALTER TABLE pokladny
+    ADD CONSTRAINT pokladny_prodejny_fk FOREIGN KEY ( prodejny_idprodejny )
+        REFERENCES prodejny ( idprodejny );
+
+ALTER TABLE prodane_zbozi
+    ADD CONSTRAINT prodane_zbozi_prodeje_fk FOREIGN KEY ( prodeje_idprodeje )
+        REFERENCES prodeje ( idprodeje );
+
+ALTER TABLE prodane_zbozi
+    ADD CONSTRAINT prodane_zbozi_zbozi_fk FOREIGN KEY ( zbozi_idzbozi )
+        REFERENCES zbozi ( idzbozi );
+
+ALTER TABLE prodeje
+    ADD CONSTRAINT prodej_platba_fk FOREIGN KEY ( platba_idplatby )
+        REFERENCES platby ( idplatby );
+
+ALTER TABLE pulty
+    ADD CONSTRAINT pulty_prodejny_fk FOREIGN KEY ( prodejny_idprodejny )
+        REFERENCES prodejny ( idprodejny );
+
+ALTER TABLE autuzivatel_role
+    ADD CONSTRAINT role_fk FOREIGN KEY ( role_idrole )
+        REFERENCES role ( idrole );
+
+ALTER TABLE sklady
+    ADD CONSTRAINT sklady_prodejny_fk FOREIGN KEY ( prodejny_idprodejny )
+        REFERENCES prodejny ( idprodejny );
+
+ALTER TABLE soubory
+    ADD CONSTRAINT soubory_autuzivatele_fk FOREIGN KEY ( autuzivatele_idautuz )
+        REFERENCES autuzivatele ( idautuz );
+
+ALTER TABLE zamestnanci
+    ADD CONSTRAINT zamestnanci_pozice_fk FOREIGN KEY ( pozice_idpozice )
+        REFERENCES pozice ( idpozice );
+
+ALTER TABLE zamestnanci
+    ADD CONSTRAINT zamestnanci_prodejny_fk FOREIGN KEY ( prodejny_idprodejny )
+        REFERENCES prodejny ( idprodejny );
+
+ALTER TABLE zamestnanci
+    ADD CONSTRAINT zamestnanci_zamestnanci_fk FOREIGN KEY ( zamestnanci_idzamestnance )
+        REFERENCES zamestnanci ( idzamestnance );
+
+ALTER TABLE zbozi
+    ADD CONSTRAINT zbozi_kategorije_fk FOREIGN KEY ( kategorije_idkategorije )
+        REFERENCES kategorije ( idkategorije );
+
+ALTER TABLE zbozi_na_pulte
+    ADD CONSTRAINT zbozi_na_pulte_pulty_fk FOREIGN KEY ( pulty_idpultu )
+        REFERENCES pulty ( idpultu );
+
+ALTER TABLE zbozi_na_pulte
+    ADD CONSTRAINT zbozi_na_pulte_zbozi_fk FOREIGN KEY ( zbozi_idzbozi )
+        REFERENCES zbozi ( idzbozi );
+
+ALTER TABLE zbozi_na_sklade
+    ADD CONSTRAINT zbozi_na_sklade_sklady_fk FOREIGN KEY ( sklady_idskladu )
+        REFERENCES sklady ( idskladu );
+
+ALTER TABLE zbozi_na_sklade
+    ADD CONSTRAINT zbozi_na_sklade_zbozi_fk FOREIGN KEY ( zbozi_idzbozi )
+        REFERENCES zbozi ( idzbozi );
+
+CREATE OR REPLACE TRIGGER arc_fkarc_2_kupony BEFORE
+    INSERT OR UPDATE OF idplatby ON kupony
+    FOR EACH ROW
+DECLARE
+    d VARCHAR2(6);
+BEGIN
+    SELECT
+        a.platba_type
+    INTO d
+    FROM
+        platby a
+    WHERE
+        a.idplatby = :new.idplatby;
+
+    IF ( d IS NULL OR d <> 'KUPON' ) THEN
+        raise_application_error(-20223, 'FK Kupon_PLATBA_FK in Table KUPONY violates Arc constraint on Table PLATBY - discriminator column PLATBA_TYPE doesn''t have value ''KUPON'''
+        );
+    END IF;
+
+EXCEPTION
+    WHEN no_data_found THEN
+        NULL;
+    WHEN OTHERS THEN
+        RAISE;
+END;
+/
+
+CREATE OR REPLACE TRIGGER arc_fkarc_2_hotove BEFORE
+    INSERT OR UPDATE OF idplatby ON hotove
+    FOR EACH ROW
+DECLARE
+    d VARCHAR2(6);
+BEGIN
+    SELECT
+        a.platba_type
+    INTO d
+    FROM
+        platby a
+    WHERE
+        a.idplatby = :new.idplatby;
+
+    IF ( d IS NULL OR d <> 'HOTOVE' ) THEN
+        raise_application_error(-20223, 'FK HOTOVE_PLATBA_FK in Table HOTOVE violates Arc constraint on Table PLATBY - discriminator column PLATBA_TYPE doesn''t have value ''HOTOVE'''
+        );
+    END IF;
+
+EXCEPTION
+    WHEN no_data_found THEN
+        NULL;
+    WHEN OTHERS THEN
+        RAISE;
+END;
+/
+
+CREATE OR REPLACE TRIGGER arc_fkarc_2_karty BEFORE
+    INSERT OR UPDATE OF idplatby ON karty
+    FOR EACH ROW
+DECLARE
+    d VARCHAR2(6);
+BEGIN
+    SELECT
+        a.platba_type
+    INTO d
+    FROM
+        platby a
+    WHERE
+        a.idplatby = :new.idplatby;
+
+    IF ( d IS NULL OR d <> 'KARTA' ) THEN
+        raise_application_error(-20223, 'FK KARTA_PLATBA_FK in Table KARTY violates Arc constraint on Table PLATBY - discriminator column PLATBA_TYPE doesn''t have value ''KARTA'''
+        );
+    END IF;
+
+EXCEPTION
+    WHEN no_data_found THEN
+        NULL;
+    WHEN OTHERS THEN
+        RAISE;
+END;
+/
+
+CREATE SEQUENCE adresy_idadresy_seq START WITH 1 NOCACHE ORDER;
+
+CREATE OR REPLACE TRIGGER adresy_idadresy_trg BEFORE
+    INSERT ON adresy
+    FOR EACH ROW
+    WHEN ( new.idadresy IS NULL )
+BEGIN
+    :new.idadresy := adresy_idadresy_seq.nextval;
+END;
+/
+
+CREATE SEQUENCE autuzivatele_idautuz_seq START WITH 1 NOCACHE ORDER;
+
+CREATE OR REPLACE TRIGGER autuzivatele_idautuz_trg BEFORE
+    INSERT ON autuzivatele
+    FOR EACH ROW
+    WHEN ( new.idautuz IS NULL )
+BEGIN
+    :new.idautuz := autuzivatele_idautuz_seq.nextval;
+END;
+/
+
+CREATE SEQUENCE karty_idplatby_seq START WITH 1 NOCACHE ORDER;
+
+CREATE OR REPLACE TRIGGER karty_idplatby_trg BEFORE
+    INSERT ON karty
+    FOR EACH ROW
+    WHEN ( new.idplatby IS NULL )
+BEGIN
+    :new.idplatby := karty_idplatby_seq.nextval;
+END;
+/
+
+CREATE SEQUENCE kategorije_idkategorije_seq START WITH 1 NOCACHE ORDER;
+
+CREATE OR REPLACE TRIGGER kategorije_idkategorije_trg BEFORE
+    INSERT ON kategorije
+    FOR EACH ROW
+    WHEN ( new.idkategorije IS NULL )
+BEGIN
+    :new.idkategorije := kategorije_idkategorije_seq.nextval;
+END;
+/
+
+CREATE SEQUENCE logy_idlogu_seq START WITH 1 NOCACHE ORDER;
+
+CREATE OR REPLACE TRIGGER logy_idlogu_trg BEFORE
+    INSERT ON logy
+    FOR EACH ROW
+    WHEN ( new.idlogu IS NULL )
+BEGIN
+    :new.idlogu := logy_idlogu_seq.nextval;
+END;
+/
+
+CREATE SEQUENCE platby_idplatby_seq START WITH 1 NOCACHE ORDER;
+
+CREATE OR REPLACE TRIGGER platby_idplatby_trg BEFORE
+    INSERT ON platby
+    FOR EACH ROW
+    WHEN ( new.idplatby IS NULL )
+BEGIN
+    :new.idplatby := platby_idplatby_seq.nextval;
+END;
+/
+
+CREATE SEQUENCE pokladny_idpokladny_seq START WITH 1 NOCACHE ORDER;
+
+CREATE OR REPLACE TRIGGER pokladny_idpokladny_trg BEFORE
+    INSERT ON pokladny
+    FOR EACH ROW
+    WHEN ( new.idpokladny IS NULL )
+BEGIN
+    :new.idpokladny := pokladny_idpokladny_seq.nextval;
+END;
+/
+
+CREATE SEQUENCE pozice_idpozice_seq START WITH 1 NOCACHE ORDER;
+
+CREATE OR REPLACE TRIGGER pozice_idpozice_trg BEFORE
+    INSERT ON pozice
+    FOR EACH ROW
+    WHEN ( new.idpozice IS NULL )
+BEGIN
+    :new.idpozice := pozice_idpozice_seq.nextval;
+END;
+/
+
+CREATE SEQUENCE prodeje_idprodeje_seq START WITH 1 NOCACHE ORDER;
+
+CREATE OR REPLACE TRIGGER prodeje_idprodeje_trg BEFORE
+    INSERT ON prodeje
+    FOR EACH ROW
+    WHEN ( new.idprodeje IS NULL )
+BEGIN
+    :new.idprodeje := prodeje_idprodeje_seq.nextval;
+END;
+/
+
+CREATE SEQUENCE prodejny_idprodejny_seq START WITH 1 NOCACHE ORDER;
+
+CREATE OR REPLACE TRIGGER prodejny_idprodejny_trg BEFORE
+    INSERT ON prodejny
+    FOR EACH ROW
+    WHEN ( new.idprodejny IS NULL )
+BEGIN
+    :new.idprodejny := prodejny_idprodejny_seq.nextval;
+END;
+/
+
+CREATE SEQUENCE pulty_idpultu_seq START WITH 1 NOCACHE ORDER;
+
+CREATE OR REPLACE TRIGGER pulty_idpultu_trg BEFORE
+    INSERT ON pulty
+    FOR EACH ROW
+    WHEN ( new.idpultu IS NULL )
+BEGIN
+    :new.idpultu := pulty_idpultu_seq.nextval;
+END;
+/
+
+CREATE SEQUENCE role_idrole_seq START WITH 1 NOCACHE ORDER;
+
+CREATE OR REPLACE TRIGGER role_idrole_trg BEFORE
+    INSERT ON role
+    FOR EACH ROW
+    WHEN ( new.idrole IS NULL )
+BEGIN
+    :new.idrole := role_idrole_seq.nextval;
+END;
+/
+
+CREATE SEQUENCE sklady_idskladu_seq START WITH 1 NOCACHE ORDER;
+
+CREATE OR REPLACE TRIGGER sklady_idskladu_trg BEFORE
+    INSERT ON sklady
+    FOR EACH ROW
+    WHEN ( new.idskladu IS NULL )
+BEGIN
+    :new.idskladu := sklady_idskladu_seq.nextval;
+END;
+/
+
+CREATE SEQUENCE soubory_idsouboru_seq START WITH 1 NOCACHE ORDER;
+
+CREATE OR REPLACE TRIGGER soubory_idsouboru_trg BEFORE
+    INSERT ON soubory
+    FOR EACH ROW
+    WHEN ( new.idsouboru IS NULL )
+BEGIN
+    :new.idsouboru := soubory_idsouboru_seq.nextval;
+END;
+/
+
+CREATE SEQUENCE zamestnanci_idzamestnance_seq START WITH 1 NOCACHE ORDER;
+
+CREATE OR REPLACE TRIGGER zamestnanci_idzamestnance_trg BEFORE
+    INSERT ON zamestnanci
+    FOR EACH ROW
+    WHEN ( new.idzamestnance IS NULL )
+BEGIN
+    :new.idzamestnance := zamestnanci_idzamestnance_seq.nextval;
+END;
+/
+
+CREATE SEQUENCE zbozi_idzbozi_seq START WITH 1 NOCACHE ORDER;
+
+CREATE OR REPLACE TRIGGER zbozi_idzbozi_trg BEFORE
+    INSERT ON zbozi
+    FOR EACH ROW
+    WHEN ( new.idzbozi IS NULL )
+BEGIN
+    :new.idzbozi := zbozi_idzbozi_seq.nextval;
+END;
+/
+
+INSERT INTO PRODEJNY (plocha, kontaktniCislo) VALUES (500, '+420 123 456 789');
+INSERT INTO PRODEJNY (plocha, kontaktniCislo) VALUES (800, '+420 987 654 321');
+INSERT INTO PRODEJNY (plocha, kontaktniCislo) VALUES (300, '+420 111 222 333');
+INSERT INTO PRODEJNY (plocha, kontaktniCislo) VALUES (700, '+420 456 789 123');
+INSERT INTO PRODEJNY (plocha, kontaktniCislo) VALUES (400, '+420 321 987 654');
+INSERT INTO PRODEJNY (plocha, kontaktniCislo) VALUES (900, '+420 333 111 222');
+INSERT INTO PRODEJNY (plocha, kontaktniCislo) VALUES (600, '+420 789 123 456');
+INSERT INTO PRODEJNY (plocha, kontaktniCislo) VALUES (300, '+420 654 321 987');
+INSERT INTO PRODEJNY (plocha, kontaktniCislo) VALUES (800, '+420 222 333 111');
+INSERT INTO PRODEJNY (plocha, kontaktniCislo) VALUES (200, '+420 123 456 789');
+INSERT INTO PRODEJNY (plocha, kontaktniCislo) VALUES (700, '+420 987 654 321');
+INSERT INTO PRODEJNY (plocha, kontaktniCislo) VALUES (400, '+420 111 222 333');
+INSERT INTO PRODEJNY (plocha, kontaktniCislo) VALUES (900, '+420 456 789 123');
+INSERT INTO PRODEJNY (plocha, kontaktniCislo) VALUES (500, '+420 321 987 654');
+INSERT INTO PRODEJNY (plocha, kontaktniCislo) VALUES (100, '+420 333 111 222');
+INSERT INTO PRODEJNY (plocha, kontaktniCislo) VALUES (600, '+420 789 123 456');
+INSERT INTO PRODEJNY (plocha, kontaktniCislo) VALUES (300, '+420 654 321 987');
+INSERT INTO PRODEJNY (plocha, kontaktniCislo) VALUES (800, '+420 222 333 111');
+INSERT INTO PRODEJNY (plocha, kontaktniCislo) VALUES (200, '+420 123 456 789');
+INSERT INTO PRODEJNY (plocha, kontaktniCislo) VALUES (700, '+420 987 654 321');
+
+INSERT INTO KATEGORIJE (nazev) VALUES ('Chemie');
+INSERT INTO KATEGORIJE (nazev) VALUES ('Domaci potreby');
+INSERT INTO KATEGORIJE (nazev) VALUES ('Pekarske vyrobky');
+INSERT INTO KATEGORIJE (nazev) VALUES ('Mlecne vyrobky');
+INSERT INTO KATEGORIJE (nazev) VALUES ('Sladkosti');
+INSERT INTO KATEGORIJE (nazev) VALUES ('Napoje');
+INSERT INTO KATEGORIJE (nazev) VALUES ('Maso');
+INSERT INTO KATEGORIJE (nazev) VALUES ('Ryby');
+INSERT INTO KATEGORIJE (nazev) VALUES ('Pripravene potraviny');
+INSERT INTO KATEGORIJE (nazev) VALUES ('Mrazene potraviny');
+INSERT INTO KATEGORIJE (nazev) VALUES ('Morske potraviny');
+INSERT INTO KATEGORIJE (nazev) VALUES ('Alkohol');
+INSERT INTO KATEGORIJE (nazev) VALUES ('Elektronika');
+INSERT INTO KATEGORIJE (nazev) VALUES ('Ovoce');
+INSERT INTO KATEGORIJE (nazev) VALUES ('Zelenina');
+INSERT INTO KATEGORIJE (nazev) VALUES ('Koreni');
+INSERT INTO KATEGORIJE (nazev) VALUES ('Kuchynske nadobi');
+INSERT INTO KATEGORIJE (nazev) VALUES ('Nabytek');
+INSERT INTO KATEGORIJE (nazev) VALUES ('Kancelarske potreby');
+INSERT INTO KATEGORIJE (nazev) VALUES ('Kosmetika');
+
+INSERT INTO Pozice (nazev, mzda) VALUES ('Prodavač', 25000);
+INSERT INTO Pozice (nazev, mzda) VALUES ('Asistent prodeje', 23000);
+INSERT INTO Pozice (nazev, mzda) VALUES ('Manažer prodeje', 30000);
+INSERT INTO Pozice (nazev, mzda) VALUES ('Specialist na klientský servis', 26000);
+INSERT INTO Pozice (nazev, mzda) VALUES ('Pokladní', 22000);
+INSERT INTO Pozice (nazev, mzda) VALUES ('Skladník', 21000);
+INSERT INTO Pozice (nazev, mzda) VALUES ('Provozní', 29000);
+INSERT INTO Pozice (nazev, mzda) VALUES ('Výrobce', 27000);
+INSERT INTO Pozice (nazev, mzda) VALUES ('Kontrolor kvality', 30000);
+INSERT INTO Pozice (nazev, mzda) VALUES ('Inženýr výroby', 35000);
+INSERT INTO Pozice (nazev, mzda) VALUES ('Technik', 32000);
+INSERT INTO Pozice (nazev, mzda) VALUES ('Pracovník technické podpory', 30000);
+INSERT INTO Pozice (nazev, mzda) VALUES ('Pracovník prodejny', 24000);
+INSERT INTO Pozice (nazev, mzda) VALUES ('Manažer oddělení', 35000);
+INSERT INTO Pozice (nazev, mzda) VALUES ('Specialist na zákaznic servis', 30000);
+INSERT INTO Pozice (nazev, mzda) VALUES ('Výrobce vedoucí', 32000);
+INSERT INTO Pozice (nazev, mzda) VALUES ('Manažer logistiky', 40000);
+INSERT INTO Pozice (nazev, mzda) VALUES ('Specialist na plánování', 38000);
+INSERT INTO Pozice (nazev, mzda) VALUES ('Manažer financí', 40000);
+INSERT INTO Pozice (nazev, mzda) VALUES ('Manažer PR a komunikace', 40000);
+INSERT INTO Pozice (nazev, mzda) VALUES ('Technický ředitel ', 30000);
+INSERT INTO Pozice (nazev, mzda) VALUES ('Vedoucí ředitel ', 100000);
+
+
+INSERT INTO ZAMESTNANCI (jmeno, prijmeni, telefonniCislo, rodneCislo, POZICE_idPozice, PRODEJNY_idProdejny) VALUES ('Jan', 'Novák', '+420 123 456 789', '1234567890', 1, 1);
+INSERT INTO ZAMESTNANCI (jmeno, prijmeni, telefonniCislo, rodneCislo, POZICE_idPozice, PRODEJNY_idProdejny) VALUES ('Petr', 'Svoboda', '+420 987 654 321', '2345678901', 2, 2);
+INSERT INTO ZAMESTNANCI (jmeno, prijmeni, telefonniCislo, rodneCislo, POZICE_idPozice, PRODEJNY_idProdejny) VALUES ('Jana', 'Kovaříková', '+420 111 222 333', '3456789012', 3, 3);
+INSERT INTO ZAMESTNANCI (jmeno, prijmeni, telefonniCislo, rodneCislo, POZICE_idPozice, PRODEJNY_idProdejny) VALUES ('Tomáš', 'Horáček', '+420 444 555 666', '4567890123', 4, 4);
+INSERT INTO ZAMESTNANCI (jmeno, prijmeni, telefonniCislo, rodneCislo, POZICE_idPozice, PRODEJNY_idProdejny) VALUES ('Martin', 'Černý', '+420 777 888 999', '5678901234', 5, 5);
+INSERT INTO ZAMESTNANCI (jmeno, prijmeni, telefonniCislo, rodneCislo, POZICE_idPozice, PRODEJNY_idProdejny) VALUES ('Lenka', 'Dvořáková', '+420 000 111 222', '6789012345', 6, 6);
+INSERT INTO ZAMESTNANCI (jmeno, prijmeni, telefonniCislo, rodneCislo, POZICE_idPozice, PRODEJNY_idProdejny) VALUES ('Pavel', 'Novotný', '+420 333 444 555', '7890123456', 7, 7);
+INSERT INTO ZAMESTNANCI (jmeno, prijmeni, telefonniCislo, rodneCislo, POZICE_idPozice, PRODEJNY_idProdejny) VALUES ('Lucie', 'Červinková', '+420 666 777 888', '8901234567', 8, 8);
+INSERT INTO ZAMESTNANCI (jmeno, prijmeni, telefonniCislo, rodneCislo, POZICE_idPozice, PRODEJNY_idProdejny) VALUES ('Kateřina', 'Pokorná', '+420 999 000 111', '9012345678', 9, 9);
+INSERT INTO ZAMESTNANCI (jmeno, prijmeni, telefonniCislo, rodneCislo, POZICE_idPozice, PRODEJNY_idProdejny) VALUES ('Marek', 'Veselý', '+420 222 333 444', '0123456789', 10, 10);
+INSERT INTO ZAMESTNANCI (jmeno, prijmeni, telefonniCislo, rodneCislo, POZICE_idPozice, PRODEJNY_idProdejny) VALUES ('Barbora', 'Kulíšková', '+420 555 666 777', '1234567890', 11, 11);
+INSERT INTO ZAMESTNANCI (jmeno, prijmeni, telefonniCislo, rodneCislo, POZICE_idPozice, PRODEJNY_idProdejny) VALUES ('Václav', 'Rybář', '+420 888 999 000', '2345678901', 12, 12);
+INSERT INTO ZAMESTNANCI (jmeno, prijmeni, telefonniCislo, rodneCislo, POZICE_idPozice, PRODEJNY_idProdejny) VALUES ('Veronika', 'Šindelářová', '+420 121 231 341', '3456789012', 13, 13);
+INSERT INTO ZAMESTNANCI (jmeno, prijmeni, telefonniCislo, rodneCislo, POZICE_idPozice, PRODEJNY_idProdejny) VALUES ('Jiří', 'Hájek', '+420 464 575 686', '4567890123', 14, 14);
+INSERT INTO ZAMESTNANCI (jmeno, prijmeni, telefonniCislo, rodneCislo, POZICE_idPozice, PRODEJNY_idProdejny) VALUES ('Anna', 'Němcová', '+420 787 898 009', '5678901234', 15, 15);
+INSERT INTO ZAMESTNANCI (jmeno, prijmeni, telefonniCislo, rodneCislo, POZICE_idPozice, PRODEJNY_idProdejny) VALUES ('Miroslav', 'Klíma', '+420 001 112 223', '6789012345', 16, 16);
+INSERT INTO ZAMESTNANCI (jmeno, prijmeni, telefonniCislo, rodneCislo, POZICE_idPozice, PRODEJNY_idProdejny) VALUES ('Věra', 'Majerová', '+420 334 445 556', '7890123456', 17, 17);
+INSERT INTO ZAMESTNANCI (jmeno, prijmeni, telefonniCislo, rodneCislo, POZICE_idPozice, PRODEJNY_idProdejny) VALUES ('Karel', 'Jirásek', '+420 667 778 889', '8901234567', 18, 18);
+INSERT INTO ZAMESTNANCI (jmeno, prijmeni, telefonniCislo, rodneCislo, POZICE_idPozice, PRODEJNY_idProdejny) VALUES ('Marie', 'Štěpánková', '+420 900 011 122', '9012345678', 19, 19);
+INSERT INTO ZAMESTNANCI (jmeno, prijmeni, telefonniCislo, rodneCislo, POZICE_idPozice, PRODEJNY_idProdejny) VALUES ('David', 'Kolář', '+420 233 344 455', '0123456789', 20, 20);
+INSERT INTO ZAMESTNANCI (jmeno, prijmeni, telefonniCislo, rodneCislo, POZICE_idPozice, PRODEJNY_idProdejny) VALUES ('Ivana', 'Veselá', '+420 566 677 788', '1234567890', 5, 1);
+INSERT INTO ZAMESTNANCI (jmeno, prijmeni, telefonniCislo, rodneCislo, POZICE_idPozice, PRODEJNY_idProdejny) VALUES ('Ondřej', 'Černý', '+420 899 001 112', '2345678901', 5, 2);
+INSERT INTO ZAMESTNANCI (jmeno, prijmeni, telefonniCislo, rodneCislo, POZICE_idPozice, PRODEJNY_idProdejny) VALUES ('Simona', 'Petrášová', '+420 122 233 344', '3456789012', 5, 3);
+INSERT INTO ZAMESTNANCI (jmeno, prijmeni, telefonniCislo, rodneCislo, POZICE_idPozice, PRODEJNY_idProdejny) VALUES ('Roman', 'Novotný', '+420 455 566 677', '4567890123', 5, 4);
+INSERT INTO ZAMESTNANCI (jmeno, prijmeni, telefonniCislo, rodneCislo, POZICE_idPozice, PRODEJNY_idProdejny) VALUES ('Jana', 'Bartošová', '+420 788 899 001', '5678901234', 3, 5);
+INSERT INTO ZAMESTNANCI (jmeno, prijmeni, telefonniCislo, rodneCislo, POZICE_idPozice, PRODEJNY_idProdejny) VALUES ('Petr', 'Červenka', '+420 011 122 233', '6789012345', 5, 6);
+INSERT INTO ZAMESTNANCI (jmeno, prijmeni, telefonniCislo, rodneCislo, POZICE_idPozice, PRODEJNY_idProdejny) VALUES ('Tereza', 'Hájková', '+420 344 455 566', '7890123456', 5, 7);
+INSERT INTO ZAMESTNANCI (jmeno, prijmeni, telefonniCislo, rodneCislo, POZICE_idPozice, PRODEJNY_idProdejny) VALUES ('Lukáš', 'Kučera', '+420 677 788 899', '8901234567', 5, 8);
+INSERT INTO ZAMESTNANCI (jmeno, prijmeni, telefonniCislo, rodneCislo, POZICE_idPozice, PRODEJNY_idProdejny) VALUES ('Eliška', 'Langrová', '+420 001 112 223', '9012345678', 5, 9);
+INSERT INTO ZAMESTNANCI (jmeno, prijmeni, telefonniCislo, rodneCislo, POZICE_idPozice, PRODEJNY_idProdejny) VALUES ('Vojtěch', 'Marek', '+420 233 344 455', '0123456789', 5, 10);
+INSERT INTO ZAMESTNANCI (jmeno, prijmeni, telefonniCislo, rodneCislo, POZICE_idPozice, PRODEJNY_idProdejny) VALUES ('Zuzana', 'Němecová', '+420 566 677 788', '1234567890', 5, 11);
+INSERT INTO ZAMESTNANCI (jmeno, prijmeni, telefonniCislo, rodneCislo, POZICE_idPozice, PRODEJNY_idProdejny) VALUES ('Adam', 'Ondráček', '+420 899 001 112', '2345678901', 5, 12);
+INSERT INTO ZAMESTNANCI (jmeno, prijmeni, telefonniCislo, rodneCislo, POZICE_idPozice, PRODEJNY_idProdejny) VALUES ('Nikola', 'Škvrnová', '+420 122 233 344', '7890123456', 5, 13);
+INSERT INTO ZAMESTNANCI (jmeno, prijmeni, telefonniCislo, rodneCislo, POZICE_idPozice, PRODEJNY_idProdejny) VALUES ('Filip', 'Toman', '+420 455 566 677', '8901234567', 5, 14);
+INSERT INTO ZAMESTNANCI (jmeno, prijmeni, telefonniCislo, rodneCislo, POZICE_idPozice, PRODEJNY_idProdejny) VALUES ('Sára', 'Urbanová', '+420 788 899 001', '9012345678', 5, 15);
+INSERT INTO ZAMESTNANCI (jmeno, prijmeni, telefonniCislo, rodneCislo, POZICE_idPozice, PRODEJNY_idProdejny) VALUES ('Matěj', 'Vávra', '+420 011 122 233', '0123456789', 5, 16);
+INSERT INTO ZAMESTNANCI (jmeno, prijmeni, telefonniCislo, rodneCislo, POZICE_idPozice, PRODEJNY_idProdejny) VALUES ('Dominik', 'Zábranský', '+420 677 788 899', '2345678901', 5, 17);
+INSERT INTO ZAMESTNANCI (jmeno, prijmeni, telefonniCislo, rodneCislo, POZICE_idPozice, PRODEJNY_idProdejny) VALUES ('Markéta', 'Adamcová', '+420 900 011 122', '3456789012', 5, 18);
+INSERT INTO ZAMESTNANCI (jmeno, prijmeni, telefonniCislo, rodneCislo, POZICE_idPozice, PRODEJNY_idProdejny) VALUES ('Tomáš', 'Baláž', '+420 233 344 455', '4567890123', 4, 19);
+INSERT INTO ZAMESTNANCI (jmeno, prijmeni, telefonniCislo, rodneCislo, POZICE_idPozice, PRODEJNY_idProdejny) VALUES ('Tereza', 'Černá', '+420 566 677 788', '5678901234', 6, 20);
+INSERT INTO ZAMESTNANCI (jmeno, prijmeni, telefonniCislo, rodneCislo, POZICE_idPozice, PRODEJNY_idProdejny) VALUES ('Lukáš', 'Černý', '+420 899 001 112', '6789012345', 9, 3);
+INSERT INTO ZAMESTNANCI (jmeno, prijmeni, telefonniCislo, rodneCislo, POZICE_idPozice, PRODEJNY_idProdejny) VALUES ('Eliška', 'Červenková', '+420 122 233 354', '7890123456', 11, 4);
+INSERT INTO ZAMESTNANCI (jmeno, prijmeni, telefonniCislo, rodneCislo, POZICE_idPozice, PRODEJNY_idProdejny) VALUES ('Petr', 'Červeny', '+420 122 653 389', '6957239344', 21, 5);
+INSERT INTO ZAMESTNANCI (jmeno, prijmeni, telefonniCislo, rodneCislo, POZICE_idPozice, PRODEJNY_idProdejny) VALUES ('Maria', 'Červena', '+420 122 289 371', '9760225585', 22, 6);
+
+UPDATE ZAMESTNANCI z SET z.zamestnanci_idzamestnance = (SELECT zam.idzamestnance FROM zamestnanci zam where zam.pozice_idpozice = 14) where z.pozice_idpozice in (1, 5, 2, 4, 15, 13, 7);
+UPDATE ZAMESTNANCI z SET z.zamestnanci_idzamestnance = (SELECT zam.idzamestnance FROM zamestnanci zam where zam.pozice_idpozice = 17) where z.pozice_idpozice in (6, 18);
+UPDATE ZAMESTNANCI z SET z.zamestnanci_idzamestnance = (SELECT zam.idzamestnance FROM zamestnanci zam where zam.pozice_idpozice = 22) where z.pozice_idpozice in (3, 14, 17, 19, 20, 8, 16, 9, 10);
+UPDATE ZAMESTNANCI z SET z.zamestnanci_idzamestnance = (SELECT zam.idzamestnance FROM zamestnanci zam where zam.pozice_idpozice = 21) where z.pozice_idpozice in (11, 12);
+UPDATE ZAMESTNANCI z SET z.zamestnanci_idzamestnance = (SELECT zam.idzamestnance FROM zamestnanci zam where zam.pozice_idpozice = 16) where z.pozice_idpozice in (8);
+UPDATE ZAMESTNANCI z SET z.zamestnanci_idzamestnance = 44 where z.idzamestnance = 43;
+
+
+INSERT INTO ADRESY (mesto, ulice, ZAMESTNANCI_IDZAMESTNANCE) VALUES ('Roma', 'Via Cola di Rie', 1);
+INSERT INTO ADRESY (mesto, ulice, ZAMESTNANCI_IDZAMESTNANCE) VALUES ('Venice', 'Calle della Testa', 2);
+INSERT INTO ADRESY (mesto, ulice, ZAMESTNANCI_IDZAMESTNANCE) VALUES ('Tokyo', 'Shinjuku-ku', 3);
+INSERT INTO ADRESY (mesto, ulice, ZAMESTNANCI_IDZAMESTNANCE) VALUES ('Hiroshima', 'Kamiya-cho', 4);
+INSERT INTO ADRESY (mesto, ulice, ZAMESTNANCI_IDZAMESTNANCE) VALUES ('Southlake', 'Jabberwocky Rd', 5);
+INSERT INTO ADRESY (mesto, ulice, ZAMESTNANCI_IDZAMESTNANCE) VALUES ('South San Francisco', 'Interiors Blvd', 6);
+INSERT INTO ADRESY (mesto, ulice, ZAMESTNANCI_IDZAMESTNANCE) VALUES ('South Brunswick', 'Zagora St', 7);
+INSERT INTO ADRESY (mesto, ulice, ZAMESTNANCI_IDZAMESTNANCE) VALUES ('Seattle', 'Charade Rd', 8);
+INSERT INTO ADRESY (mesto, ulice, ZAMESTNANCI_IDZAMESTNANCE) VALUES ('Toronto', 'Spadina Ave', 9);
+INSERT INTO ADRESY (mesto, ulice, ZAMESTNANCI_IDZAMESTNANCE) VALUES ('Whitehorse', 'Boxwood St', 10);
+INSERT INTO ADRESY (mesto, ulice, ZAMESTNANCI_IDZAMESTNANCE) VALUES ('Beijing', 'Laogianggen', 11);
+INSERT INTO ADRESY (mesto, ulice, ZAMESTNANCI_IDZAMESTNANCE) VALUES ('Bombay', 'Vileparle (E)', 12);
+INSERT INTO ADRESY (mesto, ulice, ZAMESTNANCI_IDZAMESTNANCE) VALUES ('Sydney', 'Victoria Street', 13);
+INSERT INTO ADRESY (mesto, ulice, ZAMESTNANCI_IDZAMESTNANCE) VALUES ('Singapore', 'Clementi North', 14);
+INSERT INTO ADRESY (mesto, ulice, ZAMESTNANCI_IDZAMESTNANCE) VALUES ('London', 'Arthur St', 15);
+INSERT INTO ADRESY (mesto, ulice, ZAMESTNANCI_IDZAMESTNANCE) VALUES ('Oxford', 'The Oxford Science Park', 16);
+INSERT INTO ADRESY (mesto, ulice, ZAMESTNANCI_IDZAMESTNANCE) VALUES ('Stretford', 'Chester Road', 17);
+INSERT INTO ADRESY (mesto, ulice, ZAMESTNANCI_IDZAMESTNANCE) VALUES ('Munich', 'Schwanthalerstr.', 18);
+INSERT INTO ADRESY (mesto, ulice, ZAMESTNANCI_IDZAMESTNANCE) VALUES ('Sao Paulo', 'Rua Frei Caneca', 19);
+INSERT INTO ADRESY (mesto, ulice, ZAMESTNANCI_IDZAMESTNANCE) VALUES ('Geneva', 'Rue des Corps-Saints', 20);
+
+INSERT INTO ADRESY (mesto, ulice, PRODEJNY_idProdejny) VALUES ('Bern', 'Murtenstrasse', 1);
+INSERT INTO ADRESY (mesto, ulice, PRODEJNY_idProdejny) VALUES ('Utrecht', 'Pieter Breughelstraat', 2);
+INSERT INTO ADRESY (mesto, ulice, PRODEJNY_idProdejny) VALUES ('Trinec', 'U Pekaren', 3);
+INSERT INTO ADRESY (mesto, ulice, PRODEJNY_idProdejny) VALUES ('Teplice Ceska republika', 'Armenska', 4);
+INSERT INTO ADRESY (mesto, ulice, PRODEJNY_idProdejny) VALUES ('Chrudim', 'Na Uboci', 5);
+INSERT INTO ADRESY (mesto, ulice, PRODEJNY_idProdejny) VALUES ('Pardubicky kraj Opava', 'Kopanska', 6);
+INSERT INTO ADRESY (mesto, ulice, PRODEJNY_idProdejny) VALUES ('Karvina', 'Sovova', 7);
+INSERT INTO ADRESY (mesto, ulice, PRODEJNY_idProdejny) VALUES ('Teplice', 'Milady Horakove', 8);
+INSERT INTO ADRESY (mesto, ulice, PRODEJNY_idProdejny) VALUES ('Jablonec nad Nisou', 'Ujezdska', 9);
+INSERT INTO ADRESY (mesto, ulice, PRODEJNY_idProdejny) VALUES ('Brno', 'Cervenkova  Zlinsky kraj', 10);
+INSERT INTO ADRESY (mesto, ulice, PRODEJNY_idProdejny) VALUES ('Praha', 'K Vinici', 11);
+INSERT INTO ADRESY (mesto, ulice, PRODEJNY_idProdejny) VALUES ('Karlovy Vary', 'Truhlarova', 12);
+INSERT INTO ADRESY (mesto, ulice, PRODEJNY_idProdejny) VALUES ('Kromeriz', 'Helmova Ustecky kraj', 13);
+INSERT INTO ADRESY (mesto, ulice, PRODEJNY_idProdejny) VALUES ('Trebic', 'Nad Hlinikem Karlovarsky kraj', 14);
+INSERT INTO ADRESY (mesto, ulice, PRODEJNY_idProdejny) VALUES ('Karvina', 'nam. Pod Lipou', 15);
+INSERT INTO ADRESY (mesto, ulice, PRODEJNY_idProdejny) VALUES ('Hodonin', 'Na Uboci', 16);
+INSERT INTO ADRESY (mesto, ulice, PRODEJNY_idProdejny) VALUES ('Pribram', 'Do Vozovny', 17);
+INSERT INTO ADRESY (mesto, ulice, PRODEJNY_idProdejny) VALUES ('Kladno', 'Rozrazilova', 18);
+INSERT INTO ADRESY (mesto, ulice, PRODEJNY_idProdejny) VALUES ('Brno', 'Heckova', 19);
+INSERT INTO ADRESY (mesto, ulice, PRODEJNY_idProdejny) VALUES ('Trutnov Ceska republika', 'Kejnicka', 20);
+INSERT INTO ADRESY (mesto, ulice, PRODEJNY_idProdejny) VALUES ('Teplice', 'K Vinici', 1);
+
+INSERT INTO POKLADNY (PRODEJNY_idProdejny, cislo, jeSamoobsluzna) VALUES (1, 10, 1);
+INSERT INTO POKLADNY (PRODEJNY_idProdejny, cislo, jeSamoobsluzna) VALUES (1, 6, 0);
+INSERT INTO POKLADNY (PRODEJNY_idProdejny, cislo, jeSamoobsluzna) VALUES (1, 5, 0);
+INSERT INTO POKLADNY (PRODEJNY_idProdejny, cislo, jeSamoobsluzna) VALUES (1, 6, 1);
+INSERT INTO POKLADNY (PRODEJNY_idProdejny, cislo, jeSamoobsluzna) VALUES (2, 8, 0);
+INSERT INTO POKLADNY (PRODEJNY_idProdejny, cislo, jeSamoobsluzna) VALUES (2, 9, 1);
+INSERT INTO POKLADNY (PRODEJNY_idProdejny, cislo, jeSamoobsluzna) VALUES (2, 6, 1);
+INSERT INTO POKLADNY (PRODEJNY_idProdejny, cislo, jeSamoobsluzna) VALUES (2, 9, 1);
+INSERT INTO POKLADNY (PRODEJNY_idProdejny, cislo, jeSamoobsluzna) VALUES (3, 8, 0);
+INSERT INTO POKLADNY (PRODEJNY_idProdejny, cislo, jeSamoobsluzna) VALUES (3, 3, 1);
+INSERT INTO POKLADNY (PRODEJNY_idProdejny, cislo, jeSamoobsluzna) VALUES (3, 10, 0);
+INSERT INTO POKLADNY (PRODEJNY_idProdejny, cislo, jeSamoobsluzna) VALUES (3, 4, 1);
+INSERT INTO POKLADNY (PRODEJNY_idProdejny, cislo, jeSamoobsluzna) VALUES (4, 6, 0);
+INSERT INTO POKLADNY (PRODEJNY_idProdejny, cislo, jeSamoobsluzna) VALUES (4, 1, 1);
+INSERT INTO POKLADNY (PRODEJNY_idProdejny, cislo, jeSamoobsluzna) VALUES (4, 6, 1);
+INSERT INTO POKLADNY (PRODEJNY_idProdejny, cislo, jeSamoobsluzna) VALUES (4, 7, 1);
+INSERT INTO POKLADNY (PRODEJNY_idProdejny, cislo, jeSamoobsluzna) VALUES (5, 6, 1);
+INSERT INTO POKLADNY (PRODEJNY_idProdejny, cislo, jeSamoobsluzna) VALUES (5, 8, 0);
+INSERT INTO POKLADNY (PRODEJNY_idProdejny, cislo, jeSamoobsluzna) VALUES (5, 10, 1);
+INSERT INTO POKLADNY (PRODEJNY_idProdejny, cislo, jeSamoobsluzna) VALUES (5, 5, 1);
+INSERT INTO POKLADNY (PRODEJNY_idProdejny, cislo, jeSamoobsluzna) VALUES (6, 10, 1);
+INSERT INTO POKLADNY (PRODEJNY_idProdejny, cislo, jeSamoobsluzna) VALUES (6, 6, 0);
+INSERT INTO POKLADNY (PRODEJNY_idProdejny, cislo, jeSamoobsluzna) VALUES (6, 4, 0);
+INSERT INTO POKLADNY (PRODEJNY_idProdejny, cislo, jeSamoobsluzna) VALUES (6, 9, 1);
+INSERT INTO POKLADNY (PRODEJNY_idProdejny, cislo, jeSamoobsluzna) VALUES (7, 10, 0);
+INSERT INTO POKLADNY (PRODEJNY_idProdejny, cislo, jeSamoobsluzna) VALUES (7, 4, 0);
+INSERT INTO POKLADNY (PRODEJNY_idProdejny, cislo, jeSamoobsluzna) VALUES (7, 10, 0);
+INSERT INTO POKLADNY (PRODEJNY_idProdejny, cislo, jeSamoobsluzna) VALUES (7, 6, 1);
+INSERT INTO POKLADNY (PRODEJNY_idProdejny, cislo, jeSamoobsluzna) VALUES (8, 8, 1);
+INSERT INTO POKLADNY (PRODEJNY_idProdejny, cislo, jeSamoobsluzna) VALUES (8, 8, 1);
+INSERT INTO POKLADNY (PRODEJNY_idProdejny, cislo, jeSamoobsluzna) VALUES (8, 2, 1);
+INSERT INTO POKLADNY (PRODEJNY_idProdejny, cislo, jeSamoobsluzna) VALUES (8, 8, 1);
+INSERT INTO POKLADNY (PRODEJNY_idProdejny, cislo, jeSamoobsluzna) VALUES (9, 5, 0);
+INSERT INTO POKLADNY (PRODEJNY_idProdejny, cislo, jeSamoobsluzna) VALUES (9, 3, 0);
+INSERT INTO POKLADNY (PRODEJNY_idProdejny, cislo, jeSamoobsluzna) VALUES (9, 10, 0);
+INSERT INTO POKLADNY (PRODEJNY_idProdejny, cislo, jeSamoobsluzna) VALUES (9, 7, 1);
+INSERT INTO POKLADNY (PRODEJNY_idProdejny, cislo, jeSamoobsluzna) VALUES (10, 8, 0);
+INSERT INTO POKLADNY (PRODEJNY_idProdejny, cislo, jeSamoobsluzna) VALUES (10, 6, 0);
+INSERT INTO POKLADNY (PRODEJNY_idProdejny, cislo, jeSamoobsluzna) VALUES (10, 1, 1);
+INSERT INTO POKLADNY (PRODEJNY_idProdejny, cislo, jeSamoobsluzna) VALUES (10, 5, 0);
+INSERT INTO POKLADNY (PRODEJNY_idProdejny, cislo, jeSamoobsluzna) VALUES (11, 5, 0);
+INSERT INTO POKLADNY (PRODEJNY_idProdejny, cislo, jeSamoobsluzna) VALUES (11, 1, 1);
+INSERT INTO POKLADNY (PRODEJNY_idProdejny, cislo, jeSamoobsluzna) VALUES (11, 9, 0);
+INSERT INTO POKLADNY (PRODEJNY_idProdejny, cislo, jeSamoobsluzna) VALUES (11, 5, 1);
+INSERT INTO POKLADNY (PRODEJNY_idProdejny, cislo, jeSamoobsluzna) VALUES (12, 1, 1);
+INSERT INTO POKLADNY (PRODEJNY_idProdejny, cislo, jeSamoobsluzna) VALUES (12, 9, 1);
+INSERT INTO POKLADNY (PRODEJNY_idProdejny, cislo, jeSamoobsluzna) VALUES (12, 4, 0);
+INSERT INTO POKLADNY (PRODEJNY_idProdejny, cislo, jeSamoobsluzna) VALUES (12, 1, 0);
+INSERT INTO POKLADNY (PRODEJNY_idProdejny, cislo, jeSamoobsluzna) VALUES (13, 3, 1);
+INSERT INTO POKLADNY (PRODEJNY_idProdejny, cislo, jeSamoobsluzna) VALUES (13, 7, 0);
+INSERT INTO POKLADNY (PRODEJNY_idProdejny, cislo, jeSamoobsluzna) VALUES (13, 8, 1);
+INSERT INTO POKLADNY (PRODEJNY_idProdejny, cislo, jeSamoobsluzna) VALUES (13, 3, 1);
+INSERT INTO POKLADNY (PRODEJNY_idProdejny, cislo, jeSamoobsluzna) VALUES (14, 2, 0);
+INSERT INTO POKLADNY (PRODEJNY_idProdejny, cislo, jeSamoobsluzna) VALUES (14, 5, 1);
+INSERT INTO POKLADNY (PRODEJNY_idProdejny, cislo, jeSamoobsluzna) VALUES (14, 4, 0);
+INSERT INTO POKLADNY (PRODEJNY_idProdejny, cislo, jeSamoobsluzna) VALUES (14, 4, 0);
+INSERT INTO POKLADNY (PRODEJNY_idProdejny, cislo, jeSamoobsluzna) VALUES (15, 4, 1);
+INSERT INTO POKLADNY (PRODEJNY_idProdejny, cislo, jeSamoobsluzna) VALUES (15, 10, 1);
+INSERT INTO POKLADNY (PRODEJNY_idProdejny, cislo, jeSamoobsluzna) VALUES (15, 6, 1);
+INSERT INTO POKLADNY (PRODEJNY_idProdejny, cislo, jeSamoobsluzna) VALUES (15, 2, 1);
+INSERT INTO POKLADNY (PRODEJNY_idProdejny, cislo, jeSamoobsluzna) VALUES (16, 8, 0);
+INSERT INTO POKLADNY (PRODEJNY_idProdejny, cislo, jeSamoobsluzna) VALUES (16, 3, 0);
+INSERT INTO POKLADNY (PRODEJNY_idProdejny, cislo, jeSamoobsluzna) VALUES (16, 5, 1);
+INSERT INTO POKLADNY (PRODEJNY_idProdejny, cislo, jeSamoobsluzna) VALUES (16, 3, 0);
+INSERT INTO POKLADNY (PRODEJNY_idProdejny, cislo, jeSamoobsluzna) VALUES (17, 10, 1);
+INSERT INTO POKLADNY (PRODEJNY_idProdejny, cislo, jeSamoobsluzna) VALUES (17, 1, 1);
+INSERT INTO POKLADNY (PRODEJNY_idProdejny, cislo, jeSamoobsluzna) VALUES (17, 1, 0);
+INSERT INTO POKLADNY (PRODEJNY_idProdejny, cislo, jeSamoobsluzna) VALUES (17, 6, 0);
+INSERT INTO POKLADNY (PRODEJNY_idProdejny, cislo, jeSamoobsluzna) VALUES (18, 7, 0);
+INSERT INTO POKLADNY (PRODEJNY_idProdejny, cislo, jeSamoobsluzna) VALUES (18, 5, 0);
+INSERT INTO POKLADNY (PRODEJNY_idProdejny, cislo, jeSamoobsluzna) VALUES (18, 2, 1);
+INSERT INTO POKLADNY (PRODEJNY_idProdejny, cislo, jeSamoobsluzna) VALUES (18, 2, 1);
+INSERT INTO POKLADNY (PRODEJNY_idProdejny, cislo, jeSamoobsluzna) VALUES (19, 1, 0);
+INSERT INTO POKLADNY (PRODEJNY_idProdejny, cislo, jeSamoobsluzna) VALUES (19, 8, 1);
+INSERT INTO POKLADNY (PRODEJNY_idProdejny, cislo, jeSamoobsluzna) VALUES (19, 3, 0);
+INSERT INTO POKLADNY (PRODEJNY_idProdejny, cislo, jeSamoobsluzna) VALUES (19, 10, 0);
+INSERT INTO POKLADNY (PRODEJNY_idProdejny, cislo, jeSamoobsluzna) VALUES (20, 4, 1);
+INSERT INTO POKLADNY (PRODEJNY_idProdejny, cislo, jeSamoobsluzna) VALUES (20, 2, 0);
+INSERT INTO POKLADNY (PRODEJNY_idProdejny, cislo, jeSamoobsluzna) VALUES (20, 3, 1);
+INSERT INTO POKLADNY (PRODEJNY_idProdejny, cislo, jeSamoobsluzna) VALUES (20, 3, 1);
+
+INSERT INTO PULTY (PRODEJNY_idProdejny, cislo, pocetPolicek) VALUES (1, 1, 4);
+INSERT INTO PULTY (PRODEJNY_idProdejny, cislo, pocetPolicek) VALUES (1, 19, 4);
+INSERT INTO PULTY (PRODEJNY_idProdejny, cislo, pocetPolicek) VALUES (1, 83, 5);
+INSERT INTO PULTY (PRODEJNY_idProdejny, cislo, pocetPolicek) VALUES (1, 66, 3);
+INSERT INTO PULTY (PRODEJNY_idProdejny, cislo, pocetPolicek) VALUES (2, 1, 14);
+INSERT INTO PULTY (PRODEJNY_idProdejny, cislo, pocetPolicek) VALUES (2, 98, 11);
+INSERT INTO PULTY (PRODEJNY_idProdejny, cislo, pocetPolicek) VALUES (2, 8, 11);
+INSERT INTO PULTY (PRODEJNY_idProdejny, cislo, pocetPolicek) VALUES (2, 40, 5);
+INSERT INTO PULTY (PRODEJNY_idProdejny, cislo, pocetPolicek) VALUES (3, 92, 7);
+INSERT INTO PULTY (PRODEJNY_idProdejny, cislo, pocetPolicek) VALUES (3, 59, 7);
+INSERT INTO PULTY (PRODEJNY_idProdejny, cislo, pocetPolicek) VALUES (3, 14, 5);
+INSERT INTO PULTY (PRODEJNY_idProdejny, cislo, pocetPolicek) VALUES (3, 5, 10);
+INSERT INTO PULTY (PRODEJNY_idProdejny, cislo, pocetPolicek) VALUES (4, 43, 11);
+INSERT INTO PULTY (PRODEJNY_idProdejny, cislo, pocetPolicek) VALUES (4, 40, 11);
+INSERT INTO PULTY (PRODEJNY_idProdejny, cislo, pocetPolicek) VALUES (4, 63, 8);
+INSERT INTO PULTY (PRODEJNY_idProdejny, cislo, pocetPolicek) VALUES (4, 37, 5);
+INSERT INTO PULTY (PRODEJNY_idProdejny, cislo, pocetPolicek) VALUES (5, 9, 5);
+INSERT INTO PULTY (PRODEJNY_idProdejny, cislo, pocetPolicek) VALUES (5, 12, 10);
+INSERT INTO PULTY (PRODEJNY_idProdejny, cislo, pocetPolicek) VALUES (5, 25, 9);
+INSERT INTO PULTY (PRODEJNY_idProdejny, cislo, pocetPolicek) VALUES (5, 74, 9);
+INSERT INTO PULTY (PRODEJNY_idProdejny, cislo, pocetPolicek) VALUES (6, 44, 6);
+INSERT INTO PULTY (PRODEJNY_idProdejny, cislo, pocetPolicek) VALUES (6, 9, 13);
+INSERT INTO PULTY (PRODEJNY_idProdejny, cislo, pocetPolicek) VALUES (6, 64, 3);
+INSERT INTO PULTY (PRODEJNY_idProdejny, cislo, pocetPolicek) VALUES (6, 91, 3);
+INSERT INTO PULTY (PRODEJNY_idProdejny, cislo, pocetPolicek) VALUES (7, 31, 3);
+INSERT INTO PULTY (PRODEJNY_idProdejny, cislo, pocetPolicek) VALUES (7, 14, 15);
+INSERT INTO PULTY (PRODEJNY_idProdejny, cislo, pocetPolicek) VALUES (7, 97, 11);
+INSERT INTO PULTY (PRODEJNY_idProdejny, cislo, pocetPolicek) VALUES (7, 62, 13);
+INSERT INTO PULTY (PRODEJNY_idProdejny, cislo, pocetPolicek) VALUES (8, 61, 3);
+INSERT INTO PULTY (PRODEJNY_idProdejny, cislo, pocetPolicek) VALUES (8, 90, 11);
+INSERT INTO PULTY (PRODEJNY_idProdejny, cislo, pocetPolicek) VALUES (8, 33, 7);
+INSERT INTO PULTY (PRODEJNY_idProdejny, cislo, pocetPolicek) VALUES (8, 22, 10);
+INSERT INTO PULTY (PRODEJNY_idProdejny, cislo, pocetPolicek) VALUES (9, 100, 6);
+INSERT INTO PULTY (PRODEJNY_idProdejny, cislo, pocetPolicek) VALUES (9, 72, 6);
+INSERT INTO PULTY (PRODEJNY_idProdejny, cislo, pocetPolicek) VALUES (9, 91, 14);
+INSERT INTO PULTY (PRODEJNY_idProdejny, cislo, pocetPolicek) VALUES (9, 45, 12);
+INSERT INTO PULTY (PRODEJNY_idProdejny, cislo, pocetPolicek) VALUES (10, 95, 5);
+INSERT INTO PULTY (PRODEJNY_idProdejny, cislo, pocetPolicek) VALUES (10, 44, 4);
+INSERT INTO PULTY (PRODEJNY_idProdejny, cislo, pocetPolicek) VALUES (10, 9, 5);
+INSERT INTO PULTY (PRODEJNY_idProdejny, cislo, pocetPolicek) VALUES (10, 12, 3);
+INSERT INTO PULTY (PRODEJNY_idProdejny, cislo, pocetPolicek) VALUES (11, 92, 9);
+INSERT INTO PULTY (PRODEJNY_idProdejny, cislo, pocetPolicek) VALUES (11, 85, 13);
+INSERT INTO PULTY (PRODEJNY_idProdejny, cislo, pocetPolicek) VALUES (11, 98, 7);
+INSERT INTO PULTY (PRODEJNY_idProdejny, cislo, pocetPolicek) VALUES (11, 2, 12);
+INSERT INTO PULTY (PRODEJNY_idProdejny, cislo, pocetPolicek) VALUES (12, 23, 10);
+INSERT INTO PULTY (PRODEJNY_idProdejny, cislo, pocetPolicek) VALUES (12, 57, 15);
+INSERT INTO PULTY (PRODEJNY_idProdejny, cislo, pocetPolicek) VALUES (12, 82, 15);
+INSERT INTO PULTY (PRODEJNY_idProdejny, cislo, pocetPolicek) VALUES (12, 57, 4);
+INSERT INTO PULTY (PRODEJNY_idProdejny, cislo, pocetPolicek) VALUES (13, 32, 11);
+INSERT INTO PULTY (PRODEJNY_idProdejny, cislo, pocetPolicek) VALUES (13, 29, 3);
+INSERT INTO PULTY (PRODEJNY_idProdejny, cislo, pocetPolicek) VALUES (13, 94, 6);
+INSERT INTO PULTY (PRODEJNY_idProdejny, cislo, pocetPolicek) VALUES (13, 72, 3);
+INSERT INTO PULTY (PRODEJNY_idProdejny, cislo, pocetPolicek) VALUES (14, 74, 3);
+INSERT INTO PULTY (PRODEJNY_idProdejny, cislo, pocetPolicek) VALUES (14, 72, 14);
+INSERT INTO PULTY (PRODEJNY_idProdejny, cislo, pocetPolicek) VALUES (14, 33, 10);
+INSERT INTO PULTY (PRODEJNY_idProdejny, cislo, pocetPolicek) VALUES (14, 6, 7);
+INSERT INTO PULTY (PRODEJNY_idProdejny, cislo, pocetPolicek) VALUES (15, 41, 11);
+INSERT INTO PULTY (PRODEJNY_idProdejny, cislo, pocetPolicek) VALUES (15, 75, 5);
+INSERT INTO PULTY (PRODEJNY_idProdejny, cislo, pocetPolicek) VALUES (15, 87, 14);
+INSERT INTO PULTY (PRODEJNY_idProdejny, cislo, pocetPolicek) VALUES (15, 34, 12);
+INSERT INTO PULTY (PRODEJNY_idProdejny, cislo, pocetPolicek) VALUES (16, 92, 9);
+INSERT INTO PULTY (PRODEJNY_idProdejny, cislo, pocetPolicek) VALUES (16, 88, 6);
+INSERT INTO PULTY (PRODEJNY_idProdejny, cislo, pocetPolicek) VALUES (16, 59, 9);
+INSERT INTO PULTY (PRODEJNY_idProdejny, cislo, pocetPolicek) VALUES (16, 73, 5);
+INSERT INTO PULTY (PRODEJNY_idProdejny, cislo, pocetPolicek) VALUES (17, 32, 7);
+INSERT INTO PULTY (PRODEJNY_idProdejny, cislo, pocetPolicek) VALUES (17, 34, 4);
+INSERT INTO PULTY (PRODEJNY_idProdejny, cislo, pocetPolicek) VALUES (17, 12, 9);
+INSERT INTO PULTY (PRODEJNY_idProdejny, cislo, pocetPolicek) VALUES (17, 92, 9);
+INSERT INTO PULTY (PRODEJNY_idProdejny, cislo, pocetPolicek) VALUES (18, 64, 11);
+INSERT INTO PULTY (PRODEJNY_idProdejny, cislo, pocetPolicek) VALUES (18, 8, 12);
+INSERT INTO PULTY (PRODEJNY_idProdejny, cislo, pocetPolicek) VALUES (18, 42, 9);
+INSERT INTO PULTY (PRODEJNY_idProdejny, cislo, pocetPolicek) VALUES (18, 54, 11);
+INSERT INTO PULTY (PRODEJNY_idProdejny, cislo, pocetPolicek) VALUES (19, 15, 15);
+INSERT INTO PULTY (PRODEJNY_idProdejny, cislo, pocetPolicek) VALUES (19, 50, 5);
+INSERT INTO PULTY (PRODEJNY_idProdejny, cislo, pocetPolicek) VALUES (19, 63, 8);
+INSERT INTO PULTY (PRODEJNY_idProdejny, cislo, pocetPolicek) VALUES (19, 100, 5);
+INSERT INTO PULTY (PRODEJNY_idProdejny, cislo, pocetPolicek) VALUES (20, 11, 3);
+INSERT INTO PULTY (PRODEJNY_idProdejny, cislo, pocetPolicek) VALUES (20, 48, 4);
+INSERT INTO PULTY (PRODEJNY_idProdejny, cislo, pocetPolicek) VALUES (20, 65, 5);
+INSERT INTO PULTY (PRODEJNY_idProdejny, cislo, pocetPolicek) VALUES (20, 34, 15);
+
+
+INSERT INTO ZBOZI (nazev, aktualniCena, cenaZeClubCartou, hmotnost, KATEGORIJE_idKategorije) VALUES ('mýdlo', 50, 40, 0.5, 1);
+INSERT INTO ZBOZI (nazev, aktualniCena, cenaZeClubCartou, hmotnost, KATEGORIJE_idKategorije) VALUES ('čisticí prostředek', 80, null, 1, 1);
+INSERT INTO ZBOZI (nazev, aktualniCena, cenaZeClubCartou, hmotnost, KATEGORIJE_idKategorije) VALUES ('mycí prostředek na nádobí', 60, null, 0.5, 1);
+INSERT INTO ZBOZI (nazev, aktualniCena, cenaZeClubCartou, hmotnost, KATEGORIJE_idKategorije) VALUES ('čisticí ubrousky', 40, 30, 0.2, 1);
+
+INSERT INTO ZBOZI (nazev, aktualniCena, cenaZeClubCartou, hmotnost, KATEGORIJE_idKategorije) VALUES ('ručníky', 80, null, 0.7, 2);
+INSERT INTO ZBOZI (nazev, aktualniCena, cenaZeClubCartou, hmotnost, KATEGORIJE_idKategorije) VALUES ('toaletní papír', 50, null, 0.6, 2);
+INSERT INTO ZBOZI (nazev, aktualniCena, cenaZeClubCartou, hmotnost, KATEGORIJE_idKategorije) VALUES ('utěrky', 30, null, 0.3, 2);
+
+INSERT INTO ZBOZI (nazev, aktualniCena, cenaZeClubCartou, hmotnost, KATEGORIJE_idKategorije) VALUES ('chléb', 50, null, 1, 3);
+INSERT INTO ZBOZI (nazev, aktualniCena, cenaZeClubCartou, hmotnost, KATEGORIJE_idKategorije) VALUES ('rohlíky', 30, null, 0.5, 3);
+INSERT INTO ZBOZI (nazev, aktualniCena, cenaZeClubCartou, hmotnost, KATEGORIJE_idKategorije) VALUES ('croissanty', 70, 60, 0.3, 3);
+INSERT INTO ZBOZI (nazev, aktualniCena, cenaZeClubCartou, hmotnost, KATEGORIJE_idKategorije) VALUES ('chlebíčky', 40, null, 0.4, 3);
+
+INSERT INTO ZBOZI (nazev, aktualniCena, cenaZeClubCartou, hmotnost, KATEGORIJE_idKategorije) VALUES ('mléko', 40, null, 1, 4);
+INSERT INTO ZBOZI (nazev, aktualniCena, cenaZeClubCartou, hmotnost, KATEGORIJE_idKategorije) VALUES ('sýr', 60, 50, 0.5, 4);
+INSERT INTO ZBOZI (nazev, aktualniCena, cenaZeClubCartou, hmotnost, KATEGORIJE_idKategorije) VALUES ('jogurt', 50, null, 0.4, 4);
+INSERT INTO ZBOZI (nazev, aktualniCena, cenaZeClubCartou, hmotnost, KATEGORIJE_idKategorije) VALUES ('smetana', 70, 60, 0.3, 4);
+INSERT INTO ZBOZI (nazev, aktualniCena, cenaZeClubCartou, hmotnost, KATEGORIJE_idKategorije) VALUES ('tvaroh', 80, null, 0.5, 4);
+
+INSERT INTO ZBOZI (nazev, aktualniCena, cenaZeClubCartou, hmotnost, KATEGORIJE_idKategorije) VALUES ('čokoláda', 60, 50, 0.5, 5);
+INSERT INTO ZBOZI (nazev, aktualniCena, cenaZeClubCartou, hmotnost, KATEGORIJE_idKategorije) VALUES ('tyčinky', 70, 60, 0.4, 5);
+INSERT INTO ZBOZI (nazev, aktualniCena, cenaZeClubCartou, hmotnost, KATEGORIJE_idKategorije) VALUES ('čokoládové bonbóny', 50, null, 0.3, 5);
+INSERT INTO ZBOZI (nazev, aktualniCena, cenaZeClubCartou, hmotnost, KATEGORIJE_idKategorije) VALUES ('řezy', 80, 70, 0.6, 5);
+INSERT INTO ZBOZI (nazev, aktualniCena, cenaZeClubCartou, hmotnost, KATEGORIJE_idKategorije) VALUES ('sušenky', 40, 35, 0.4, 5);
+
+INSERT INTO ZBOZI (nazev, aktualniCena, cenaZeClubCartou, hmotnost, KATEGORIJE_idKategorije) VALUES ('Pepsi', 25, null, 0.5, 6);
+INSERT INTO ZBOZI (nazev, aktualniCena, cenaZeClubCartou, hmotnost, KATEGORIJE_idKategorije) VALUES ('Coca Cola', 30, null, 0.5, 6);
+INSERT INTO ZBOZI (nazev, aktualniCena, cenaZeClubCartou, hmotnost, KATEGORIJE_idKategorije) VALUES ('Sprite', 25, null, 0.5, 6);
+INSERT INTO ZBOZI (nazev, aktualniCena, cenaZeClubCartou, hmotnost, KATEGORIJE_idKategorije) VALUES ('Fanta', 25, null, 0.5, 6);
+INSERT INTO ZBOZI (nazev, aktualniCena, cenaZeClubCartou, hmotnost, KATEGORIJE_idKategorije) VALUES ('Red Bull', 50, null, 1, 6);
+
+INSERT INTO ZBOZI (nazev, aktualniCena, cenaZeClubCartou, hmotnost, KATEGORIJE_idKategorije) VALUES ('hovězí maso', 90, 80, 1, 7);
+INSERT INTO ZBOZI (nazev, aktualniCena, cenaZeClubCartou, hmotnost, KATEGORIJE_idKategorije) VALUES ('kuřecí maso', 70, 60, 0.8, 7);
+INSERT INTO ZBOZI (nazev, aktualniCena, cenaZeClubCartou, hmotnost, KATEGORIJE_idKategorije) VALUES ('vepřové maso', 80, 70, 1, 7);
+INSERT INTO ZBOZI (nazev, aktualniCena, cenaZeClubCartou, hmotnost, KATEGORIJE_idKategorije) VALUES ('králík', 60, null, 0.5, 7);
+INSERT INTO ZBOZI (nazev, aktualniCena, cenaZeClubCartou, hmotnost, KATEGORIJE_idKategorije) VALUES ('kachna', 80, 70, 1, 7);
+
+INSERT INTO ZBOZI (nazev, aktualniCena, cenaZeClubCartou, hmotnost, KATEGORIJE_idKategorije) VALUES ('Losos', 200, 180, 0.5, 8);
+INSERT INTO ZBOZI (nazev, aktualniCena, cenaZeClubCartou, hmotnost, KATEGORIJE_idKategorije) VALUES ('Treska', 150, null, 0.5, 8);
+INSERT INTO ZBOZI (nazev, aktualniCena, cenaZeClubCartou, hmotnost, KATEGORIJE_idKategorije) VALUES ('Tuňák', 180, 160, 0.5, 8);
+INSERT INTO ZBOZI (nazev, aktualniCena, cenaZeClubCartou, hmotnost, KATEGORIJE_idKategorije) VALUES ('Sardinky', 100, 90, 0.5, 8);
+
+INSERT INTO ZBOZI (nazev, aktualniCena, cenaZeClubCartou, hmotnost, KATEGORIJE_idKategorije) VALUES ('zeleninová směs', 50, 40, 0.7, 9);
+INSERT INTO ZBOZI (nazev, aktualniCena, cenaZeClubCartou, hmotnost, KATEGORIJE_idKategorije) VALUES ('polévka v pytlíku', 30, null, 0.2, 9);
+INSERT INTO ZBOZI (nazev, aktualniCena, cenaZeClubCartou, hmotnost, KATEGORIJE_idKategorije) VALUES ('čerstvé palačinky', 70, 60, 0.5, 9);
+INSERT INTO ZBOZI (nazev, aktualniCena, cenaZeClubCartou, hmotnost, KATEGORIJE_idKategorije) VALUES ('guláš v pytlíku', 80, null, 0.8, 9);
+
+INSERT INTO ZBOZI (nazev, aktualniCena, cenaZeClubCartou, hmotnost, KATEGORIJE_idKategorije) VALUES ('Mrazena pizza', 80, 70, 0.5, 10);
+INSERT INTO ZBOZI (nazev, aktualniCena, cenaZeClubCartou, hmotnost, KATEGORIJE_idKategorije) VALUES ('Mrazene hrstky zeleniny', 50, null, 0.5, 10);
+INSERT INTO ZBOZI (nazev, aktualniCena, cenaZeClubCartou, hmotnost, KATEGORIJE_idKategorije) VALUES ('Mrazene krevety', 150, 140, 0.5, 10);
+INSERT INTO ZBOZI (nazev, aktualniCena, cenaZeClubCartou, hmotnost, KATEGORIJE_idKategorije) VALUES ('Mrazeny kuřecí prsa', 100, null, 0.5, 10);
+
+INSERT INTO ZBOZI (nazev, aktualniCena, cenaZeClubCartou, hmotnost, KATEGORIJE_idKategorije) VALUES ('Kalmár', 100, null, 0.5, 11);
+INSERT INTO ZBOZI (nazev, aktualniCena, cenaZeClubCartou, hmotnost, KATEGORIJE_idKategorije) VALUES ('Krevety', 150, 140, 0.5, 11);
+INSERT INTO ZBOZI (nazev, aktualniCena, cenaZeClubCartou, hmotnost, KATEGORIJE_idKategorije) VALUES ('Mušle', 70, 65, 0.5, 11);
+
+INSERT INTO ZBOZI (nazev, aktualniCena, cenaZeClubCartou, hmotnost, KATEGORIJE_idKategorije) VALUES ('Pivo', 35, 30, 0.5, 12);
+INSERT INTO ZBOZI (nazev, aktualniCena, cenaZeClubCartou, hmotnost, KATEGORIJE_idKategorije) VALUES ('Vino', 100, null, 0.75, 12);
+INSERT INTO ZBOZI (nazev, aktualniCena, cenaZeClubCartou, hmotnost, KATEGORIJE_idKategorije) VALUES ('Likér', 80, 70, 0.5, 12);
+
+INSERT INTO ZBOZI (nazev, aktualniCena, cenaZeClubCartou, hmotnost, KATEGORIJE_idKategorije) VALUES ('Notebook', 19000, 18000, 2, 13);
+INSERT INTO ZBOZI (nazev, aktualniCena, cenaZeClubCartou, hmotnost, KATEGORIJE_idKategorije) VALUES ('Mobilní telefon', 8000, null, 0.5, 13);
+INSERT INTO ZBOZI (nazev, aktualniCena, cenaZeClubCartou, hmotnost, KATEGORIJE_idKategorije) VALUES ('Televize', 15000, 13000, 10, 13);
+
+INSERT INTO ZBOZI (nazev, aktualniCena, cenaZeClubCartou, hmotnost, KATEGORIJE_idKategorije) VALUES ('Jablka', 25, 20, 0.5, 14);
+INSERT INTO ZBOZI (nazev, aktualniCena, cenaZeClubCartou, hmotnost, KATEGORIJE_idKategorije) VALUES ('Hrušky', 30, null, 0.5, 14);
+
+INSERT INTO ZBOZI (nazev, aktualniCena, cenaZeClubCartou, hmotnost, KATEGORIJE_idKategorije) VALUES ('Červená řepa', 15, 10, 0.5, 15);
+INSERT INTO ZBOZI (nazev, aktualniCena, cenaZeClubCartou, hmotnost, KATEGORIJE_idKategorije) VALUES ('Pórek', 25, 20, 0.5, 15);
+INSERT INTO ZBOZI (nazev, aktualniCena, cenaZeClubCartou, hmotnost, KATEGORIJE_idKategorije) VALUES ('Mrkev', 15, 10, 0.5, 15);
+
+INSERT INTO ZBOZI (nazev, aktualniCena, cenaZeClubCartou, hmotnost, KATEGORIJE_idKategorije) VALUES ('Černý pepř', 50, 45, 0.5, 16);
+INSERT INTO ZBOZI (nazev, aktualniCena, cenaZeClubCartou, hmotnost, KATEGORIJE_idKategorije) VALUES ('Česnek', 25, null, 0.5, 16);
+INSERT INTO ZBOZI (nazev, aktualniCena, cenaZeClubCartou, hmotnost, KATEGORIJE_idKategorije) VALUES ('Zázvor', 30, 25, 0.5, 16);
+
+INSERT INTO ZBOZI (nazev, aktualniCena, cenaZeClubCartou, hmotnost, KATEGORIJE_idKategorije) VALUES ('Talíř', 100, 90, 0.5, 17);
+INSERT INTO ZBOZI (nazev, aktualniCena, cenaZeClubCartou, hmotnost, KATEGORIJE_idKategorije) VALUES ('Hrnek', 50, null, 0.5, 17);
+INSERT INTO ZBOZI (nazev, aktualniCena, cenaZeClubCartou, hmotnost, KATEGORIJE_idKategorije) VALUES ('Pánev', 250, 225, 1, 17);
+
+INSERT INTO ZBOZI (nazev, aktualniCena, cenaZeClubCartou, hmotnost, KATEGORIJE_idKategorije) VALUES ('Počítačový stůl', 5000, 4500, 10, 18);
+INSERT INTO ZBOZI (nazev, aktualniCena, cenaZeClubCartou, hmotnost, KATEGORIJE_idKategorije) VALUES ('Šatní skříň', 8000, null, 20, 18);
+INSERT INTO ZBOZI (nazev, aktualniCena, cenaZeClubCartou, hmotnost, KATEGORIJE_idKategorije) VALUES ('Kancelářská židle', 3000, 2700, 10, 18);
+
+INSERT INTO ZBOZI (nazev, aktualniCena, cenaZeClubCartou, hmotnost, KATEGORIJE_idKategorije) VALUES ('Papír A4', 50, null, 0.5, 19);
+INSERT INTO ZBOZI (nazev, aktualniCena, cenaZeClubCartou, hmotnost, KATEGORIJE_idKategorije) VALUES ('Pero', 100, null, 0.5, 19);
+INSERT INTO ZBOZI (nazev, aktualniCena, cenaZeClubCartou, hmotnost, KATEGORIJE_idKategorije) VALUES ('Tužka', 50, null, 0.5, 19);
+
+INSERT INTO ZBOZI (nazev, aktualniCena, cenaZeClubCartou, hmotnost, KATEGORIJE_idKategorije) VALUES ('Šampon', 300, null, 0.5, 20);
+INSERT INTO ZBOZI (nazev, aktualniCena, cenaZeClubCartou, hmotnost, KATEGORIJE_idKategorije) VALUES ('Sprchový gel', 250, null, 0.5, 20);
+
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (100, 1, 71); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (13, 1, 30); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (58, 1, 54); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (31, 1, 55); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (49, 1, 46); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (100, 1, 31); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (23, 2, 21); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (16, 2, 46); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (70, 2, 20); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (13, 2, 3); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (37, 2, 47); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (18, 2, 56); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (3, 3, 14); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (27, 3, 70); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (63, 3, 33); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (77, 3, 16); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (7, 3, 25); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (43, 3, 10); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (76, 4, 49); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (30, 4, 17); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (74, 4, 23); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (34, 4, 69); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (1, 4, 24); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (40, 4, 38); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (18, 5, 33); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (6, 5, 40); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (92, 5, 1); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (99, 5, 45); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (58, 5, 49); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (36, 5, 37); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (67, 6, 21); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (62, 6, 57); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (66, 6, 35); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (79, 6, 10); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (82, 6, 9); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (28, 6, 5); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (43, 7, 7); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (38, 7, 49); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (7, 7, 48); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (31, 7, 55); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (55, 7, 60); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (32, 7, 5); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (44, 8, 30); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (31, 8, 39); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (85, 8, 40); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (20, 8, 32); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (91, 8, 9); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (15, 8, 38); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (66, 9, 47); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (54, 9, 43); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (35, 9, 30); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (57, 9, 26); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (46, 9, 12); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (59, 9, 16); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (98, 10, 44); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (56, 10, 7); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (99, 10, 16); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (61, 10, 26); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (38, 10, 55); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (5, 10, 17); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (56, 11, 33); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (90, 11, 26); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (57, 11, 47); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (49, 11, 2); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (57, 11, 46); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (13, 11, 18); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (69, 12, 45); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (76, 12, 26); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (52, 12, 20); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (59, 12, 21); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (21, 12, 52); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (69, 12, 44); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (33, 13, 33); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (72, 13, 22); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (79, 13, 12); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (44, 13, 1); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (31, 13, 71); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (5, 13, 51); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (95, 14, 27); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (55, 14, 64); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (59, 14, 69); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (78, 14, 29); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (21, 14, 63); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (64, 14, 12); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (7, 15, 69); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (51, 15, 21); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (28, 15, 37); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (51, 15, 22); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (37, 15, 45); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (84, 15, 47); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (11, 16, 9); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (34, 16, 37); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (67, 16, 67); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (94, 16, 28); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (62, 16, 56); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (24, 16, 70); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (45, 17, 13); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (84, 17, 7); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (93, 17, 51); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (12, 17, 31); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (71, 17, 52); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (34, 17, 68); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (27, 18, 64); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (84, 18, 71); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (3, 18, 45); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (30, 18, 30); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (76, 18, 12); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (80, 18, 70); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (63, 19, 15); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (4, 19, 43); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (46, 19, 45); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (76, 19, 37); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (84, 19, 18); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (77, 19, 36); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (10, 20, 27); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (47, 20, 9); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (10, 20, 3); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (70, 20, 67); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (62, 20, 38); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (87, 20, 57); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (5, 21, 47); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (64, 21, 56); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (14, 21, 37); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (11, 21, 68); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (77, 21, 58); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (26, 21, 7); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (36, 22, 35); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (57, 22, 3); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (95, 22, 50); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (68, 22, 33); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (91, 22, 62); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (18, 22, 21); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (36, 23, 18); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (98, 23, 4); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (31, 23, 10); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (39, 23, 12); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (65, 23, 13); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (48, 23, 32); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (61, 24, 10); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (8, 24, 3); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (68, 24, 64); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (65, 24, 57); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (2, 24, 1); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (47, 24, 6); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (6, 25, 40); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (66, 25, 67); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (98, 25, 47); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (62, 25, 61); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (76, 25, 25); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (8, 25, 46); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (7, 26, 15); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (60, 26, 48); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (81, 26, 53); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (41, 26, 61); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (33, 26, 16); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (62, 26, 22); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (55, 27, 25); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (3, 27, 28); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (20, 27, 53); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (14, 27, 65); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (63, 27, 1); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (81, 27, 48); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (83, 28, 37); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (69, 28, 49); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (2, 28, 17); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (35, 28, 27); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (69, 28, 60); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (1, 28, 63); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (54, 29, 63); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (31, 29, 8); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (92, 29, 51); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (59, 29, 60); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (99, 29, 7); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (61, 29, 31); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (53, 30, 24); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (47, 30, 23); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (85, 30, 61); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (39, 30, 9); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (99, 30, 25); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (93, 30, 21); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (9, 31, 28); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (71, 31, 19); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (74, 31, 36); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (98, 31, 8); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (97, 31, 12); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (41, 31, 66); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (59, 32, 66); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (52, 32, 36); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (76, 32, 7); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (31, 32, 64); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (82, 32, 68); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (35, 32, 32); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (3, 33, 70); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (74, 33, 62); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (2, 33, 64); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (34, 33, 31); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (68, 33, 59); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (18, 33, 10); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (38, 34, 71); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (23, 34, 45); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (74, 34, 70); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (89, 34, 12); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (61, 34, 58); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (44, 34, 66); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (3, 35, 26); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (96, 35, 60); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (27, 35, 47); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (54, 35, 9); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (7, 35, 54); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (47, 35, 25); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (60, 36, 18); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (44, 36, 62); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (84, 36, 15); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (85, 36, 51); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (34, 36, 38); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (96, 36, 65); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (22, 37, 3); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (56, 37, 31); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (62, 37, 57); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (21, 37, 64); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (40, 37, 33); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (40, 37, 20); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (49, 38, 42); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (72, 38, 60); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (41, 38, 11); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (90, 38, 38); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (99, 38, 6); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (95, 38, 32); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (71, 39, 66); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (16, 39, 29); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (11, 39, 24); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (37, 39, 11); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (95, 39, 25); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (34, 39, 68); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (64, 40, 55); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (78, 40, 47); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (86, 40, 27); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (5, 40, 28); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (91, 40, 42); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (40, 40, 46); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (22, 41, 9); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (72, 41, 37); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (25, 41, 51); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (52, 41, 63); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (4, 41, 47); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (69, 41, 40); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (78, 42, 6); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (49, 42, 21); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (81, 42, 67); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (10, 42, 48); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (46, 42, 64); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (4, 42, 32); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (38, 43, 37); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (100, 43, 61); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (42, 43, 55); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (88, 43, 67); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (81, 43, 42); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (39, 43, 31); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (8, 44, 33); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (66, 44, 22); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (16, 44, 35); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (11, 44, 51); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (7, 44, 12); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (36, 44, 31); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (32, 45, 43); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (53, 45, 23); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (34, 45, 55); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (16, 45, 5); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (19, 45, 2); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (76, 45, 57); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (2, 46, 22); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (99, 46, 26); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (80, 46, 47); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (89, 46, 35); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (3, 46, 49); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (4, 46, 46); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (5, 47, 1); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (49, 47, 54); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (61, 47, 43); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (38, 47, 66); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (76, 47, 68); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (36, 47, 44); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (36, 48, 70); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (36, 48, 1); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (1, 48, 58); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (6, 48, 25); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (9, 48, 32); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (22, 48, 69); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (18, 49, 28); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (66, 49, 58); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (80, 49, 71); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (33, 49, 53); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (54, 49, 15); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (44, 49, 27); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (63, 50, 36); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (40, 50, 35); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (97, 50, 41); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (92, 50, 9); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (98, 50, 14); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (86, 50, 2); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (24, 51, 67); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (29, 51, 70); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (14, 51, 6); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (38, 51, 25); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (4, 51, 9); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (4, 51, 17); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (52, 52, 56); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (27, 52, 45); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (35, 52, 18); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (56, 52, 12); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (28, 52, 8); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (50, 52, 35); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (63, 53, 1); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (61, 53, 35); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (50, 53, 42); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (42, 53, 67); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (24, 53, 4); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (4, 53, 9); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (98, 54, 38); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (18, 54, 56); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (61, 54, 63); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (87, 54, 68); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (20, 54, 60); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (37, 54, 8); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (7, 55, 39); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (21, 55, 3); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (28, 55, 26); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (59, 55, 33); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (14, 55, 8); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (2, 55, 41); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (73, 56, 60); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (65, 56, 3); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (98, 56, 44); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (69, 56, 20); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (21, 56, 69); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (9, 56, 65); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (69, 57, 71); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (32, 57, 31); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (23, 57, 33); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (95, 57, 13); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (55, 57, 35); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (58, 57, 51); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (62, 58, 69); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (9, 58, 38); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (94, 58, 54); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (35, 58, 6); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (34, 58, 12); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (75, 58, 39); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (53, 59, 13); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (59, 59, 21); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (89, 59, 34); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (77, 59, 5); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (52, 59, 67); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (14, 59, 49); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (70, 60, 63); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (74, 60, 3); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (65, 60, 26); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (50, 60, 62); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (58, 60, 19); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (49, 60, 32); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (68, 61, 18); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (23, 61, 58); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (11, 61, 50); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (69, 61, 70); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (5, 61, 17); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (36, 61, 19); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (89, 62, 56); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (33, 62, 18); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (42, 62, 68); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (16, 62, 49); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (19, 62, 67); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (58, 62, 29); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (92, 63, 2); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (96, 63, 16); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (26, 63, 60); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (52, 63, 27); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (60, 63, 13); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (90, 63, 52); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (79, 64, 40); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (57, 64, 45); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (13, 64, 34); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (54, 64, 10); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (90, 64, 48); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (44, 64, 70); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (12, 65, 24); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (22, 65, 26); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (8, 65, 47); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (18, 65, 20); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (24, 65, 41); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (99, 65, 6); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (96, 66, 49); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (85, 66, 57); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (78, 66, 39); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (76, 66, 56); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (39, 66, 65); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (92, 66, 20); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (31, 67, 11); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (84, 67, 7); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (49, 67, 17); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (32, 67, 47); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (47, 67, 22); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (87, 67, 15); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (8, 68, 51); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (4, 68, 24); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (33, 68, 26); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (88, 68, 7); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (63, 68, 59); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (87, 68, 4); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (12, 69, 32); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (92, 69, 34); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (51, 69, 18); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (43, 69, 70); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (63, 69, 55); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (54, 69, 48); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (75, 70, 4); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (91, 70, 44); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (60, 70, 52); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (15, 70, 38); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (25, 70, 10); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (44, 70, 24); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (5, 71, 63); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (73, 71, 16); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (91, 71, 43); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (35, 71, 3); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (85, 71, 8); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (48, 71, 52); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (55, 72, 25); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (73, 72, 53); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (78, 72, 12); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (33, 72, 13); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (29, 72, 35); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (78, 72, 58); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (59, 73, 70); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (8, 73, 3); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (4, 73, 64); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (69, 73, 12); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (93, 73, 18); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (80, 73, 47); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (54, 74, 36); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (70, 74, 14); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (23, 74, 53); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (74, 74, 52); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (100, 74, 34); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (69, 74, 11); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (25, 75, 34); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (81, 75, 66); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (29, 75, 57); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (22, 75, 33); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (91, 75, 25); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (3, 75, 48); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (53, 76, 42); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (49, 76, 43); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (23, 76, 19); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (15, 76, 27); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (44, 76, 3); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (89, 76, 18); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (65, 77, 13); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (98, 77, 48); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (76, 77, 27); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (26, 77, 47); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (55, 77, 46); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (55, 77, 61); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (1, 78, 67); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (39, 78, 5); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (42, 78, 22); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (2, 78, 28); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (39, 78, 58); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (33, 78, 66); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (18, 79, 62); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (93, 79, 18); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (26, 79, 19); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (95, 79, 20); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (97, 79, 32); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (24, 79, 16); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (57, 80, 43); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (70, 80, 15); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (60, 80, 25); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (64, 80, 53); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (84, 80, 29); 
+INSERT INTO ZBOZI_NA_PULTE (pocetZbozi, PULTY_idPultu, ZBOZI_idZbozi) VALUES (12, 80, 45); 
+
+
+INSERT INTO PLATBY (jeclubcarta, platba_type) VALUES (1, 'KARTA');
+INSERT INTO PLATBY (jeclubcarta, platba_type) VALUES (1, 'HOTOVE');
+INSERT INTO PLATBY (jeclubcarta, platba_type) VALUES (0, 'HOTOVE');
+INSERT INTO PLATBY (jeclubcarta, platba_type) VALUES (0, 'HOTOVE');
+INSERT INTO PLATBY (jeclubcarta, platba_type) VALUES (1, 'KUPON');
+INSERT INTO PLATBY (jeclubcarta, platba_type) VALUES (1, 'KUPON');
+INSERT INTO PLATBY (jeclubcarta, platba_type) VALUES (0, 'HOTOVE');
+INSERT INTO PLATBY (jeclubcarta, platba_type) VALUES (0, 'KUPON');
+INSERT INTO PLATBY (jeclubcarta, platba_type) VALUES (1, 'KUPON');
+INSERT INTO PLATBY (jeclubcarta, platba_type) VALUES (0, 'KARTA');
+INSERT INTO PLATBY (jeclubcarta, platba_type) VALUES (1, 'KARTA');
+INSERT INTO PLATBY (jeclubcarta, platba_type) VALUES (0, 'KUPON');
+INSERT INTO PLATBY (jeclubcarta, platba_type) VALUES (0, 'KUPON');
+INSERT INTO PLATBY (jeclubcarta, platba_type) VALUES (0, 'HOTOVE');
+INSERT INTO PLATBY (jeclubcarta, platba_type) VALUES (0, 'KUPON');
+INSERT INTO PLATBY (jeclubcarta, platba_type) VALUES (1, 'HOTOVE');
+INSERT INTO PLATBY (jeclubcarta, platba_type) VALUES (0, 'KUPON');
+INSERT INTO PLATBY (jeclubcarta, platba_type) VALUES (1, 'KUPON');
+INSERT INTO PLATBY (jeclubcarta, platba_type) VALUES (1, 'HOTOVE');
+INSERT INTO PLATBY (jeclubcarta, platba_type) VALUES (0, 'KARTA');
+
+INSERT INTO PRODEJE (datumProdeje, celkovaCena, PLATBA_idPlatby) VALUES ('12/7/2022', 7265, 1);
+INSERT INTO PRODEJE (datumProdeje, celkovaCena, PLATBA_idPlatby) VALUES ('25/12/2022', 4387, 2);
+INSERT INTO PRODEJE (datumProdeje, celkovaCena, PLATBA_idPlatby) VALUES ('19/5/2022', 2186, 3);
+INSERT INTO PRODEJE (datumProdeje, celkovaCena, PLATBA_idPlatby) VALUES ('5/2/2022', 6247, 4);
+INSERT INTO PRODEJE (datumProdeje, celkovaCena, PLATBA_idPlatby) VALUES ('27/7/2022', 1616, 5);
+INSERT INTO PRODEJE (datumProdeje, celkovaCena, PLATBA_idPlatby) VALUES ('13/12/2022', 4669, 6);
+INSERT INTO PRODEJE (datumProdeje, celkovaCena, PLATBA_idPlatby) VALUES ('8/5/2022', 9157, 7);
+INSERT INTO PRODEJE (datumProdeje, celkovaCena, PLATBA_idPlatby) VALUES ('3/7/2022', 3559, 8);
+INSERT INTO PRODEJE (datumProdeje, celkovaCena, PLATBA_idPlatby) VALUES ('25/1/2022', 7994, 9);
+INSERT INTO PRODEJE (datumProdeje, celkovaCena, PLATBA_idPlatby) VALUES ('24/10/2022', 7315, 10);
+INSERT INTO PRODEJE (datumProdeje, celkovaCena, PLATBA_idPlatby) VALUES ('14/9/2022', 445, 11);
+INSERT INTO PRODEJE (datumProdeje, celkovaCena, PLATBA_idPlatby) VALUES ('14/11/2022', 6977, 12);
+INSERT INTO PRODEJE (datumProdeje, celkovaCena, PLATBA_idPlatby) VALUES ('22/12/2022', 9921, 13);
+INSERT INTO PRODEJE (datumProdeje, celkovaCena, PLATBA_idPlatby) VALUES ('17/4/2022', 2737, 14);
+INSERT INTO PRODEJE (datumProdeje, celkovaCena, PLATBA_idPlatby) VALUES ('9/1/2022', 2326, 15);
+INSERT INTO PRODEJE (datumProdeje, celkovaCena, PLATBA_idPlatby) VALUES ('2/2/2022', 2317, 16);
+INSERT INTO PRODEJE (datumProdeje, celkovaCena, PLATBA_idPlatby) VALUES ('5/11/2022', 644, 17);
+INSERT INTO PRODEJE (datumProdeje, celkovaCena, PLATBA_idPlatby) VALUES ('24/6/2022', 6516, 18);
+INSERT INTO PRODEJE (datumProdeje, celkovaCena, PLATBA_idPlatby) VALUES ('21/8/2022', 8928, 19);
+INSERT INTO PRODEJE (datumProdeje, celkovaCena, PLATBA_idPlatby) VALUES ('29/11/2022', 8183, 20);
+
+INSERT INTO HOTOVE (idPlatby, vraceno) VALUES (2, 6);
+INSERT INTO HOTOVE (idPlatby, vraceno) VALUES (3, 7);
+INSERT INTO HOTOVE (idPlatby, vraceno) VALUES (4, 4);
+INSERT INTO HOTOVE (idPlatby, vraceno) VALUES (7, 7);
+INSERT INTO HOTOVE (idPlatby, vraceno) VALUES (14, 5);
+INSERT INTO HOTOVE (idPlatby, vraceno) VALUES (16, 8);
+INSERT INTO HOTOVE (idPlatby, vraceno) VALUES (19, 45);
+
+INSERT INTO KUPONY (idPlatby, cislo) VALUES (5, 110794);
+INSERT INTO KUPONY (idPlatby, cislo) VALUES (6, 160614);
+INSERT INTO KUPONY (idPlatby, cislo) VALUES (8, 179240);
+INSERT INTO KUPONY (idPlatby, cislo) VALUES (9, 150123);
+INSERT INTO KUPONY (idPlatby, cislo) VALUES (12, 112210);
+INSERT INTO KUPONY (idPlatby, cislo) VALUES (13, 179163);
+INSERT INTO KUPONY (idPlatby, cislo) VALUES (17, 120752);
+INSERT INTO KUPONY (idPlatby, cislo) VALUES (18, 156752);
+INSERT INTO KUPONY (idPlatby, cislo) VALUES(15, 1000);     
+
+INSERT INTO KARTY (idPlatby, cisloKarty, autorizacniKod) VALUES (1, 116479, 124871);
+INSERT INTO KARTY (idPlatby, cisloKarty, autorizacniKod) VALUES (10, 154676, 180441);
+INSERT INTO KARTY (idPlatby, cisloKarty, autorizacniKod) VALUES (11, 119778, 146734);
+INSERT INTO KARTY (idPlatby, cisloKarty, autorizacniKod) VALUES (20, 182933, 125833);
+
+INSERT INTO SKLADY (pocetPolicek, PRODEJNY_IDPRODEJNY) VALUES (11, 1);
+INSERT INTO SKLADY (pocetPolicek, PRODEJNY_IDPRODEJNY) VALUES (20, 2);
+INSERT INTO SKLADY (pocetPolicek, PRODEJNY_IDPRODEJNY) VALUES (19, 3);
+INSERT INTO SKLADY (pocetPolicek, PRODEJNY_IDPRODEJNY) VALUES (19, 4);
+INSERT INTO SKLADY (pocetPolicek, PRODEJNY_IDPRODEJNY) VALUES (12, 5);
+INSERT INTO SKLADY (pocetPolicek, PRODEJNY_IDPRODEJNY) VALUES (13, 6);
+INSERT INTO SKLADY (pocetPolicek, PRODEJNY_IDPRODEJNY) VALUES (11, 7);
+INSERT INTO SKLADY (pocetPolicek, PRODEJNY_IDPRODEJNY) VALUES (13, 8);
+INSERT INTO SKLADY (pocetPolicek, PRODEJNY_IDPRODEJNY) VALUES (13, 9);
+INSERT INTO SKLADY (pocetPolicek, PRODEJNY_IDPRODEJNY) VALUES (16, 10);
+INSERT INTO SKLADY (pocetPolicek, PRODEJNY_IDPRODEJNY) VALUES (18, 11);
+INSERT INTO SKLADY (pocetPolicek, PRODEJNY_IDPRODEJNY) VALUES (11, 12);
+INSERT INTO SKLADY (pocetPolicek, PRODEJNY_IDPRODEJNY) VALUES (11, 13);
+INSERT INTO SKLADY (pocetPolicek, PRODEJNY_IDPRODEJNY) VALUES (18, 14);
+INSERT INTO SKLADY (pocetPolicek, PRODEJNY_IDPRODEJNY) VALUES (10, 15);
+INSERT INTO SKLADY (pocetPolicek, PRODEJNY_IDPRODEJNY) VALUES (19, 16);
+INSERT INTO SKLADY (pocetPolicek, PRODEJNY_IDPRODEJNY) VALUES (17, 17);
+INSERT INTO SKLADY (pocetPolicek, PRODEJNY_IDPRODEJNY) VALUES (12, 18);
+INSERT INTO SKLADY (pocetPolicek, PRODEJNY_IDPRODEJNY) VALUES (19, 19);
+INSERT INTO SKLADY (pocetPolicek, PRODEJNY_IDPRODEJNY) VALUES (16, 20);
+
+
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (11, 1, 23);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (41, 1, 42);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (28, 1, 17);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (46, 2, 60);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (27, 2, 38);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (37, 2, 53);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (3, 3, 1);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (20, 3, 2);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (16, 3, 3);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (13, 3, 4);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (20, 3, 5);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (8, 3, 6);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (4, 3, 7);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (15, 3, 8);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (2, 3, 9);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (18, 3, 10);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (9, 3, 11);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (9, 3, 12);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (4, 3, 13);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (3, 3, 14);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (12, 3, 15);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (10, 3, 16);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (13, 3, 17);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (15, 3, 18);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (15, 3, 19);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (5, 3, 20);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (17, 3, 21);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (9, 3, 22);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (18, 3, 23);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (19, 3, 24);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (14, 3, 25);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (17, 3, 26);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (10, 3, 27);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (12, 3, 28);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (5, 3, 29);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (13, 3, 30);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (3, 3, 31);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (1, 3, 32);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (17, 3, 33);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (12, 3, 34);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (14, 3, 35);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (20, 3, 36);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (11, 3, 37);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (15, 3, 38);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (9, 3, 39);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (2, 3, 40);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (3, 3, 41);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (15, 3, 42);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (5, 3, 43);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (18, 3, 44);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (8, 3, 45);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (12, 3, 46);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (14, 3, 47);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (17, 3, 48);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (5, 3, 49);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (1, 3, 50);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (10, 3, 51);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (15, 3, 52);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (9, 3, 53);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (1, 3, 54);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (13, 3, 55);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (16, 3, 56);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (11, 3, 57);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (20, 3, 58);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (7, 3, 59);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (16, 3, 60);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (3, 3, 61);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (18, 3, 62);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (19, 3, 63);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (7, 3, 64);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (12, 3, 65);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (1, 3, 66);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (1, 3, 67);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (15, 3, 68);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (19, 3, 69);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (18, 3, 70);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (13, 3, 71);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (25, 4, 62);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (30, 4, 55);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (50, 4, 27);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (39, 5, 9);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (13, 5, 47);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (49, 5, 1);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (27, 6, 60);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (36, 6, 70);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (46, 6, 36);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (1, 7, 40);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (29, 7, 65);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (1, 7, 61);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (18, 8, 63);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (15, 8, 42);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (31, 8, 55);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (19, 9, 46);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (25, 9, 7);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (13, 9, 36);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (4, 10, 35);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (9, 10, 5);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (30, 10, 68);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (49, 11, 17);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (2, 11, 7);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (48, 11, 52);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (46, 12, 32);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (18, 12, 46);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (14, 12, 53);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (6, 13, 2);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (14, 13, 49);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (40, 13, 59);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (2, 14, 18);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (8, 14, 46);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (43, 14, 41);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (3, 15, 43);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (32, 15, 64);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (42, 15, 66);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (12, 16, 9);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (8, 16, 65);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (22, 16, 63);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (45, 17, 10);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (19, 17, 24);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (13, 17, 41);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (11, 18, 1);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (11, 18, 2);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (19, 18, 3);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (10, 18, 4);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (13, 18, 5);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (6, 18, 6);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (16, 18, 7);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (4, 18, 8);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (16, 18, 9);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (15, 18, 10);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (10, 18, 11);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (11, 18, 12);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (1, 18, 13);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (3, 18, 14);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (20, 18, 15);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (11, 18, 16);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (10, 18, 17);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (14, 18, 18);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (3, 18, 19);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (10, 18, 20);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (11, 18, 21);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (3, 18, 22);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (7, 18, 23);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (8, 18, 24);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (18, 18, 25);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (8, 18, 26);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (2, 18, 27);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (14, 18, 28);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (3, 18, 29);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (2, 18, 30);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (4, 18, 31);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (12, 18, 32);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (5, 18, 33);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (10, 18, 34);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (5, 18, 35);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (19, 18, 36);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (9, 18, 37);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (3, 18, 38);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (10, 18, 39);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (2, 18, 40);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (17, 18, 41);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (9, 18, 42);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (13, 18, 43);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (12, 18, 44);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (6, 18, 45);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (16, 18, 46);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (17, 18, 47);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (10, 18, 48);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (16, 18, 49);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (16, 18, 50);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (20, 18, 51);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (12, 18, 52);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (17, 18, 53);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (1, 18, 54);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (12, 18, 55);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (12, 18, 56);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (9, 18, 57);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (19, 18, 58);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (18, 18, 59);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (13, 18, 60);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (13, 18, 61);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (20, 18, 62);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (2, 18, 63);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (18, 18, 64);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (19, 18, 65);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (13, 18, 66);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (13, 18, 67);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (10, 18, 68);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (14, 18, 69);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (18, 18, 70);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (11, 18, 71);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (20, 19, 65);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (47, 19, 45);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (42, 19, 12);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (30, 20, 27);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (36, 20, 38);
+INSERT INTO ZBOZI_NA_SKLADE (pocetZbozi, SKLADY_idSkladu, ZBOZI_idZbozi) VALUES (22, 20, 32);
+
+INSERT INTO PRODANE_ZBOZI (pocetZbozi, PRODEJE_IDPRODEJE, ZBOZI_idZbozi, prodejniCena) VALUES (4, 1, 1, 771);
+INSERT INTO PRODANE_ZBOZI (pocetZbozi, PRODEJE_IDPRODEJE, ZBOZI_idZbozi, prodejniCena) VALUES (5, 2, 2, 430);
+INSERT INTO PRODANE_ZBOZI (pocetZbozi, PRODEJE_IDPRODEJE, ZBOZI_idZbozi, prodejniCena) VALUES (9, 3, 3, 748);
+INSERT INTO PRODANE_ZBOZI (pocetZbozi, PRODEJE_IDPRODEJE, ZBOZI_idZbozi, prodejniCena) VALUES (3, 4, 4, 988);
+INSERT INTO PRODANE_ZBOZI (pocetZbozi, PRODEJE_IDPRODEJE, ZBOZI_idZbozi, prodejniCena) VALUES (7, 5, 5, 401);
+INSERT INTO PRODANE_ZBOZI (pocetZbozi, PRODEJE_IDPRODEJE, ZBOZI_idZbozi, prodejniCena) VALUES (8, 6, 6, 687);
+INSERT INTO PRODANE_ZBOZI (pocetZbozi, PRODEJE_IDPRODEJE, ZBOZI_idZbozi, prodejniCena) VALUES (2, 7, 7, 566);
+INSERT INTO PRODANE_ZBOZI (pocetZbozi, PRODEJE_IDPRODEJE, ZBOZI_idZbozi, prodejniCena) VALUES (2, 8, 8, 844);
+INSERT INTO PRODANE_ZBOZI (pocetZbozi, PRODEJE_IDPRODEJE, ZBOZI_idZbozi, prodejniCena) VALUES (3, 9, 9, 47);
+INSERT INTO PRODANE_ZBOZI (pocetZbozi, PRODEJE_IDPRODEJE, ZBOZI_idZbozi, prodejniCena) VALUES (5, 10, 10, 248);
+INSERT INTO PRODANE_ZBOZI (pocetZbozi, PRODEJE_IDPRODEJE, ZBOZI_idZbozi, prodejniCena) VALUES (8, 11, 11, 675);
+INSERT INTO PRODANE_ZBOZI (pocetZbozi, PRODEJE_IDPRODEJE, ZBOZI_idZbozi, prodejniCena) VALUES (3, 12, 12, 376);
+INSERT INTO PRODANE_ZBOZI (pocetZbozi, PRODEJE_IDPRODEJE, ZBOZI_idZbozi, prodejniCena) VALUES (3, 13, 13, 107);
+INSERT INTO PRODANE_ZBOZI (pocetZbozi, PRODEJE_IDPRODEJE, ZBOZI_idZbozi, prodejniCena) VALUES (7, 14, 14, 771);
+INSERT INTO PRODANE_ZBOZI (pocetZbozi, PRODEJE_IDPRODEJE, ZBOZI_idZbozi, prodejniCena) VALUES (3, 15, 15, 375);
+INSERT INTO PRODANE_ZBOZI (pocetZbozi, PRODEJE_IDPRODEJE, ZBOZI_idZbozi, prodejniCena) VALUES (8, 16, 16, 378);
+INSERT INTO PRODANE_ZBOZI (pocetZbozi, PRODEJE_IDPRODEJE, ZBOZI_idZbozi, prodejniCena) VALUES (8, 17, 17, 815);
+INSERT INTO PRODANE_ZBOZI (pocetZbozi, PRODEJE_IDPRODEJE, ZBOZI_idZbozi, prodejniCena) VALUES (4, 18, 18, 51);
+INSERT INTO PRODANE_ZBOZI (pocetZbozi, PRODEJE_IDPRODEJE, ZBOZI_idZbozi, prodejniCena) VALUES (7, 19, 19, 932);
+INSERT INTO PRODANE_ZBOZI (pocetZbozi, PRODEJE_IDPRODEJE, ZBOZI_idZbozi, prodejniCena) VALUES (4, 20, 20, 959);
+
+UPDATE zbozi SET nazev = INITCAP(nazev) WHERE nazev IS NOT NULL;
+
+INSERT INTO ROLE(NAZEV) VALUES ('Admin');
+INSERT INTO ROLE(NAZEV) VALUES ('ShiftLeader');
+INSERT INTO ROLE(NAZEV) VALUES ('Employee');
+
+INSERT INTO AUTUZIVATELE(JMENO, HESLOHASH, HESLOSALT, ZAMESTNANCI_IDZAMESTNANCE) VALUES ('System admin', 'SGIUyU/DjYH3TYLS8OcB0VtKd3rWj0sM7TitWmDWR2s=', '0t9a9xnSFF2ljR19Wny2Ag==', 44);
+INSERT INTO AUTUZIVATEL_ROLE(ROLE_IDROLE, AUTUZIVATELE_IDAUTUZ) VALUES (1, 1);
+
+INSERT INTO AUTUZIVATELE(JMENO, HESLOHASH, HESLOSALT, ZAMESTNANCI_IDZAMESTNANCE) VALUES ('ShiftLeader', 'iE4S569d1VcG7G4d2HZKNxV948HPp3aHQdzpgQXupOg=', 'dZNzRXPPXSD23Kg2dwpOkw==', 17);
+INSERT INTO AUTUZIVATEL_ROLE(ROLE_IDROLE, AUTUZIVATELE_IDAUTUZ) VALUES (2, 2);
+
+INSERT INTO AUTUZIVATELE(JMENO, HESLOHASH, HESLOSALT, ZAMESTNANCI_IDZAMESTNANCE) VALUES ('Employee', 'FLdlAWY1Ecuff7v5qohLXF059EntZNlTHwK3cKLHr7Q=', 'H/S2GUcm3cgGehjNGGMwNg==', 5);
+INSERT INTO AUTUZIVATEL_ROLE(ROLE_IDROLE, AUTUZIVATELE_IDAUTUZ) VALUES (3, 3);
+
+INSERT INTO AUTUZIVATEL_ROLE(ROLE_IDROLE, AUTUZIVATELE_IDAUTUZ) VALUES (3, 1);
+INSERT INTO AUTUZIVATEL_ROLE(ROLE_IDROLE, AUTUZIVATELE_IDAUTUZ) VALUES (3, 2);
+
+commit;
+
+--Vrátí počet zaměstnanců, kteří mají zadanou pozici s identifikátorem p_idpozice. Pokud nejsou žádné záznamy nalezeny, funkce vrátí 0.
+CREATE OR REPLACE FUNCTION pocet_zamestnancu_na_pozici(p_idpozice IN NUMBER) RETURN NUMBER IS
+    v_count NUMBER;
+BEGIN
+    SELECT COUNT(*) INTO v_count
+    FROM zamestnanci
+    WHERE pozice_idpozice = p_idpozice;
+
+    RETURN v_count;
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        RETURN 0;
+    WHEN OTHERS THEN
+        RAISE;
+END pocet_zamestnancu_na_pozici;
+/
+--Ověřuje platnost rodného čísla. Pokud je zadané rodné číslo platné, vrátí 1; v opačném případě vrátí 0. Platné rodné číslo musí mít délku 9 nebo 10 číslic a splňovat určité podmínky.
+create or replace FUNCTION validne_rc(RC IN NUMBER) RETURN NUMBER AS
+    i_zbytek NUMBER;
+    i_mesic NUMBER;
+    i_rok NUMBER;
+    i_den NUMBER;
+    i_datum DATE;
+
+BEGIN
+    IF LENGTH(RC) NOT BETWEEN 9 AND 10 THEN
+        RETURN 0;
+    END IF;
+
+    -- rodne cislo pred rokem 1954
+    IF LENGTH(RC) = 9 AND SUBSTR(RC,1,2) < 54 THEN
+        RETURN 1;
+    END IF;
+
+
+    i_zbytek := MOD(SUBSTR(RC,1,9),11);
+
+    IF i_zbytek = 10 THEN
+        i_zbytek := 0;
+    END IF;
+
+    i_rok := TO_NUMBER(SUBSTR(RC,1,2));
+    i_mesic := TO_NUMBER(SUBSTR(RC,3,2));
+    i_den := TO_NUMBER(SUBSTR(RC,5,2));
+
+    IF i_rok < 54 THEN
+        i_rok := i_rok + 2000;
+    ELSE
+        i_rok := i_rok + 1900;
+    END IF;
+
+
+    IF i_mesic > 70 AND i_rok > 2003 THEN
+        i_mesic := i_mesic - 70;
+    ELSIF i_mesic > 50 THEN
+        i_mesic := i_mesic - 50;
+    ELSIF i_mesic > 20 AND i_rok > 2003 THEN
+        i_mesic := i_mesic - 20;
+    END IF;
+
+    BEGIN
+        i_datum := TO_DATE(i_den || '.' || i_mesic || '.' || i_rok,'DD.MM.YYYY');
+    EXCEPTION WHEN OTHERS THEN
+        RETURN 0;
+    END;
+
+
+    IF i_zbytek = SUBSTR(RC,10,1) THEN
+        RETURN 1;
+    ELSE
+        RETURN 0;
+    END IF;
+
+END validne_rc;
+/
+--Zjistí dostupnost zboží podle jeho identifikátoru id_produktu. Vrací informaci o dostupnosti zboží a celkovém množství na skladech. Pokud zboží není dostupné, vrátí informaci o nedostupnosti. Pokud nejsou nalezeny žádné informace pro zadaný identifikátor, funkce vrátí chybovou zprávu.
+CREATE OR REPLACE FUNCTION get_dostupnost_zbozi(id_produktu IN zbozi.idzbozi%TYPE) RETURN VARCHAR2 AS
+    dostupnost_info VARCHAR2(4000);
+    celkove_mnozstvi NUMBER;
+    nazev_produktu VARCHAR2(32);
+BEGIN
+ 
+    SELECT z.nazev
+    INTO nazev_produktu
+    FROM zbozi z
+    WHERE z.idzbozi = id_produktu;
+
+    SELECT SUM(zns.pocetzbozi) INTO celkove_mnozstvi
+    FROM zbozi_na_sklade zns
+    WHERE zns.zbozi_idzbozi = id_produktu;
+
+    IF celkove_mnozstvi IS NULL THEN
+        dostupnost_info := 'Produkt ' || nazev_produktu  || ' není aktuálně dostupný ve skladech.';
+    ELSE
+        dostupnost_info := 'Produkt ' || nazev_produktu || ' je dostupný ve skladech s celkovým množstvím: ' || TO_CHAR(celkove_mnozstvi);
+    END IF;
+
+    RETURN dostupnost_info;
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+        RETURN 'Nebyly nalezeny žádné informace pro produkt ID: ' || TO_CHAR(id_produktu);
+    WHEN OTHERS THEN
+        RETURN 'Došlo k chybě při získávání informací o produktu.';
+END get_dostupnost_zbozi;
+/
+--smaže záznamy o uživatelích, jejich rolích a souborech pro zadaného uživatele s identifikátorem p_IDAUTUZ 
+CREATE OR REPLACE PROCEDURE smazat_autuzivatele(p_IDAUTUZ IN NUMBER) AS
+BEGIN
+    delete from autuzivatel_role where autuzivatele_idautuz = p_IDAUTUZ;
+
+    delete from soubory where autuzivatele_idautuz = p_IDAUTUZ;
+
+    delete from autuzivatele where idautuz = p_IDAUTUZ;
+    COMMIT;
+END;
+/
+
+--provádí vkládání nebo aktualizaci množství zboží na skladě. Pokud zboží s identifikátorem id_produktu a skladem id_skladu existuje, aktualizuje jeho počet na skladě o mnozstvi_zmeny, jinak vytvoří nový záznam
+CREATE OR REPLACE PROCEDURE insert_produkt (
+    id_produktu IN NUMBER,
+    mnozstvi_zmeny IN NUMBER,
+    id_skladu IN NUMBER
+) AS
+BEGIN
+    MERGE INTO zbozi_na_sklade USING dual ON (zbozi_idzbozi = id_produktu AND sklady_idskladu = id_skladu)
+    WHEN MATCHED THEN
+        UPDATE SET pocetzbozi = pocetzbozi + mnozstvi_zmeny
+    WHEN NOT MATCHED THEN
+        INSERT (zbozi_idzbozi, sklady_idskladu, pocetzbozi)
+        VALUES (id_produktu, id_skladu, mnozstvi_zmeny);
+
+    COMMIT;
+END insert_produkt;
+/
+
+--smaže záznamy v tabulce logů, které jsou starší než určený počet dní dny_stare
+CREATE OR REPLACE PROCEDURE delete_starsi_logy (dny_stare IN NUMBER) AS
+    datum_vymezene DATE;
+BEGIN
+    datum_vymezene := SYSDATE - dny_stare;
+
+    DELETE FROM logy WHERE cas < datum_vymezene;
+
+    COMMIT;
+END delete_starsi_logy;
+/
+--aktualizuje ceny produktů v určité kategorii (kategorie_id) o určené procento zvýšení procento_navyseni. 
+CREATE OR REPLACE PROCEDURE update_cena_zbozi_kategorii (
+    kategorie_id IN kategorije.idkategorije%TYPE,
+    procento_navyseni IN NUMBER
+) AS
+  CURSOR kurzor_produktu IS
+    SELECT idzbozi, aktualnicena
+    FROM zbozi
+    WHERE kategorije_idkategorije = kategorie_id;
+
+    v_product_id NUMBER;
+    v_aktualni_cena NUMBER;
+
+BEGIN
+  OPEN kurzor_produktu;
+
+  LOOP
+    FETCH kurzor_produktu INTO v_product_id, v_aktualni_cena;
+    EXIT WHEN kurzor_produktu%NOTFOUND;
+
+    UPDATE zbozi
+    SET aktualnicena = v_aktualni_cena * (1 + procento_navyseni / 100)
+    WHERE idzbozi = v_product_id;
+
+  END LOOP;
+
+  CLOSE kurzor_produktu;
+
+  COMMIT;
+END update_cena_zbozi_kategorii;
+/
+--Je triggeře typu "AFTER INSERT", který se spustí po vložení nového záznamu do tabulky AUTUZIVATELE. Trigger vloží nový záznam do tabulky AUTUZIVATEL_ROLE s hodnotou ROLE_IDROLE rovnou 3 a AUTUZIVATELE_IDAUTUZ z nově vloženého záznamu v tabulce AUTUZIVATELE.
+CREATE OR REPLACE TRIGGER pridej_zaznam_AUTUZIVATEL_ROLE
+AFTER INSERT ON AUTUZIVATELE
+FOR EACH ROW
+BEGIN
+  INSERT INTO AUTUZIVATEL_ROLE(ROLE_IDROLE, AUTUZIVATELE_IDAUTUZ)
+  VALUES (3, :NEW.IDAUTUZ);
+END;
+/
+--Je triggeře typu "BEFORE INSERT OR UPDATE", který se spustí před vložením nebo aktualizací záznamu v tabulce zamestnanci. Trigger kontroluje, zda délka telefonního čísla (telefonnicislo) je menší než 9 znaků nebo zda rodné číslo (rodnecislo) není platné podle funkce validne_rc. Pokud jsou tyto podmínky nesplněny, trigger vyvolá chybovou zprávu s kódem -20001 a textem 'invalid data', což zabrání vložení nebo aktualizaci záznamu s neplatnými daty.
+CREATE OR REPLACE TRIGGER zam_validace
+BEFORE INSERT OR UPDATE ON zamestnanci
+FOR EACH ROW
+BEGIN
+    IF LENGTH(:new.telefonnicislo) < 9 OR validne_rc(:new.rodnecislo) = 0 THEN
+        raise_application_error(-20001, 'invalid data');
+    END IF;
+END;
+/
+
+CREATE OR REPLACE TRIGGER trg_adresy_zmeny
+BEFORE INSERT OR UPDATE OR DELETE ON adresy
+FOR EACH ROW
+DECLARE
+    v_operace VARCHAR2(10);
+    v_zmeny VARCHAR2(4000);
+BEGIN
+    IF INSERTING THEN
+        v_operace := 'INSERT';
+        v_zmeny := 'PRIDANO ' ||  'mesto ' || '' || :new.mesto || ', ' || 'ulice ' || '' || :new.ulice || ', ' || 'prodejny_idprodejny ' || '' || :new.prodejny_idprodejny;
+    ELSIF UPDATING THEN
+        v_operace := 'UPDATE';
+        v_zmeny := 'ZMENENO ';
+            	IF (:new.mesto != :old.mesto) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'mesto ' || '' || :old.mesto || ' -> ' || 'mesto ' || ' ' || :new.mesto; 
+	END IF; 
+	IF (:new.ulice != :old.ulice) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'ulice ' || '' || :old.ulice || ' -> ' || 'ulice ' || ' ' || :new.ulice; 
+	END IF; 
+	IF (:new.prodejny_idprodejny != :old.prodejny_idprodejny) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'prodejny_idprodejny ' || '' || :old.prodejny_idprodejny || ' -> ' || 'prodejny_idprodejny ' || ' ' || :new.prodejny_idprodejny; 
+	END IF; 
+
+    ELSIF DELETING THEN
+        v_operace := 'DELETE';
+        v_zmeny := 'Smazano ' ||  'mesto ' || '' || :old.mesto || ', ' || 'ulice ' || '' || :old.ulice || ', ' || 'prodejny_idprodejny ' || '' || :old.prodejny_idprodejny;
+    END IF;
+    INSERT INTO logy (TABULKA, OPERACE, CAS, UZIVATEL, ZMENY) VALUES ('adresy', v_operace, SYSTIMESTAMP, USER, v_zmeny);
+END;
+/
+    
+CREATE OR REPLACE TRIGGER trg_autuzivatele_zmeny
+BEFORE INSERT OR UPDATE OR DELETE ON autuzivatele
+FOR EACH ROW
+DECLARE
+    v_operace VARCHAR2(10);
+    v_zmeny VARCHAR2(4000);
+BEGIN
+    IF INSERTING THEN
+        v_operace := 'INSERT';
+        v_zmeny := 'PRIDANO ' ||  'jmeno ' || '' || :new.jmeno || ', ' || 'heslohash ' || '' || :new.heslohash || ', ' || 'heslosalt ' || '' || :new.heslosalt;
+    ELSIF UPDATING THEN
+        v_operace := 'UPDATE';
+        v_zmeny := 'ZMENENO ';
+            	IF (:new.jmeno != :old.jmeno) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'jmeno ' || '' || :old.jmeno || ' -> ' || 'jmeno ' || ' ' || :new.jmeno; 
+	END IF; 
+	IF (:new.heslohash != :old.heslohash) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'heslohash ' || '' || :old.heslohash || ' -> ' || 'heslohash ' || ' ' || :new.heslohash; 
+	END IF; 
+	IF (:new.heslosalt != :old.heslosalt) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'heslosalt ' || '' || :old.heslosalt || ' -> ' || 'heslosalt ' || ' ' || :new.heslosalt; 
+	END IF; 
+
+    ELSIF DELETING THEN
+        v_operace := 'DELETE';
+        v_zmeny := 'Smazano ' ||  'jmeno ' || '' || :old.jmeno || ', ' || 'heslohash ' || '' || :old.heslohash || ', ' || 'heslosalt ' || '' || :old.heslosalt;
+    END IF;
+    INSERT INTO logy (TABULKA, OPERACE, CAS, UZIVATEL, ZMENY) VALUES ('autuzivatele', v_operace, SYSTIMESTAMP, USER, v_zmeny);
+END;
+/
+    
+CREATE OR REPLACE TRIGGER trg_hotove_zmeny
+BEFORE INSERT OR UPDATE OR DELETE ON hotove
+FOR EACH ROW
+DECLARE
+    v_operace VARCHAR2(10);
+    v_zmeny VARCHAR2(4000);
+BEGIN
+    IF INSERTING THEN
+        v_operace := 'INSERT';
+        v_zmeny := 'PRIDANO ' ||  'vraceno ' || '' || :new.vraceno;
+    ELSIF UPDATING THEN
+        v_operace := 'UPDATE';
+        v_zmeny := 'ZMENENO ';
+            	IF (:new.vraceno != :old.vraceno) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'vraceno ' || '' || :old.vraceno || ' -> ' || 'vraceno ' || ' ' || :new.vraceno; 
+	END IF; 
+
+    ELSIF DELETING THEN
+        v_operace := 'DELETE';
+        v_zmeny := 'Smazano ' ||  'vraceno ' || '' || :old.vraceno;
+    END IF;
+    INSERT INTO logy (TABULKA, OPERACE, CAS, UZIVATEL, ZMENY) VALUES ('hotove', v_operace, SYSTIMESTAMP, USER, v_zmeny);
+END;
+/
+    
+CREATE OR REPLACE TRIGGER trg_karty_zmeny
+BEFORE INSERT OR UPDATE OR DELETE ON karty
+FOR EACH ROW
+DECLARE
+    v_operace VARCHAR2(10);
+    v_zmeny VARCHAR2(4000);
+BEGIN
+    IF INSERTING THEN
+        v_operace := 'INSERT';
+        v_zmeny := 'PRIDANO ' ||  'cislokarty ' || '' || :new.cislokarty || ', ' || 'autorizacnikod ' || '' || :new.autorizacnikod;
+    ELSIF UPDATING THEN
+        v_operace := 'UPDATE';
+        v_zmeny := 'ZMENENO ';
+            	IF (:new.cislokarty != :old.cislokarty) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'cislokarty ' || '' || :old.cislokarty || ' -> ' || 'cislokarty ' || ' ' || :new.cislokarty; 
+	END IF; 
+	IF (:new.autorizacnikod != :old.autorizacnikod) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'autorizacnikod ' || '' || :old.autorizacnikod || ' -> ' || 'autorizacnikod ' || ' ' || :new.autorizacnikod; 
+	END IF; 
+
+    ELSIF DELETING THEN
+        v_operace := 'DELETE';
+        v_zmeny := 'Smazano ' ||  'cislokarty ' || '' || :old.cislokarty || ', ' || 'autorizacnikod ' || '' || :old.autorizacnikod;
+    END IF;
+    INSERT INTO logy (TABULKA, OPERACE, CAS, UZIVATEL, ZMENY) VALUES ('karty', v_operace, SYSTIMESTAMP, USER, v_zmeny);
+END;
+/
+    
+CREATE OR REPLACE TRIGGER trg_kategorije_zmeny
+BEFORE INSERT OR UPDATE OR DELETE ON kategorije
+FOR EACH ROW
+DECLARE
+    v_operace VARCHAR2(10);
+    v_zmeny VARCHAR2(4000);
+BEGIN
+    IF INSERTING THEN
+        v_operace := 'INSERT';
+        v_zmeny := 'PRIDANO ' ||  'nazev ' || '' || :new.nazev;
+    ELSIF UPDATING THEN
+        v_operace := 'UPDATE';
+        v_zmeny := 'ZMENENO ';
+            	IF (:new.nazev != :old.nazev) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'nazev ' || '' || :old.nazev || ' -> ' || 'nazev ' || ' ' || :new.nazev; 
+	END IF; 
+
+    ELSIF DELETING THEN
+        v_operace := 'DELETE';
+        v_zmeny := 'Smazano ' ||  'nazev ' || '' || :old.nazev;
+    END IF;
+    INSERT INTO logy (TABULKA, OPERACE, CAS, UZIVATEL, ZMENY) VALUES ('kategorije', v_operace, SYSTIMESTAMP, USER, v_zmeny);
+END;
+/
+    
+CREATE OR REPLACE TRIGGER trg_kupony_zmeny
+BEFORE INSERT OR UPDATE OR DELETE ON kupony
+FOR EACH ROW
+DECLARE
+    v_operace VARCHAR2(10);
+    v_zmeny VARCHAR2(4000);
+BEGIN
+    IF INSERTING THEN
+        v_operace := 'INSERT';
+        v_zmeny := 'PRIDANO ' ||  'cislo ' || '' || :new.cislo;
+    ELSIF UPDATING THEN
+        v_operace := 'UPDATE';
+        v_zmeny := 'ZMENENO ';
+            	IF (:new.cislo != :old.cislo) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'cislo ' || '' || :old.cislo || ' -> ' || 'cislo ' || ' ' || :new.cislo; 
+	END IF; 
+
+    ELSIF DELETING THEN
+        v_operace := 'DELETE';
+        v_zmeny := 'Smazano ' ||  'cislo ' || '' || :old.cislo;
+    END IF;
+    INSERT INTO logy (TABULKA, OPERACE, CAS, UZIVATEL, ZMENY) VALUES ('kupony', v_operace, SYSTIMESTAMP, USER, v_zmeny);
+END;
+/
+    
+CREATE OR REPLACE TRIGGER trg_platby_zmeny
+BEFORE INSERT OR UPDATE OR DELETE ON platby
+FOR EACH ROW
+DECLARE
+    v_operace VARCHAR2(10);
+    v_zmeny VARCHAR2(4000);
+BEGIN
+    IF INSERTING THEN
+        v_operace := 'INSERT';
+        v_zmeny := 'PRIDANO ' ||  'jeclubcarta ' || '' || :new.jeclubcarta || ', ' || 'platba_type ' || '' || :new.platba_type;
+    ELSIF UPDATING THEN
+        v_operace := 'UPDATE';
+        v_zmeny := 'ZMENENO ';
+            	IF (:new.jeclubcarta != :old.jeclubcarta) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'jeclubcarta ' || '' || :old.jeclubcarta || ' -> ' || 'jeclubcarta ' || ' ' || :new.jeclubcarta; 
+	END IF; 
+	IF (:new.platba_type != :old.platba_type) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'platba_type ' || '' || :old.platba_type || ' -> ' || 'platba_type ' || ' ' || :new.platba_type; 
+	END IF; 
+
+    ELSIF DELETING THEN
+        v_operace := 'DELETE';
+        v_zmeny := 'Smazano ' ||  'jeclubcarta ' || '' || :old.jeclubcarta || ', ' || 'platba_type ' || '' || :old.platba_type;
+    END IF;
+    INSERT INTO logy (TABULKA, OPERACE, CAS, UZIVATEL, ZMENY) VALUES ('platby', v_operace, SYSTIMESTAMP, USER, v_zmeny);
+END;
+/
+    
+CREATE OR REPLACE TRIGGER trg_pokladny_zmeny
+BEFORE INSERT OR UPDATE OR DELETE ON pokladny
+FOR EACH ROW
+DECLARE
+    v_operace VARCHAR2(10);
+    v_zmeny VARCHAR2(4000);
+BEGIN
+    IF INSERTING THEN
+        v_operace := 'INSERT';
+        v_zmeny := 'PRIDANO ' ||  'cislo ' || '' || :new.cislo || ', ' || 'jesamoobsluzna ' || '' || :new.jesamoobsluzna;
+    ELSIF UPDATING THEN
+        v_operace := 'UPDATE';
+        v_zmeny := 'ZMENENO ';
+            	IF (:new.cislo != :old.cislo) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'cislo ' || '' || :old.cislo || ' -> ' || 'cislo ' || ' ' || :new.cislo; 
+	END IF; 
+	IF (:new.jesamoobsluzna != :old.jesamoobsluzna) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'jesamoobsluzna ' || '' || :old.jesamoobsluzna || ' -> ' || 'jesamoobsluzna ' || ' ' || :new.jesamoobsluzna; 
+	END IF; 
+
+    ELSIF DELETING THEN
+        v_operace := 'DELETE';
+        v_zmeny := 'Smazano ' ||  'cislo ' || '' || :old.cislo || ', ' || 'jesamoobsluzna ' || '' || :old.jesamoobsluzna;
+    END IF;
+    INSERT INTO logy (TABULKA, OPERACE, CAS, UZIVATEL, ZMENY) VALUES ('pokladny', v_operace, SYSTIMESTAMP, USER, v_zmeny);
+END;
+/
+    
+CREATE OR REPLACE TRIGGER trg_pozice_zmeny
+BEFORE INSERT OR UPDATE OR DELETE ON pozice
+FOR EACH ROW
+DECLARE
+    v_operace VARCHAR2(10);
+    v_zmeny VARCHAR2(4000);
+BEGIN
+    IF INSERTING THEN
+        v_operace := 'INSERT';
+        v_zmeny := 'PRIDANO ' ||  'nazev ' || '' || :new.nazev || ', ' || 'mzda ' || '' || :new.mzda;
+    ELSIF UPDATING THEN
+        v_operace := 'UPDATE';
+        v_zmeny := 'ZMENENO ';
+            	IF (:new.nazev != :old.nazev) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'nazev ' || '' || :old.nazev || ' -> ' || 'nazev ' || ' ' || :new.nazev; 
+	END IF; 
+	IF (:new.mzda != :old.mzda) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'mzda ' || '' || :old.mzda || ' -> ' || 'mzda ' || ' ' || :new.mzda; 
+	END IF; 
+
+    ELSIF DELETING THEN
+        v_operace := 'DELETE';
+        v_zmeny := 'Smazano ' ||  'nazev ' || '' || :old.nazev || ', ' || 'mzda ' || '' || :old.mzda;
+    END IF;
+    INSERT INTO logy (TABULKA, OPERACE, CAS, UZIVATEL, ZMENY) VALUES ('pozice', v_operace, SYSTIMESTAMP, USER, v_zmeny);
+END;
+/
+    
+CREATE OR REPLACE TRIGGER trg_prodane_zbozi_zmeny
+BEFORE INSERT OR UPDATE OR DELETE ON prodane_zbozi
+FOR EACH ROW
+DECLARE
+    v_operace VARCHAR2(10);
+    v_zmeny VARCHAR2(4000);
+BEGIN
+    IF INSERTING THEN
+        v_operace := 'INSERT';
+        v_zmeny := 'PRIDANO ' ||  'pocetzbozi ' || '' || :new.pocetzbozi || ', ' || 'prodejnicena ' || '' || :new.prodejnicena;
+    ELSIF UPDATING THEN
+        v_operace := 'UPDATE';
+        v_zmeny := 'ZMENENO ';
+            	IF (:new.pocetzbozi != :old.pocetzbozi) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'pocetzbozi ' || '' || :old.pocetzbozi || ' -> ' || 'pocetzbozi ' || ' ' || :new.pocetzbozi; 
+	END IF; 
+	IF (:new.prodejnicena != :old.prodejnicena) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'prodejnicena ' || '' || :old.prodejnicena || ' -> ' || 'prodejnicena ' || ' ' || :new.prodejnicena; 
+	END IF; 
+
+    ELSIF DELETING THEN
+        v_operace := 'DELETE';
+        v_zmeny := 'Smazano ' ||  'pocetzbozi ' || '' || :old.pocetzbozi || ', ' || 'prodejnicena ' || '' || :old.prodejnicena;
+    END IF;
+    INSERT INTO logy (TABULKA, OPERACE, CAS, UZIVATEL, ZMENY) VALUES ('prodane_zbozi', v_operace, SYSTIMESTAMP, USER, v_zmeny);
+END;
+/
+    
+CREATE OR REPLACE TRIGGER trg_prodeje_zmeny
+BEFORE INSERT OR UPDATE OR DELETE ON prodeje
+FOR EACH ROW
+DECLARE
+    v_operace VARCHAR2(10);
+    v_zmeny VARCHAR2(4000);
+BEGIN
+    IF INSERTING THEN
+        v_operace := 'INSERT';
+        v_zmeny := 'PRIDANO ' ||  'datumprodeje ' || '' || :new.datumprodeje || ', ' || 'celkovacena ' || '' || :new.celkovacena;
+    ELSIF UPDATING THEN
+        v_operace := 'UPDATE';
+        v_zmeny := 'ZMENENO ';
+            	IF (:new.datumprodeje != :old.datumprodeje) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'datumprodeje ' || '' || :old.datumprodeje || ' -> ' || 'datumprodeje ' || ' ' || :new.datumprodeje; 
+	END IF; 
+	IF (:new.celkovacena != :old.celkovacena) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'celkovacena ' || '' || :old.celkovacena || ' -> ' || 'celkovacena ' || ' ' || :new.celkovacena; 
+	END IF; 
+
+    ELSIF DELETING THEN
+        v_operace := 'DELETE';
+        v_zmeny := 'Smazano ' ||  'datumprodeje ' || '' || :old.datumprodeje || ', ' || 'celkovacena ' || '' || :old.celkovacena;
+    END IF;
+    INSERT INTO logy (TABULKA, OPERACE, CAS, UZIVATEL, ZMENY) VALUES ('prodeje', v_operace, SYSTIMESTAMP, USER, v_zmeny);
+END;
+/
+    
+CREATE OR REPLACE TRIGGER trg_prodejny_zmeny
+BEFORE INSERT OR UPDATE OR DELETE ON prodejny
+FOR EACH ROW
+DECLARE
+    v_operace VARCHAR2(10);
+    v_zmeny VARCHAR2(4000);
+BEGIN
+    IF INSERTING THEN
+        v_operace := 'INSERT';
+        v_zmeny := 'PRIDANO ' ||  'kontaktnicislo ' || '' || :new.kontaktnicislo || ', ' || 'plocha ' || '' || :new.plocha;
+    ELSIF UPDATING THEN
+        v_operace := 'UPDATE';
+        v_zmeny := 'ZMENENO ';
+            	IF (:new.kontaktnicislo != :old.kontaktnicislo) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'kontaktnicislo ' || '' || :old.kontaktnicislo || ' -> ' || 'kontaktnicislo ' || ' ' || :new.kontaktnicislo; 
+	END IF; 
+	IF (:new.plocha != :old.plocha) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'plocha ' || '' || :old.plocha || ' -> ' || 'plocha ' || ' ' || :new.plocha; 
+	END IF; 
+
+    ELSIF DELETING THEN
+        v_operace := 'DELETE';
+        v_zmeny := 'Smazano ' ||  'kontaktnicislo ' || '' || :old.kontaktnicislo || ', ' || 'plocha ' || '' || :old.plocha;
+    END IF;
+    INSERT INTO logy (TABULKA, OPERACE, CAS, UZIVATEL, ZMENY) VALUES ('prodejny', v_operace, SYSTIMESTAMP, USER, v_zmeny);
+END;
+/
+    
+CREATE OR REPLACE TRIGGER trg_pulty_zmeny
+BEFORE INSERT OR UPDATE OR DELETE ON pulty
+FOR EACH ROW
+DECLARE
+    v_operace VARCHAR2(10);
+    v_zmeny VARCHAR2(4000);
+BEGIN
+    IF INSERTING THEN
+        v_operace := 'INSERT';
+        v_zmeny := 'PRIDANO ' ||  'cislo ' || '' || :new.cislo || ', ' || 'pocetpolicek ' || '' || :new.pocetpolicek;
+    ELSIF UPDATING THEN
+        v_operace := 'UPDATE';
+        v_zmeny := 'ZMENENO ';
+            	IF (:new.cislo != :old.cislo) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'cislo ' || '' || :old.cislo || ' -> ' || 'cislo ' || ' ' || :new.cislo; 
+	END IF; 
+	IF (:new.pocetpolicek != :old.pocetpolicek) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'pocetpolicek ' || '' || :old.pocetpolicek || ' -> ' || 'pocetpolicek ' || ' ' || :new.pocetpolicek; 
+	END IF; 
+
+    ELSIF DELETING THEN
+        v_operace := 'DELETE';
+        v_zmeny := 'Smazano ' ||  'cislo ' || '' || :old.cislo || ', ' || 'pocetpolicek ' || '' || :old.pocetpolicek;
+    END IF;
+    INSERT INTO logy (TABULKA, OPERACE, CAS, UZIVATEL, ZMENY) VALUES ('pulty', v_operace, SYSTIMESTAMP, USER, v_zmeny);
+END;
+/
+    
+CREATE OR REPLACE TRIGGER trg_role_zmeny
+BEFORE INSERT OR UPDATE OR DELETE ON role
+FOR EACH ROW
+DECLARE
+    v_operace VARCHAR2(10);
+    v_zmeny VARCHAR2(4000);
+BEGIN
+    IF INSERTING THEN
+        v_operace := 'INSERT';
+        v_zmeny := 'PRIDANO ' ||  'nazev ' || '' || :new.nazev;
+    ELSIF UPDATING THEN
+        v_operace := 'UPDATE';
+        v_zmeny := 'ZMENENO ';
+            	IF (:new.nazev != :old.nazev) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'nazev ' || '' || :old.nazev || ' -> ' || 'nazev ' || ' ' || :new.nazev; 
+	END IF; 
+
+    ELSIF DELETING THEN
+        v_operace := 'DELETE';
+        v_zmeny := 'Smazano ' ||  'nazev ' || '' || :old.nazev;
+    END IF;
+    INSERT INTO logy (TABULKA, OPERACE, CAS, UZIVATEL, ZMENY) VALUES ('role', v_operace, SYSTIMESTAMP, USER, v_zmeny);
+END;
+/
+    
+CREATE OR REPLACE TRIGGER trg_sklady_zmeny
+BEFORE INSERT OR UPDATE OR DELETE ON sklady
+FOR EACH ROW
+DECLARE
+    v_operace VARCHAR2(10);
+    v_zmeny VARCHAR2(4000);
+BEGIN
+    IF INSERTING THEN
+        v_operace := 'INSERT';
+        v_zmeny := 'PRIDANO ' ||  'pocetpolicek ' || '' || :new.pocetpolicek;
+    ELSIF UPDATING THEN
+        v_operace := 'UPDATE';
+        v_zmeny := 'ZMENENO ';
+            	IF (:new.pocetpolicek != :old.pocetpolicek) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'pocetpolicek ' || '' || :old.pocetpolicek || ' -> ' || 'pocetpolicek ' || ' ' || :new.pocetpolicek; 
+	END IF; 
+
+    ELSIF DELETING THEN
+        v_operace := 'DELETE';
+        v_zmeny := 'Smazano ' ||  'pocetpolicek ' || '' || :old.pocetpolicek;
+    END IF;
+    INSERT INTO logy (TABULKA, OPERACE, CAS, UZIVATEL, ZMENY) VALUES ('sklady', v_operace, SYSTIMESTAMP, USER, v_zmeny);
+END;
+/
+    
+CREATE OR REPLACE TRIGGER trg_soubory_zmeny
+BEFORE INSERT OR UPDATE OR DELETE ON soubory
+FOR EACH ROW
+DECLARE
+    v_operace VARCHAR2(10);
+    v_zmeny VARCHAR2(4000);
+BEGIN
+    IF INSERTING THEN
+        v_operace := 'INSERT';
+        v_zmeny := 'PRIDANO ' ||  'jmeno ' || '' || :new.jmeno || ', ' || 'pripona ' || '' || :new.pripona;
+    ELSIF UPDATING THEN
+        v_operace := 'UPDATE';
+        v_zmeny := 'ZMENENO ';
+            	IF (:new.jmeno != :old.jmeno) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'jmeno ' || '' || :old.jmeno || ' -> ' || 'jmeno ' || ' ' || :new.jmeno; 
+	END IF; 
+	IF (:new.pripona != :old.pripona) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'pripona ' || '' || :old.pripona || ' -> ' || 'pripona ' || ' ' || :new.pripona; 
+	END IF; 
+
+    ELSIF DELETING THEN
+        v_operace := 'DELETE';
+        v_zmeny := 'Smazano ' ||  'jmeno ' || '' || :old.jmeno || ', ' || 'pripona ' || '' || :old.pripona;
+    END IF;
+    INSERT INTO logy (TABULKA, OPERACE, CAS, UZIVATEL, ZMENY) VALUES ('soubory', v_operace, SYSTIMESTAMP, USER, v_zmeny);
+END;
+/
+    
+CREATE OR REPLACE TRIGGER trg_zamestnanci_zmeny
+BEFORE INSERT OR UPDATE OR DELETE ON zamestnanci
+FOR EACH ROW
+DECLARE
+    v_operace VARCHAR2(10);
+    v_zmeny VARCHAR2(4000);
+BEGIN
+    IF INSERTING THEN
+        v_operace := 'INSERT';
+        v_zmeny := 'PRIDANO ' ||  'jmeno ' || '' || :new.jmeno || ', ' || 'prijmeni ' || '' || :new.prijmeni || ', ' || 'rodnecislo ' || '' || :new.rodnecislo || ', ' || 'telefonnicislo ' || '' || :new.telefonnicislo;
+    ELSIF UPDATING THEN
+        v_operace := 'UPDATE';
+        v_zmeny := 'ZMENENO ';
+            	IF (:new.jmeno != :old.jmeno) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'jmeno ' || '' || :old.jmeno || ' -> ' || 'jmeno ' || ' ' || :new.jmeno; 
+	END IF; 
+	IF (:new.prijmeni != :old.prijmeni) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'prijmeni ' || '' || :old.prijmeni || ' -> ' || 'prijmeni ' || ' ' || :new.prijmeni; 
+	END IF; 
+	IF (:new.rodnecislo != :old.rodnecislo) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'rodnecislo ' || '' || :old.rodnecislo || ' -> ' || 'rodnecislo ' || ' ' || :new.rodnecislo; 
+	END IF; 
+	IF (:new.telefonnicislo != :old.telefonnicislo) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'telefonnicislo ' || '' || :old.telefonnicislo || ' -> ' || 'telefonnicislo ' || ' ' || :new.telefonnicislo; 
+	END IF; 
+
+    ELSIF DELETING THEN
+        v_operace := 'DELETE';
+        v_zmeny := 'Smazano ' ||  'jmeno ' || '' || :old.jmeno || ', ' || 'prijmeni ' || '' || :old.prijmeni || ', ' || 'rodnecislo ' || '' || :old.rodnecislo || ', ' || 'telefonnicislo ' || '' || :old.telefonnicislo;
+    END IF;
+    INSERT INTO logy (TABULKA, OPERACE, CAS, UZIVATEL, ZMENY) VALUES ('zamestnanci', v_operace, SYSTIMESTAMP, USER, v_zmeny);
+END;
+/
+    
+CREATE OR REPLACE TRIGGER trg_zbozi_zmeny
+BEFORE INSERT OR UPDATE OR DELETE ON zbozi
+FOR EACH ROW
+DECLARE
+    v_operace VARCHAR2(10);
+    v_zmeny VARCHAR2(4000);
+BEGIN
+    IF INSERTING THEN
+        v_operace := 'INSERT';
+        v_zmeny := 'PRIDANO ' ||  'nazev ' || '' || :new.nazev || ', ' || 'aktualnicena ' || '' || :new.aktualnicena || ', ' || 'cenazeclubcartou ' || '' || :new.cenazeclubcartou || ', ' || 'hmotnost ' || '' || :new.hmotnost;
+    ELSIF UPDATING THEN
+        v_operace := 'UPDATE';
+        v_zmeny := 'ZMENENO ';
+            	IF (:new.nazev != :old.nazev) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'nazev ' || '' || :old.nazev || ' -> ' || 'nazev ' || ' ' || :new.nazev; 
+	END IF; 
+	IF (:new.aktualnicena != :old.aktualnicena) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'aktualnicena ' || '' || :old.aktualnicena || ' -> ' || 'aktualnicena ' || ' ' || :new.aktualnicena; 
+	END IF; 
+	IF (:new.cenazeclubcartou != :old.cenazeclubcartou) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'cenazeclubcartou ' || '' || :old.cenazeclubcartou || ' -> ' || 'cenazeclubcartou ' || ' ' || :new.cenazeclubcartou; 
+	END IF; 
+	IF (:new.hmotnost != :old.hmotnost) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'hmotnost ' || '' || :old.hmotnost || ' -> ' || 'hmotnost ' || ' ' || :new.hmotnost; 
+	END IF; 
+
+    ELSIF DELETING THEN
+        v_operace := 'DELETE';
+        v_zmeny := 'Smazano ' ||  'nazev ' || '' || :old.nazev || ', ' || 'aktualnicena ' || '' || :old.aktualnicena || ', ' || 'cenazeclubcartou ' || '' || :old.cenazeclubcartou || ', ' || 'hmotnost ' || '' || :old.hmotnost;
+    END IF;
+    INSERT INTO logy (TABULKA, OPERACE, CAS, UZIVATEL, ZMENY) VALUES ('zbozi', v_operace, SYSTIMESTAMP, USER, v_zmeny);
+END;
+/
+    
+CREATE OR REPLACE TRIGGER trg_zbozi_na_pulte_zmeny
+BEFORE INSERT OR UPDATE OR DELETE ON zbozi_na_pulte
+FOR EACH ROW
+DECLARE
+    v_operace VARCHAR2(10);
+    v_zmeny VARCHAR2(4000);
+BEGIN
+    IF INSERTING THEN
+        v_operace := 'INSERT';
+        v_zmeny := 'PRIDANO ' ||  'pocetzbozi ' || '' || :new.pocetzbozi;
+    ELSIF UPDATING THEN
+        v_operace := 'UPDATE';
+        v_zmeny := 'ZMENENO ';
+            	IF (:new.pocetzbozi != :old.pocetzbozi) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'pocetzbozi ' || '' || :old.pocetzbozi || ' -> ' || 'pocetzbozi ' || ' ' || :new.pocetzbozi; 
+	END IF; 
+
+    ELSIF DELETING THEN
+        v_operace := 'DELETE';
+        v_zmeny := 'Smazano ' ||  'pocetzbozi ' || '' || :old.pocetzbozi;
+    END IF;
+    INSERT INTO logy (TABULKA, OPERACE, CAS, UZIVATEL, ZMENY) VALUES ('zbozi_na_pulte', v_operace, SYSTIMESTAMP, USER, v_zmeny);
+END;
+/
+    
+CREATE OR REPLACE TRIGGER trg_zbozi_na_sklade_zmeny
+BEFORE INSERT OR UPDATE OR DELETE ON zbozi_na_sklade
+FOR EACH ROW
+DECLARE
+    v_operace VARCHAR2(10);
+    v_zmeny VARCHAR2(4000);
+BEGIN
+    IF INSERTING THEN
+        v_operace := 'INSERT';
+        v_zmeny := 'PRIDANO ' ||  'pocetzbozi ' || '' || :new.pocetzbozi;
+    ELSIF UPDATING THEN
+        v_operace := 'UPDATE';
+        v_zmeny := 'ZMENENO ';
+            	IF (:new.pocetzbozi != :old.pocetzbozi) THEN 
+		v_zmeny := v_zmeny || ' | ' || 'pocetzbozi ' || '' || :old.pocetzbozi || ' -> ' || 'pocetzbozi ' || ' ' || :new.pocetzbozi; 
+	END IF; 
+
+    ELSIF DELETING THEN
+        v_operace := 'DELETE';
+        v_zmeny := 'Smazano ' ||  'pocetzbozi ' || '' || :old.pocetzbozi;
+    END IF;
+    INSERT INTO logy (TABULKA, OPERACE, CAS, UZIVATEL, ZMENY) VALUES ('zbozi_na_sklade', v_operace, SYSTIMESTAMP, USER, v_zmeny);
+END;
+/
+--1=========================
+
+--Kolik bylo prodano zbozi podle kazde kategorije
+
+CREATE OR REPLACE VIEW v_prodej_kategorie AS
+SELECT k.nazev AS kategorie_nazev, SUM(pz.prodejnicena * pz.pocetzbozi) AS total_sales
+FROM prodane_zbozi pz
+JOIN zbozi z ON pz.zbozi_idzbozi = z.idzbozi
+JOIN kategorije k ON z.kategorije_idkategorije = k.idkategorije
+GROUP BY k.nazev;
+
+--2===========================
+
+--Ukazuje vsechny prodeje s detalni informace 
+
+CREATE OR REPLACE VIEW v_prodeje AS
+SELECT pr.idprodeje, pr.datumprodeje, pr.celkovacena, p.platba_type,
+       z.nazev AS nazev_zbozi, pz.zbozi_idzbozi ZBOZIID, pz.pocetzbozi
+FROM prodeje pr
+JOIN platby p ON pr.platba_idplatby = p.idplatby
+JOIN prodane_zbozi pz ON pr.idprodeje = pz.prodeje_idprodeje
+JOIN zbozi z ON pz.zbozi_idzbozi = z.idzbozi;
+
+
+--3==========================
+
+--Ukazuje kolik je zbozi na skladech a pultech
+
+CREATE OR REPLACE  VIEW v_zbozi_dostupnost AS
+SELECT z.idzbozi, z.nazev, z.aktualnicena,
+       SUM(zns.pocetzbozi) AS celkem_na_skladech,
+       SUM(znp.pocetzbozi) AS celkem_na_pulte
+FROM zbozi z
+LEFT JOIN zbozi_na_sklade zns ON z.idzbozi = zns.zbozi_idzbozi
+LEFT JOIN zbozi_na_pulte znp ON z.idzbozi = znp.zbozi_idzbozi
+GROUP BY z.idzbozi, z.nazev, z.aktualnicena;
+

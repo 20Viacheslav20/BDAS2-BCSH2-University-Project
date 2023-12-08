@@ -1,5 +1,4 @@
 ﻿--1=========================
---Сколько по категриям было продано
 
 --Kolik bylo prodano zbozi podle kazde kategorije
 
@@ -13,7 +12,6 @@ GROUP BY k.nazev;
 select * from v_prodej_kategorie;
 
 --2===========================
---Показывает все продажи
 
 --Ukazuje vsechny prodeje s detalni informace 
 
@@ -29,7 +27,6 @@ JOIN zbozi z ON pz.zbozi_idzbozi = z.idzbozi;
 select * from v_prodeje;
 
 --3==========================
---Показывает сколько товаров есть на складе и на полках
 
 --Ukazuje kolik je zbozi na skladech a pultech
 
