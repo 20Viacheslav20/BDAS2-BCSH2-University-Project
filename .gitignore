@@ -271,5 +271,6 @@ __pycache__/
 # Cake - Uncomment if you are using it
 # tools/
 
-
+appsettings.Development.json
+appsettings.json
 
